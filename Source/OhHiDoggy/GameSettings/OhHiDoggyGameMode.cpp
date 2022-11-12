@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "OhHiDoggyGameMode.h"
-#include "OhHiDoggyCharacter.h"
+#include "../HumanCharacter/OhHiDoggyCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AOhHiDoggyGameMode::AOhHiDoggyGameMode()

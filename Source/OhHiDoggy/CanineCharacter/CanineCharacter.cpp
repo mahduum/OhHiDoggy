@@ -2,7 +2,7 @@
 
 
 #include "CanineCharacter.h"
-#include "CanineCharacterMovementComponent.h"
+#include "../Movement/CanineCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 

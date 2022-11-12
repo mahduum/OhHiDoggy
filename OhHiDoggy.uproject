@@ -7,6 +7,17 @@
 		{
 			"Name": "OhHiDoggy",
 			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"ModularGameplay",
+				"Engine",
+				"EnhancedInput",
+				"CommonUI"
+			]
+		},
+		{
+			"Name": "OhHiDoggyGame",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	],
@@ -57,6 +68,10 @@
 		{
 			"Name": "LiveLink",
 			"Enabled": true
-		}
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		},
 	]
 }

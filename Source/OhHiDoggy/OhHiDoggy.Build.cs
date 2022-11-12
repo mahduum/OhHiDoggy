@@ -6,6 +6,7 @@ public class OhHiDoggy : ModuleRules
 {
 	public OhHiDoggy(ReadOnlyTargetRules Target) : base(Target)
 	{
+		PrivateDependencyModuleNames.AddRange(new string[] {"CommonUI"});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]
