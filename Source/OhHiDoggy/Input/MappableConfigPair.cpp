@@ -6,8 +6,6 @@
 //#include "Settings/OhHiDoggySettingsLocal.h"
 #include "ICommonUIModule.h"
 #include "CommonUISettings.h"
-#include "PlayerMappableInputConfig.h"
-#include "Engine/AssetManager.h"
 
 bool FMappableConfigPair::CanBeActivated() const
 {

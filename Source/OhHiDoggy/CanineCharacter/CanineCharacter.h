@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
 #include "CanineCharacter.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDoggyPossessed, UInputComponent*)
 
 USTRUCT()
 struct FCanineReplicatedAcceleration
@@ -36,9 +39,15 @@ public:
 protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
+
+	//todo use from PawnComponentExt instead
+	FOnDoggyPossessed OnDoggyPossessedDelegate;
 
 private:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
+	UOhHiDoggyPawnComponentExt* PawnExtComponent;
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
 	// UCanineCameraComponent* CameraComponent;
 	//

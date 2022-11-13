@@ -11,9 +11,23 @@ public class OhHiDoggy : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
-			"EnhancedInput", "AIModule", "GameplayTasks", "GameplayAbilities",
+			"Core", "CoreUObject", "Engine", "HeadMountedDisplay",
+			"AIModule", "GameplayTasks", "GameplayAbilities",
 			"GameplayTags", "GameFeatures", "ModularGameplay",
 		});
+		
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"InputCore",
+				"CoreUObject",
+				"Slate",
+				"SlateCore",
+				"CommonInput",
+				"CommonUI",
+				"UMG",
+				"EnhancedInput",
+			}
+		);
 	}
 }

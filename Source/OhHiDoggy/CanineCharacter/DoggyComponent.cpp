@@ -2,14 +2,94 @@
 
 
 #include "DoggyComponent.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework//PlayerState.h"
+#include "Misc/UObjectToken.h"
+#include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
 
-#include "InputTriggers.h"
-#include "OhHiDoggy/Input/DoggyInputConfig.h"
+//#include "OhHiDoggy/Input/DoggyInputConfig.h"
 
 void UDoggyComponent::OnRegister()
 {
 	Super::OnRegister();
-	InitializePlayerInput(GetController<APlayerController>()->GetPawn()->InputComponent);
+
+	//todo before using pawn extension try using a character for testing?
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(Pawn))
+		{
+			PawnExtComp->OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnPawnReadyToInitialize));
+		}
+	}
+	else
+	{
+		UE_LOG(LogCore, Error, TEXT("[ULyraHeroComponent::OnRegister] This component has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint."));
+
+//todo: what is it for?
+#if WITH_EDITOR
+		if (GIsEditor)
+		{
+			static const FText Message = NSLOCTEXT("LyraHeroComponent", "NotOnPawnError", "has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint. This will cause a crash if you PIE!");
+			static const FName HeroMessageLogName = TEXT("LyraHeroComponent");
+			
+			FMessageLog(HeroMessageLogName).Error()
+				->AddToken(FUObjectToken::Create(this, FText::FromString(GetNameSafe(this))))
+				->AddToken(FTextToken::Create(Message));
+				
+			FMessageLog(HeroMessageLogName).Open();
+		}
+#endif
+	}
+	//get owner and add delegate initialize player input to owner to be fired on setup input 
+	//InitializePlayerInput(GetController<APlayerController>()->GetPawn()->InputComponent);//todo crashes
+}
+
+void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register to owner or pawn ext when pawn will be ready to initialize (like onpossessed etc.)
+{
+	if (!ensure(!bPawnHasInitialized))
+	{
+		// Don't initialize twice
+		return;
+	}
+
+	APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+
+	APlayerState* LyraPS = GetPlayerState<APlayerState>();
+	check(LyraPS);
+
+	//const ULyraPawnData* PawnData = nullptr;
+
+	// if (ULyraPawnExtensionComponent* PawnExtComp = ULyraPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	// {
+	// 	PawnData = PawnExtComp->GetPawnData<ULyraPawnData>();
+	//
+	// 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
+	// 	// The ability system component and attribute sets live on the player state.
+	// 	PawnExtComp->InitializeAbilitySystem(LyraPS->GetLyraAbilitySystemComponent(), LyraPS);
+	// }
+
+	if (APlayerController* LyraPC = GetController<APlayerController>())
+	{
+		if (Pawn->InputComponent != nullptr)
+		{
+			InitializePlayerInput(Pawn->InputComponent);
+		}
+	}
+
+	// if (bIsLocallyControlled && PawnData)
+	// {
+	// 	if (ULyraCameraComponent* CameraComponent = ULyraCameraComponent::FindCameraComponent(Pawn))
+	// 	{
+	// 		CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+	// 	}
+	// }
+
+	bPawnHasInitialized = true;
 }
 
 void UDoggyComponent::BeginPlay()
@@ -120,4 +200,51 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue) cons
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
 		}
 	}
+}
+
+
+bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
+{
+	// The player state is required.
+	if (!GetPlayerState<APlayerState>())
+	{
+		return false;
+	}
+
+	const APawn* Pawn = GetPawn<APawn>();
+
+	// A pawn is required.
+	if (!Pawn)
+	{
+		return false;
+	}
+
+	//If we're authority or autonomous, we need to wait for a controller with registered ownership of the player state.
+	if (Pawn->GetLocalRole() != ROLE_SimulatedProxy)
+	{
+		AController* Controller = GetController<AController>();
+	
+		const bool bHasControllerPairedWithPS = (Controller != nullptr) && \
+												(Controller->PlayerState != nullptr) && \
+												(Controller->PlayerState->GetOwner() == Controller);
+	
+		if (!bHasControllerPairedWithPS)
+		{
+			return false;
+		}
+	}
+	
+	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+	const bool bIsBot = Pawn->IsBotControlled();
+
+	if (bIsLocallyControlled && !bIsBot)
+	{
+		// The input component is required when locally controlled.
+		if (!Pawn->InputComponent)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }

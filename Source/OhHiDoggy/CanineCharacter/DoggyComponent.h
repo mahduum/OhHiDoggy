@@ -6,17 +6,18 @@
 #include "GameplayAbilitySpec.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/PawnComponent.h"
+#include "OhHiDoggy/Components/OhHiDoggyPawnComponent.h"
+#include "OhHiDoggy/Input/MappableConfigPair.h"
 #include "DoggyComponent.generated.h"
 
-class UDoggyInputConfigBad;
 struct FGameplayTag;
 struct FGameplayAbilitySpecHandle;
 struct FInputActionValue;
 /**
  * 
  */
-UCLASS()
-class UDoggyComponent : public UPawnComponent//Inspired by ULyraHeroComponent
+UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
+class UDoggyComponent : public UOhHiDoggyPawnComponent//Inspired by ULyraHeroComponent
 {
 	GENERATED_BODY()
 	public:
@@ -43,10 +44,11 @@ class UDoggyComponent : public UPawnComponent//Inspired by ULyraHeroComponent
 
 protected:
 
+	/* Called when component added to object in runtime or in edit mode. */
 	virtual void OnRegister() override;
 
-	//virtual bool IsPawnComponentReadyToInitialize() const override;
-	//void OnPawnReadyToInitialize();//todo here initialize input
+	virtual bool IsPawnComponentReadyToInitialize() const override;//TODO when base class is added add override
+	void OnPawnReadyToInitialize();//todo here initialize input
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -75,8 +77,8 @@ protected:
 	 * NOTE: You should only add to this if you do not have a game feature plugin accessible to you.
 	 * If you do, then use the GameFeatureAction_AddInputConfig instead. 
 	 */
-	// UPROPERTY(EditAnywhere)
-	// TArray<FMappableConfigPair> DefaultInputConfigs;
+	UPROPERTY(EditAnywhere)
+	TArray<FMappableConfigPair> DefaultInputConfigs;
 	
 	// Camera mode set by an ability.
 	//TSubclassOf<UCameraMode> AbilityCameraMode;

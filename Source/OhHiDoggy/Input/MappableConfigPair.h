@@ -8,7 +8,6 @@
 #include "MappableConfigPair.generated.h"
 
 class UPlayerMappableInputConfig;
-//class UPlayerMappableInputConfig;
 /**
  * 
  */
@@ -30,7 +29,7 @@ struct OHHIDOGGY_API FLoadedMappableConfigPair
 	const UPlayerMappableInputConfig* Config = nullptr;
 
 	/** The type of device that this mapping config should be applied to */
-	// UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ECommonInputType Type = ECommonInputType::Count;
 
 	/** If this config is currently active. A config is marked as active when it's owning GFA is active */
@@ -54,7 +53,7 @@ struct FMappableConfigPair
 	 * for things like the settings screen, or if you only want to apply this config when a certain
 	 * input type is being used.
 	 */
-	//UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	ECommonInputType Type = ECommonInputType::Count;
 
 	/**
