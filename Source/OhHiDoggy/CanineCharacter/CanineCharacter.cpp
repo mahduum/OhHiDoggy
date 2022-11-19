@@ -56,9 +56,6 @@ void ACanineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	UE_LOG(LogCore, Display, TEXT("Player input component setup."));//todo debug when it's happening
 	
 	PawnExtComponent->SetupPlayerInputComponent();
-	
-	//todo just for testing:
-	OnDoggyPossessedDelegate.Broadcast(PlayerInputComponent);
 }
 
 void ACanineCharacter::PossessedBy(AController* NewController)

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "OhHiDoggyInputComponent.h"
 
 
@@ -13,6 +12,7 @@ void UOhHiDoggyInputComponent::AddInputMappings(const UDoggyInputConfig* InputCo
 	check(InputConfig);
 	check(InputSubsystem);
 
+	// todo primary local player impl add
 	//UOhHiDoggyLocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<UOhHiDoggyLocalPlayer>();//todo add local player
 	//check(LocalPlayer);
 
@@ -53,7 +53,8 @@ void UOhHiDoggyInputComponent::RemoveInputMappings(const UDoggyInputConfig* Inpu
 	check(InputConfig);
 	check(InputSubsystem);
 
-	// UOhHiDoggyLocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<UOhHiDoggyLocalPlayer>();
+	// todo primary local player impl add
+	//UOhHiDoggyLocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<UOhHiDoggyLocalPlayer>();
 	// check(LocalPlayer);
 	//
 	// if (UOhHiDoggySettingsLocal* LocalSettings = UOhHiDoggySettingsLocal::Get())
@@ -82,20 +83,20 @@ void UOhHiDoggyInputComponent::RemoveBinds(TArray<uint32>& BindHandles)
 	BindHandles.Reset();
 }
 
-// void UOhHiDoggyInputComponent::AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
-// {
-// 	check(InputSubsystem);
-// 	if (ensure(ConfigPair.bIsActive))
-// 	{
-// 		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);	
-// 	}
-// }
-//
-// void UOhHiDoggyInputComponent::RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
-// {
-// 	check(InputSubsystem);
-// 	if (!ConfigPair.bIsActive)
-// 	{
-// 		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);	
-// 	}	
-// }
+void UOhHiDoggyInputComponent::AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
+{
+	check(InputSubsystem);
+	if (ensure(ConfigPair.bIsActive))
+	{
+		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);	
+	}
+}
+
+void UOhHiDoggyInputComponent::RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
+{
+	check(InputSubsystem);
+	if (!ConfigPair.bIsActive)
+	{
+		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);	
+	}	
+}

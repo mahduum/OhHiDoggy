@@ -6,6 +6,7 @@
 #include "DoggyInputConfig.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "MappableConfigPair.h"
 #include "OhHiDoggyInputComponent.generated.h"
 
 struct FGameplayTag;
@@ -32,11 +33,11 @@ public:
 
 	void RemoveBinds(TArray<uint32>& BindHandles);
 
-	//void AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem);
-	//void RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem);
+	void AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem);
+	void RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem);
 };
 
-
+/* Binds actions to input actions with tags, delegates and owners */
 template<class UserClass, typename FuncType>
 void UOhHiDoggyInputComponent::BindNativeAction(const UDoggyInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound)
 {
@@ -47,6 +48,7 @@ void UOhHiDoggyInputComponent::BindNativeAction(const UDoggyInputConfig* InputCo
 	}
 }
 
+/* Binds abilities to input actions with tags, delegates and owners, the difference with actions is that it returned bounded handles (uint32) to bindings. */
 template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 void UOhHiDoggyInputComponent::BindAbilityActions(const UDoggyInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
 {

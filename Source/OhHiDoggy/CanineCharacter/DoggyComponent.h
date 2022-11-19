@@ -58,7 +58,7 @@ protected:
 	// void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	// void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 	//
-	void Input_Move(const FInputActionValue& InputActionValue) const;
+	void Input_Move(const FInputActionValue& InputActionValue);
 	// void Input_LookMouse(const FInputActionValue& InputActionValue);
 	// void Input_LookStick(const FInputActionValue& InputActionValue);
 	// void Input_Crouch(const FInputActionValue& InputActionValue);
@@ -66,8 +66,8 @@ protected:
 
 	//TSubclassOf<UCameraMode> DetermineCameraMode() const;
 	
-	// void OnInputConfigActivated(const FLoadedMappableConfigPair& ConfigPair);
-	// void OnInputConfigDeactivated(const FLoadedMappableConfigPair& ConfigPair);
+	void OnInputConfigActivated(const FLoadedMappableConfigPair& ConfigPair);
+	void OnInputConfigDeactivated(const FLoadedMappableConfigPair& ConfigPair);
 
 protected:
 

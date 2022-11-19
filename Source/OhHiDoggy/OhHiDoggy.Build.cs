@@ -14,6 +14,7 @@ public class OhHiDoggy : ModuleRules
 			"Core", "CoreUObject", "Engine", "HeadMountedDisplay",
 			"AIModule", "GameplayTasks", "GameplayAbilities",
 			"GameplayTags", "GameFeatures", "ModularGameplay",
+			"ApplicationCore"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -27,6 +28,9 @@ public class OhHiDoggy : ModuleRules
 				"CommonUI",
 				"UMG",
 				"EnhancedInput",
+				"RHI",
+				"AudioMixer",
+				"NetCore"
 			}
 		);
 	}

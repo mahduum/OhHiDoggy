@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "OhHiDoggyPawnComponent.h"
+#include "OhHiDoggy/Data/OhHiDoggyPawnData.h"
 #include "OhHiDoggyPawnComponentExt.generated.h"
 
 
@@ -17,16 +18,19 @@ public:
 	UOhHiDoggyPawnComponentExt(const FObjectInitializer& ObjectInitializer);
 
 	// Returns the pawn extension component if one exists on the specified actor.
-	UFUNCTION(BlueprintPure, Category = "Lyra|Pawn")
+	UFUNCTION(BlueprintPure, Category = "OhHiDoggy|Pawn")
 	static UOhHiDoggyPawnComponentExt* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UOhHiDoggyPawnComponentExt>() : nullptr); }
 
-	// template <class T>
-	// const T* GetPawnData() const { return Cast<T>(PawnData); }
+	template <class T>
+	const T* GetPawnData() const { return Cast<UOhHiDoggyPawnData>(PawnData); }
 
-	//void SetPawnData(const UPawnData* InPawnData);//todo I already done it somewhere with data?
+	void SetPawnData(const UOhHiDoggyPawnData* InPawnData);//todo I already done it somewhere with data?
 
-	UFUNCTION(BlueprintPure, Category = "Lyra|Pawn")
-	UAbilitySystemComponent* GetLyraAbilitySystemComponent() const { return AbilitySystemComponent; }
+	UFUNCTION(BlueprintPure, Category = "OhHiDoggy|Pawn")
+	UAbilitySystemComponent* GetOhHiDoggyAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 	// // Should be called by the owning pawn to become the avatar of the ability system.
 	// void InitializeAbilitySystem(UAbilitySystemComponent* InASC, AActor* InOwnerActor);
@@ -47,7 +51,7 @@ public:
 	bool CheckPawnReadyToInitialize();
 
 	// Returns true if the pawn is ready to be initialized.
-	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Lyra|Pawn", Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "OhHiDoggy|Pawn", Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool IsPawnReadyToInitialize() const { return bPawnReadyToInitialize; }
 	
 	// Register with the OnPawnReadyToInitialize delegate and broadcast if condition is already met.
@@ -63,14 +67,14 @@ protected:
 
 	virtual void OnRegister() override;
 
-	// UFUNCTION()
-	// void OnRep_PawnData();
+	UFUNCTION()
+	void OnRep_PawnData();
 
 	// Delegate fired when pawn has everything needed for initialization.
 	FSimpleMulticastDelegate OnPawnReadyToInitialize;
 
 	// UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "On Pawn Ready To Initialize"))
-	// FLyraDynamicMulticastDelegate BP_OnPawnReadyToInitialize;
+	// FOhHiDoggyDynamicMulticastDelegate BP_OnPawnReadyToInitialize;
 
 	// Delegate fired when our pawn becomes the ability system's avatar actor
 	FSimpleMulticastDelegate OnAbilitySystemInitialized;
@@ -81,8 +85,8 @@ protected:
 protected:
 
 	// Pawn data used to create the pawn.  Specified from a spawn function or on a placed instance.
-	// UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "Lyra|Pawn")
-	// const ULyraPawnData* PawnData;
+	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "OhHiDoggy|Pawn")
+	const UOhHiDoggyPawnData* PawnData;
 
 	// Pointer to the ability system component that is cached for convenience.
 	UPROPERTY()

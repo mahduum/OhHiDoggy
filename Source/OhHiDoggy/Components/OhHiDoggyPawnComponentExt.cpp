@@ -2,6 +2,7 @@
 
 
 #include "OhHiDoggyPawnComponentExt.h"
+#include "Net/UnrealNetwork.h"
 
 
 UOhHiDoggyPawnComponentExt::UOhHiDoggyPawnComponentExt(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -41,7 +42,17 @@ void UOhHiDoggyPawnComponentExt::OnRegister()
 	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one LyraPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
 }
 
+void UOhHiDoggyPawnComponentExt::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
 void UOhHiDoggyPawnComponentExt::SetupPlayerInputComponent()
+{
+	CheckPawnReadyToInitialize();
+}
+
+void UOhHiDoggyPawnComponentExt::OnRep_PawnData()
 {
 	CheckPawnReadyToInitialize();
 }
@@ -93,29 +104,29 @@ bool UOhHiDoggyPawnComponentExt::CheckPawnReadyToInitialize()//todo what should 
 	return true;
 }
 
-//
-// void UOhHiDoggyPawnComponentExt::SetPawnData(const UOhHiDoggyPawnData* InPawnData)
-// {
-// 	check(InPawnData);
-//
-// 	bPawnReadyToInitialize = false;
-//
-// 	APawn* Pawn = GetPawnChecked<APawn>();
-//
-// 	if (Pawn->GetLocalRole() != ROLE_Authority)
-// 	{
-// 		return;
-// 	}
-//
-// 	if (PawnData)
-// 	{
-// 		UE_LOG(LogLyra, Error, TEXT("Trying to set PawnData [%s] on pawn [%s] that already has valid PawnData [%s]."), *GetNameSafe(InPawnData), *GetNameSafe(Pawn), *GetNameSafe(PawnData));
-// 		return;
-// 	}
-//
-// 	PawnData = InPawnData;
-//
-// 	Pawn->ForceNetUpdate();
-//
-// 	CheckPawnReadyToInitialize();
-// }
+
+void UOhHiDoggyPawnComponentExt::SetPawnData(const UOhHiDoggyPawnData* InPawnData)//todo make and understand what should be pawn data, make it and set it
+{
+	check(InPawnData);
+
+	bPawnReadyToInitialize = false;
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+
+	if (Pawn->GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	if (PawnData)
+	{
+		UE_LOG(LogCore, Error, TEXT("Trying to set PawnData [%s] on pawn [%s] that already has valid PawnData [%s]."), *GetNameSafe(InPawnData), *GetNameSafe(Pawn), *GetNameSafe(PawnData));
+		return;
+	}
+
+	PawnData = InPawnData;
+
+	Pawn->ForceNetUpdate();
+
+	CheckPawnReadyToInitialize();
+}
