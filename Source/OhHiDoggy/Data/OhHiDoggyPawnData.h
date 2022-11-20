@@ -25,11 +25,12 @@ public:
 
 public:
 
-	// Class to instantiate for this pawn (should usually derive from ALyraPawn or ALyraCharacter).
+	// Class to instantiate for this pawn (should usually derive from ALyraPawn or ACanineCharacter). Is retrieved by game mode through controller (where the owner - pawn data -
+	// is kept/loaded to from player state or experience: todo primary make custom player state and experience definition in world settings
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Pawn")
 	TSubclassOf<APawn> PawnClass;
 
-	// Ability sets to grant to this pawn's ability system.
+	// Ability sets to grant to this pawn's ability system. //todo primary add class sets
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Abilities")//todo make from primary data asset
 	// TArray<ULyraAbilitySet*> AbilitySets;//todo abilities with data: ability class, ability level and ability input tag, gameplay effects and owner attribute sets
 
@@ -43,5 +44,5 @@ public:
 
 	// // Default camera mode used by player controlled pawns.
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Camera")
-	// TSubclassOf<ULyraCameraMode> DefaultCameraMode;//TODO primary add camera modes
+	// TSubclassOf<ULyraCameraMode> DefaultCameraMode;//TODO primary add camera modes, modes are in stack variable inside custom camera component
 };

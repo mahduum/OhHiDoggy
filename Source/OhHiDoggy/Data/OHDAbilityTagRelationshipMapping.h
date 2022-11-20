@@ -42,7 +42,7 @@ class OHHIDOGGY_API UOHDAbilityTagRelationshipMapping : public UDataAsset
 	
 private:
 	/** The list of relationships between different gameplay tags (which ones block or cancel others) */
-	UPROPERTY(EditAnywhere, Category = Ability, meta=(TitleProperty="AbilityTag"))//todo see how it looks in Lyra
+	UPROPERTY(EditAnywhere, Category = Ability, meta=(TitleProperty="AbilityTag"))//displays the content of the property "AbilityTag" inside the struct
 	TArray<FOHDAbilityTagRelationship> AbilityTagRelationships;
 
 public:
