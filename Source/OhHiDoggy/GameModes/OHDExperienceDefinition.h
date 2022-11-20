@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OhHiDoggy/Data/OhHiDoggyPawnData.h"
+#include "OhHiDoggy/Data/OHDPawnData.h"
 #include "UObject/Object.h"
 #include "OHDExperienceDefinition.generated.h"
 
@@ -39,7 +39,7 @@ public:
 	/** The default pawn class to spawn for players */
 	//@TODO: Make soft?
 	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
-	TObjectPtr<const UOhHiDoggyPawnData> DefaultPawnData;
+	TObjectPtr<const UOHDPawnData> DefaultPawnData;
 
 	// List of actions to perform as this experience is loaded/activated/deactivated/unloaded
 	// UPROPERTY(EditDefaultsOnly, Instanced, Category="Actions")

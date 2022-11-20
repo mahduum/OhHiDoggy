@@ -6,7 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerState.h"
-#include "OhHiDoggy/Data/OhHiDoggyPawnData.h"
+#include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OHDPlayerState.generated.h"
 
 
@@ -47,7 +47,7 @@ public:
 	template <class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 
-	void SetPawnData(const UOhHiDoggyPawnData* InPawnData);
+	void SetPawnData(const UOHDPawnData* InPawnData);
 
 	//~AActor interface
 	virtual void PreInitializeComponents() override;
@@ -85,7 +85,7 @@ protected:
 protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
-	const UOhHiDoggyPawnData* PawnData;
+	const UOHDPawnData* PawnData;
 
 private:
 

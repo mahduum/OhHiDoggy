@@ -105,7 +105,7 @@ bool UOhHiDoggyPawnComponentExt::CheckPawnReadyToInitialize()//todo what should 
 }
 
 
-void UOhHiDoggyPawnComponentExt::SetPawnData(const UOhHiDoggyPawnData* InPawnData)//todo make and understand what should be pawn data, make it and set it
+void UOhHiDoggyPawnComponentExt::SetPawnData(const UOHDPawnData* InPawnData)//todo make and understand what should be pawn data, make it and set it
 {
 	check(InPawnData);
 

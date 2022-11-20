@@ -7,7 +7,7 @@
 #include "Misc/UObjectToken.h"
 #include "OhHiDoggy/FOhHiDoggyGameplayTags.h"
 #include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
-#include "OhHiDoggy/Data/OhHiDoggyPawnData.h"
+#include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OhHiDoggy/Input/DoggyInputConfig.h"
 #include "OhHiDoggy/Input/OhHiDoggyInputComponent.h"
 #include "OhHiDoggy/Settings/OhHiDoggySettingsLocal.h"
@@ -67,11 +67,11 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 	APlayerState* OhHiDoggyPS = GetPlayerState<APlayerState>();
 	check(OhHiDoggyPS);
 
-	//const UOhHiDoggyPawnData* PawnData = nullptr;
+	//const UOHDPawnData* PawnData = nullptr;
 
 	// if (UOhHiDoggyPawnExtensionComponent* PawnExtComp = UOhHiDoggyPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 	// {
-	// 	PawnData = PawnExtComp->GetPawnData<UOhHiDoggyPawnData>();
+	// 	PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
 	//
 	// 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
 	// 	// The ability system component and attribute sets live on the player state.
@@ -134,7 +134,7 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 	if (const UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(Pawn))
 	{
-		if (const UOhHiDoggyPawnData* PawnData = PawnExtComp->GetPawnData<UOhHiDoggyPawnData>())//todo make pawn data and nest it in extension comp
+		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())//todo make pawn data and nest it in extension comp
 		{
 			if (const UDoggyInputConfig* InputConfig = PawnData->InputConfig)//todo what input config
 			{

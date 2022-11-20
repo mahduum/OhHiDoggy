@@ -87,7 +87,7 @@ void AOHDPlayerState::OnExperienceLoaded(const UOHDExperienceDefinition* /*Curre
 	//todo
 	// if (AOHDGameMode* OHDGameMode = GetWorld()->GetAuthGameMode<AOHDGameMode>())
 	// {
-	// 	if (const UOhHiDoggyPawnData* NewPawnData = OHDGameMode->GetPawnDataForController(GetOwningController()))
+	// 	if (const UOHDPawnData* NewPawnData = OHDGameMode->GetPawnDataForController(GetOwningController()))
 	// 	{
 	// 		SetPawnData(NewPawnData);
 	// 	}
@@ -138,7 +138,7 @@ void AOHDPlayerState::PostInitializeComponents()
 	// }
 }
 
-void AOHDPlayerState::SetPawnData(const UOhHiDoggyPawnData* InPawnData)
+void AOHDPlayerState::SetPawnData(const UOHDPawnData* InPawnData)
 {
 	check(InPawnData);
 

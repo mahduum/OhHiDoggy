@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "OhHiDoggyPawnComponent.h"
-#include "OhHiDoggy/Data/OhHiDoggyPawnData.h"
+#include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OhHiDoggyPawnComponentExt.generated.h"
 
 
@@ -22,9 +22,9 @@ public:
 	static UOhHiDoggyPawnComponentExt* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UOhHiDoggyPawnComponentExt>() : nullptr); }
 
 	template <class T>
-	const T* GetPawnData() const { return Cast<UOhHiDoggyPawnData>(PawnData); }
+	const T* GetPawnData() const { return Cast<UOHDPawnData>(PawnData); }
 
-	void SetPawnData(const UOhHiDoggyPawnData* InPawnData);//todo I already done it somewhere with data?
+	void SetPawnData(const UOHDPawnData* InPawnData);//todo I already done it somewhere with data?
 
 	UFUNCTION(BlueprintPure, Category = "OhHiDoggy|Pawn")
 	UAbilitySystemComponent* GetOhHiDoggyAbilitySystemComponent() const { return AbilitySystemComponent; }
@@ -86,7 +86,7 @@ protected:
 
 	// Pawn data used to create the pawn.  Specified from a spawn function or on a placed instance.
 	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "OhHiDoggy|Pawn")
-	const UOhHiDoggyPawnData* PawnData;
+	const UOHDPawnData* PawnData;
 
 	// Pointer to the ability system component that is cached for convenience.
 	UPROPERTY()

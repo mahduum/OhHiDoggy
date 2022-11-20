@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "OhHiDoggyPawnData.h"
+#include "OHDPawnData.h"
 
-UOhHiDoggyPawnData::UOhHiDoggyPawnData(const FObjectInitializer& ObjectInitializer)
+UOHDPawnData::UOHDPawnData(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PawnClass = nullptr;

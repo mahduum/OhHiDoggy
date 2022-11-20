@@ -4,24 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "OhHiDoggyPawnData.generated.h"
+#include "OHDPawnData.generated.h"
 
 class UOHDAbilityTagRelationshipMapping;
 class UDoggyInputConfig;
 /*
- * UOhHiDoggyPawnData
+ * UOHDPawnData
  *
  * Non-mutable data asset that contains properties used to define a pawn.
  */
 UCLASS(BlueprintType, Const, Meta = (DisplayName = "OhHiDoggy Pawn Data", ShortTooltip = "Data asset used to define a Pawn."))
-class OHHIDOGGY_API UOhHiDoggyPawnData : public UPrimaryDataAsset
+class OHHIDOGGY_API UOHDPawnData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 	
 public:
 
-	UOhHiDoggyPawnData(const FObjectInitializer& ObjectInitializer);
+	UOHDPawnData(const FObjectInitializer& ObjectInitializer);
 
 public:
 
