@@ -30,7 +30,7 @@ bool FMappableConfigPair::RegisterPair(const FMappableConfigPair& Pair)
 {
 	// UOhHiDoggyAssetManager& AssetManager = UOhHiDoggyAssetManager::Get();
 	//
-	// if (UOhHiDoggySettingsLocal* Settings = UOhHiDoggySettingsLocal::Get())
+	// if (UOHDSettingsLocal* Settings = UOHDSettingsLocal::Get())
 	// {
 	// 	// Register the pair with the settings, but do not activate it yet
 	// 	if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
@@ -49,7 +49,7 @@ bool FMappableConfigPair::ActivatePair(const FMappableConfigPair& Pair)
 	// // Only activate a pair that has been successfully registered
 	// if (FMappableConfigPair::RegisterPair(Pair) && Pair.CanBeActivated())
 	// {		
-	// 	if (UOhHiDoggySettingsLocal* Settings = UOhHiDoggySettingsLocal::Get())//todo from GameUserSettings
+	// 	if (UOHDSettingsLocal* Settings = UOHDSettingsLocal::Get())//todo from GameUserSettings
 	// 	{
 	// 		if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
 	// 		{
@@ -65,7 +65,7 @@ void FMappableConfigPair::DeactivatePair(const FMappableConfigPair& Pair)
 {
 	// UOhHiDoggyAssetManager& AssetManager = UOhHiDoggyAssetManager::Get();
 	//
-	// if (UOhHiDoggySettingsLocal* Settings = UOhHiDoggySettingsLocal::Get())
+	// if (UOHDSettingsLocal* Settings = UOHDSettingsLocal::Get())
 	// {
 	// 	if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
 	// 	{
@@ -78,7 +78,7 @@ void FMappableConfigPair::UnregisterPair(const FMappableConfigPair& Pair)
 {
 	// UOhHiDoggyAssetManager& AssetManager = UOhHiDoggyAssetManager::Get();
 	//
-	// if (UOhHiDoggySettingsLocal* Settings = UOhHiDoggySettingsLocal::Get())
+	// if (UOHDSettingsLocal* Settings = UOHDSettingsLocal::Get())
 	// {
 	// 	if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
 	// 	{

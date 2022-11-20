@@ -5,12 +5,12 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework//PlayerState.h"
 #include "Misc/UObjectToken.h"
-#include "OhHiDoggy/FOhHiDoggyGameplayTags.h"
-#include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
+#include "OhHiDoggy/FOHDGameplayTags.h"
+#include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 #include "OhHiDoggy/Data/OHDPawnData.h"
-#include "OhHiDoggy/Input/DoggyInputConfig.h"
-#include "OhHiDoggy/Input/OhHiDoggyInputComponent.h"
-#include "OhHiDoggy/Settings/OhHiDoggySettingsLocal.h"
+#include "OhHiDoggy/Input/OHDInputConfig.h"
+#include "OhHiDoggy/Input/OHDInputComponent.h"
+#include "OhHiDoggy/Settings/OHDSettingsLocal.h"
 
 //#include "OhHiDoggy/Input/DoggyInputConfig.h"
 
@@ -21,7 +21,7 @@ void UDoggyComponent::OnRegister()
 	//todo before using pawn extension try using a character for testing?
 	if (const APawn* Pawn = GetPawn<APawn>())
 	{
-		if (UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(Pawn))
+		if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
 		{
 			PawnExtComp->OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnPawnReadyToInitialize));
 		}
@@ -132,15 +132,15 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 	//todo add inherited from enhanced
 
-	if (const UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(Pawn))
+	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
 	{
 		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())//todo make pawn data and nest it in extension comp
 		{
-			if (const UDoggyInputConfig* InputConfig = PawnData->InputConfig)//todo what input config
+			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)//todo what input config
 			{
 				//todo make as UOhHiDoggyGameplayTags, tags by which to find to what input action the native action is bound
 				//an input action has its tag defined and assigned and it can by found by that tag, and internally then it bounds and action, object, trigger event with this input action.
-				const FOhHiDoggyGameplayTags& GameplayTags = FOhHiDoggyGameplayTags::Get();
+				const FOHDGameplayTags& GameplayTags = FOHDGameplayTags::Get();
 	
 				 //Register any default input configs with the settings so that they will be applied to the player during AddInputMappings
 				 for (const FMappableConfigPair& Pair : DefaultInputConfigs)
@@ -148,10 +148,10 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				 	FMappableConfigPair::ActivatePair(Pair);
 				 }
 				
-				UOhHiDoggyInputComponent* DoggyIC = CastChecked<UOhHiDoggyInputComponent>(PlayerInputComponent);//todo
+				UOHDInputComponent* DoggyIC = CastChecked<UOHDInputComponent>(PlayerInputComponent);//todo
 	
 				DoggyIC->AddInputMappings(InputConfig, Subsystem);
-				if (UOhHiDoggySettingsLocal* LocalSettings = UOhHiDoggySettingsLocal::Get())
+				if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())
 				{
 					LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
 					LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
@@ -264,7 +264,7 @@ void UDoggyComponent::OnInputConfigActivated(const FLoadedMappableConfigPair& Co
 	{
 		if (APawn* Pawn = GetPawn<APawn>())
 		{
-			if (UOhHiDoggyInputComponent* OhHiDoggyIC = Cast<UOhHiDoggyInputComponent>(Pawn->InputComponent))
+			if (UOHDInputComponent* OhHiDoggyIC = Cast<UOHDInputComponent>(Pawn->InputComponent))
 			{
 				if (const ULocalPlayer* LP = OhHiDoggyPC->GetLocalPlayer())
 				{
@@ -284,7 +284,7 @@ void UDoggyComponent::OnInputConfigDeactivated(const FLoadedMappableConfigPair& 
 	{
 		if (APawn* Pawn = GetPawn<APawn>())
 		{
-			if (UOhHiDoggyInputComponent* OhHiDoggyIC = Cast<UOhHiDoggyInputComponent>(Pawn->InputComponent))
+			if (UOHDInputComponent* OhHiDoggyIC = Cast<UOHDInputComponent>(Pawn->InputComponent))
 			{
 				if (const ULocalPlayer* LP = OhHiDoggyPC->GetLocalPlayer())
 				{

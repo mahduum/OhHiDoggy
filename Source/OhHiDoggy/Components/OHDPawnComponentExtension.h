@@ -3,23 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OhHiDoggyPawnComponent.h"
+#include "OHDPawnComponent.h"
 #include "OhHiDoggy/Data/OHDPawnData.h"
-#include "OhHiDoggyPawnComponentExt.generated.h"
+#include "OHDPawnComponentExtension.generated.h"
 
 
 class UAbilitySystemComponent;
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class OHHIDOGGY_API UOhHiDoggyPawnComponentExt : public UOhHiDoggyPawnComponent
+class OHHIDOGGY_API UOHDPawnComponentExtension : public UOHDPawnComponent
 {
 	GENERATED_BODY()
 public:
 
-	UOhHiDoggyPawnComponentExt(const FObjectInitializer& ObjectInitializer);
+	UOHDPawnComponentExtension(const FObjectInitializer& ObjectInitializer);
 
 	// Returns the pawn extension component if one exists on the specified actor.
 	UFUNCTION(BlueprintPure, Category = "OhHiDoggy|Pawn")
-	static UOhHiDoggyPawnComponentExt* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UOhHiDoggyPawnComponentExt>() : nullptr); }
+	static UOHDPawnComponentExtension* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UOHDPawnComponentExtension>() : nullptr); }
 
 	template <class T>
 	const T* GetPawnData() const { return Cast<UOHDPawnData>(PawnData); }

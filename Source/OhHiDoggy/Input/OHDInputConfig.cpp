@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DoggyInputConfig.h"
+#include "OHDInputConfig.h"
 
 
-UDoggyInputConfig::UDoggyInputConfig(const FObjectInitializer& ObjectInitializer)
+UOHDInputConfig::UOHDInputConfig(const FObjectInitializer& ObjectInitializer)
 {
 }
 
-const UInputAction* UDoggyInputConfig::FindNativeInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound) const
+const UInputAction* UOHDInputConfig::FindNativeInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound) const
 {
 	for (const FDoggyInputAction& Action : NativeInputActions)
 	{
@@ -26,7 +26,7 @@ const UInputAction* UDoggyInputConfig::FindNativeInputActionForTag(const FGamepl
 	return nullptr;
 }
 
-const UInputAction* UDoggyInputConfig::FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound) const
+const UInputAction* UOHDInputConfig::FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound) const
 {
 	for (const FDoggyInputAction& Action : AbilityInputActions)
 	{

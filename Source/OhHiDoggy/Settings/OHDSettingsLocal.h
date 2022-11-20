@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameUserSettings.h"
 #include "OhHiDoggy/Input/MappableConfigPair.h"
-#include "OhHiDoggySettingsLocal.generated.h"
+#include "OHDSettingsLocal.generated.h"
 
 class UPlayerMappableInputConfig;
 enum class ECommonInputType : uint8;
@@ -31,15 +31,15 @@ struct FOhHiDoggyScalabilitySnapshot
  * 
  */
 UCLASS()
-class OHHIDOGGY_API UOhHiDoggySettingsLocal : public UGameUserSettings
+class OHHIDOGGY_API UOHDSettingsLocal : public UGameUserSettings
 {
 	GENERATED_BODY()
 
 	public:
 
-	UOhHiDoggySettingsLocal();
+	UOHDSettingsLocal();
 
-	static UOhHiDoggySettingsLocal* Get();
+	static UOHDSettingsLocal* Get();
 
 	//~UObject interface
 	virtual void BeginDestroy() override;

@@ -3,33 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DoggyInputConfig.h"
+#include "OHDInputConfig.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MappableConfigPair.h"
-#include "OhHiDoggyInputComponent.generated.h"
+#include "OHDInputComponent.generated.h"
 
 struct FGameplayTag;
 /**
  * 
  */
 UCLASS()
-class OHHIDOGGY_API UOhHiDoggyInputComponent : public UEnhancedInputComponent
+class OHHIDOGGY_API UOHDInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
 
 public:
 
-	UOhHiDoggyInputComponent(const FObjectInitializer& ObjectInitializer);
+	UOHDInputComponent(const FObjectInitializer& ObjectInitializer);
 
-	void AddInputMappings(const UDoggyInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
-	void RemoveInputMappings(const UDoggyInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
+	void AddInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
+	void RemoveInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
 
 	template<class UserClass, typename FuncType>
-	void BindNativeAction(const UDoggyInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound);
+	void BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound);
 
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-	void BindAbilityActions(const UDoggyInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
+	void BindAbilityActions(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
 
 	void RemoveBinds(TArray<uint32>& BindHandles);
 
@@ -39,7 +39,7 @@ public:
 
 /* Binds actions to input actions with tags, delegates and owners */
 template<class UserClass, typename FuncType>
-void UOhHiDoggyInputComponent::BindNativeAction(const UDoggyInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound)
+void UOHDInputComponent::BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound)
 {
 	check(InputConfig);
 	if (const UInputAction* IA = InputConfig->FindNativeInputActionForTag(InputTag, bLogIfNotFound))
@@ -50,7 +50,7 @@ void UOhHiDoggyInputComponent::BindNativeAction(const UDoggyInputConfig* InputCo
 
 /* Binds abilities to input actions with tags, delegates and owners, the difference with actions is that it returned bounded handles (uint32) to bindings. */
 template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-void UOhHiDoggyInputComponent::BindAbilityActions(const UDoggyInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
+void UOHDInputComponent::BindAbilityActions(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
 {
 	check(InputConfig);
 

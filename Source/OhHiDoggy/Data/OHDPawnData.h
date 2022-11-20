@@ -7,7 +7,7 @@
 #include "OHDPawnData.generated.h"
 
 class UOHDAbilityTagRelationshipMapping;
-class UDoggyInputConfig;
+class UOHDInputConfig;
 /*
  * UOHDPawnData
  *
@@ -40,7 +40,7 @@ public:
 
 	// Input configuration used by player controlled pawns to create input mappings and bind input actions.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Input")
-	UDoggyInputConfig* InputConfig;
+	UOHDInputConfig* InputConfig;
 
 	// // Default camera mode used by player controlled pawns.
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Camera")

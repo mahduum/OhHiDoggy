@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OhHiDoggyInputComponent.h"
+#include "OHDInputComponent.h"
 
 
-UOhHiDoggyInputComponent::UOhHiDoggyInputComponent(const FObjectInitializer& ObjectInitializer)
+UOHDInputComponent::UOHDInputComponent(const FObjectInitializer& ObjectInitializer)
 {
 }
 
-void UOhHiDoggyInputComponent::AddInputMappings(const UDoggyInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
+void UOHDInputComponent::AddInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
 {
 	check(InputConfig);
 	check(InputSubsystem);
@@ -17,7 +17,7 @@ void UOhHiDoggyInputComponent::AddInputMappings(const UDoggyInputConfig* InputCo
 	//check(LocalPlayer);
 
 	// Add any registered input mappings from the settings!
-	// if (UOhHiDoggySettingsLocal* LocalSettings = UOhHiDoggySettingsLocal::Get())//todo add custom settings
+	// if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo add custom settings
 	// {
 	// 	// We don't want to ignore keys that were "Down" when we add the mapping context
 	// 	// This allows you to die holding a movement key, keep holding while waiting for respawn,
@@ -48,7 +48,7 @@ void UOhHiDoggyInputComponent::AddInputMappings(const UDoggyInputConfig* InputCo
 	//}
 }
 
-void UOhHiDoggyInputComponent::RemoveInputMappings(const UDoggyInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
+void UOHDInputComponent::RemoveInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
 {
 	check(InputConfig);
 	check(InputSubsystem);
@@ -57,7 +57,7 @@ void UOhHiDoggyInputComponent::RemoveInputMappings(const UDoggyInputConfig* Inpu
 	//UOhHiDoggyLocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<UOhHiDoggyLocalPlayer>();
 	// check(LocalPlayer);
 	//
-	// if (UOhHiDoggySettingsLocal* LocalSettings = UOhHiDoggySettingsLocal::Get())
+	// if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())
 	// {
 	// 	// Remove any registered input contexts
 	// 	const TArray<FLoadedMappableConfigPair>& Configs = LocalSettings->GetAllRegisteredInputConfigs();
@@ -74,7 +74,7 @@ void UOhHiDoggyInputComponent::RemoveInputMappings(const UDoggyInputConfig* Inpu
 	// }
 }
 
-void UOhHiDoggyInputComponent::RemoveBinds(TArray<uint32>& BindHandles)
+void UOHDInputComponent::RemoveBinds(TArray<uint32>& BindHandles)
 {
 	for (uint32 Handle : BindHandles)
 	{
@@ -83,7 +83,7 @@ void UOhHiDoggyInputComponent::RemoveBinds(TArray<uint32>& BindHandles)
 	BindHandles.Reset();
 }
 
-void UOhHiDoggyInputComponent::AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
+void UOHDInputComponent::AddInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
 {
 	check(InputSubsystem);
 	if (ensure(ConfigPair.bIsActive))
@@ -92,7 +92,7 @@ void UOhHiDoggyInputComponent::AddInputConfig(const FLoadedMappableConfigPair& C
 	}
 }
 
-void UOhHiDoggyInputComponent::RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
+void UOHDInputComponent::RemoveInputConfig(const FLoadedMappableConfigPair& ConfigPair, UEnhancedInputLocalPlayerSubsystem* InputSubsystem)
 {
 	check(InputSubsystem);
 	if (!ConfigPair.bIsActive)

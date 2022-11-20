@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "OhHiDoggySettingsLocal.h"
+#include "OHDSettingsLocal.h"
 
-#include "OhHiDoggySettingsLocal.h"
+#include "OHDSettingsLocal.h"
 #include "Sound/SoundClass.h"
 #include "AudioDeviceManager.h"
 #include "AudioDevice.h"
@@ -309,12 +309,12 @@ namespace OhHiDoggySettingsHelpers
 	// 		const int32 LimitQuality = GetApplicableResolutionQualityLimit(TestRate);
 	// 		const bool bQualityDoesntExceedLimit = (LimitQuality < 0) || (OverallQuality <= LimitQuality);
 	// 		
-	// 		const bool bIsSupported = UOhHiDoggySettingsLocal::IsSupportedMobileFramePace(TestRate);
+	// 		const bool bIsSupported = UOHDSettingsLocal::IsSupportedMobileFramePace(TestRate);
 	//
 	// 		return bAtOrBelowDesiredRate && bQualityDoesntExceedLimit && bIsSupported;
 	// 	});
 	//
-	// 	return PossibleRates.IsValidIndex(LimitIndex) ? PossibleRates[LimitIndex] : UOhHiDoggySettingsLocal::GetDefaultMobileFrameRate();
+	// 	return PossibleRates.IsValidIndex(LimitIndex) ? PossibleRates[LimitIndex] : UOHDSettingsLocal::GetDefaultMobileFrameRate();
 	// }
 
 	// Returns the first frame rate at which overall quality is restricted/limited by the current device profile
@@ -332,7 +332,7 @@ namespace OhHiDoggySettingsHelpers
 
 //////////////////////////////////////////////////////////////////////
 
-UOhHiDoggySettingsLocal::UOhHiDoggySettingsLocal()
+UOHDSettingsLocal::UOHDSettingsLocal()
 {
 	if (!HasAnyFlags(RF_ClassDefaultObject) && FSlateApplication::IsInitialized())
 	{
@@ -342,7 +342,7 @@ UOhHiDoggySettingsLocal::UOhHiDoggySettingsLocal()
 	SetToDefaults();
 }
 
-void UOhHiDoggySettingsLocal::SetToDefaults()
+void UOHDSettingsLocal::SetToDefaults()
 {
 	Super::SetToDefaults();
 
@@ -362,7 +362,7 @@ void UOhHiDoggySettingsLocal::SetToDefaults()
 	// DesiredMobileFrameRateLimit = MobileFrameRateLimit;
 }
 
-void UOhHiDoggySettingsLocal::LoadSettings(bool bForceReload)
+void UOHDSettingsLocal::LoadSettings(bool bForceReload)
 {
 	Super::LoadSettings(bForceReload);
 
@@ -389,7 +389,7 @@ void UOhHiDoggySettingsLocal::LoadSettings(bool bForceReload)
 	// PerfStatSettingsChangedEvent.Broadcast();
 }
 
-void UOhHiDoggySettingsLocal::ResetToCurrentSettings()
+void UOHDSettingsLocal::ResetToCurrentSettings()
 {
 	Super::ResetToCurrentSettings();
 
@@ -400,7 +400,7 @@ void UOhHiDoggySettingsLocal::ResetToCurrentSettings()
 	MobileFrameRateLimit = DesiredMobileFrameRateLimit;
 }
 
-void UOhHiDoggySettingsLocal::BeginDestroy()
+void UOHDSettingsLocal::BeginDestroy()
 {
 	if (FSlateApplication::IsInitialized())
 	{
@@ -410,12 +410,12 @@ void UOhHiDoggySettingsLocal::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-UOhHiDoggySettingsLocal* UOhHiDoggySettingsLocal::Get()
+UOHDSettingsLocal* UOHDSettingsLocal::Get()
 {
-	return GEngine ? CastChecked<UOhHiDoggySettingsLocal>(GEngine->GetGameUserSettings()) : nullptr;
+	return GEngine ? CastChecked<UOHDSettingsLocal>(GEngine->GetGameUserSettings()) : nullptr;
 }
 
-void UOhHiDoggySettingsLocal::ConfirmVideoMode()
+void UOHDSettingsLocal::ConfirmVideoMode()
 {
 	Super::ConfirmVideoMode();
 
@@ -439,7 +439,7 @@ float CombineFrameRateLimits(float Limit1, float Limit2)
 	}
 }
 
-float UOhHiDoggySettingsLocal::GetEffectiveFrameRateLimit()
+float UOHDSettingsLocal::GetEffectiveFrameRateLimit()
 {
 // 	const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 //
@@ -479,12 +479,12 @@ float UOhHiDoggySettingsLocal::GetEffectiveFrameRateLimit()
 	return 0;
 }
 
-int32 UOhHiDoggySettingsLocal::GetHighestLevelOfAnyScalabilityChannel() const
+int32 UOHDSettingsLocal::GetHighestLevelOfAnyScalabilityChannel() const
 {
 	return OhHiDoggySettingsHelpers::GetHighestLevelOfAnyScalabilityChannel(ScalabilityQuality);
 }
 
-// void UOhHiDoggySettingsLocal::OverrideQualityLevelsToScalabilityMode(const FOhHiDoggyScalabilitySnapshot& InMode, Scalability::FQualityLevels& InOutLevels)
+// void UOHDSettingsLocal::OverrideQualityLevelsToScalabilityMode(const FOhHiDoggyScalabilitySnapshot& InMode, Scalability::FQualityLevels& InOutLevels)
 // {
 // 	static_assert(sizeof(Scalability::FQualityLevels) == 88, "This function may need to be updated to account for new members");
 //
@@ -502,7 +502,7 @@ int32 UOhHiDoggySettingsLocal::GetHighestLevelOfAnyScalabilityChannel() const
 // 	InOutLevels.ShadingQuality = (InMode.Qualities.ShadingQuality >= 0) ? InMode.Qualities.ShadingQuality : InOutLevels.ShadingQuality;
 // }
 
-void UOhHiDoggySettingsLocal::ClampQualityLevelsToDeviceProfile(const Scalability::FQualityLevels& ClampLevels, Scalability::FQualityLevels& InOutLevels)
+void UOHDSettingsLocal::ClampQualityLevelsToDeviceProfile(const Scalability::FQualityLevels& ClampLevels, Scalability::FQualityLevels& InOutLevels)
 {
 	static_assert(sizeof(Scalability::FQualityLevels) == 88, "This function may need to be updated to account for new members");
 
@@ -520,28 +520,28 @@ void UOhHiDoggySettingsLocal::ClampQualityLevelsToDeviceProfile(const Scalabilit
 	InOutLevels.ShadingQuality = (ClampLevels.ShadingQuality >= 0) ? FMath::Min(ClampLevels.ShadingQuality, InOutLevels.ShadingQuality) : InOutLevels.ShadingQuality;
 }
 
-void UOhHiDoggySettingsLocal::OnExperienceLoaded()
+void UOHDSettingsLocal::OnExperienceLoaded()
 {
 	ReapplyThingsDueToPossibleDeviceProfileChange();
 }
 
-void UOhHiDoggySettingsLocal::OnHotfixDeviceProfileApplied()
+void UOHDSettingsLocal::OnHotfixDeviceProfileApplied()
 {
 	ReapplyThingsDueToPossibleDeviceProfileChange();
 }
 
-void UOhHiDoggySettingsLocal::ReapplyThingsDueToPossibleDeviceProfileChange()
+void UOHDSettingsLocal::ReapplyThingsDueToPossibleDeviceProfileChange()
 {
 	ApplyNonResolutionSettings();
 }
 
-void UOhHiDoggySettingsLocal::SetShouldUseFrontendPerformanceSettings(bool bInFrontEnd)
+void UOHDSettingsLocal::SetShouldUseFrontendPerformanceSettings(bool bInFrontEnd)
 {
 	bInFrontEndForPerformancePurposes = bInFrontEnd;
 	UpdateEffectiveFrameRateLimit();
 }
 
-bool UOhHiDoggySettingsLocal::ShouldUseFrontendPerformanceSettings() const
+bool UOHDSettingsLocal::ShouldUseFrontendPerformanceSettings() const
 {
 #if WITH_EDITOR
 	if (GIsEditor && !CVarApplyFrontEndPerformanceOptionsInPIE.GetValueOnGameThread())
@@ -553,7 +553,7 @@ bool UOhHiDoggySettingsLocal::ShouldUseFrontendPerformanceSettings() const
 	return bInFrontEndForPerformancePurposes;
 }
 //
-// EOhHiDoggyStatDisplayMode UOhHiDoggySettingsLocal::GetPerfStatDisplayState(EOhHiDoggyDisplayablePerformanceStat Stat) const
+// EOhHiDoggyStatDisplayMode UOHDSettingsLocal::GetPerfStatDisplayState(EOhHiDoggyDisplayablePerformanceStat Stat) const
 // {
 // 	if (const EOhHiDoggyStatDisplayMode* pMode = DisplayStatList.Find(Stat))
 // 	{
@@ -565,7 +565,7 @@ bool UOhHiDoggySettingsLocal::ShouldUseFrontendPerformanceSettings() const
 // 	}
 // }
 //
-// void UOhHiDoggySettingsLocal::SetPerfStatDisplayState(EOhHiDoggyDisplayablePerformanceStat Stat, EOhHiDoggyStatDisplayMode DisplayMode)
+// void UOHDSettingsLocal::SetPerfStatDisplayState(EOhHiDoggyDisplayablePerformanceStat Stat, EOhHiDoggyStatDisplayMode DisplayMode)
 // {
 // 	if (DisplayMode == EOhHiDoggyStatDisplayMode::Hidden)
 // 	{
@@ -578,18 +578,18 @@ bool UOhHiDoggySettingsLocal::ShouldUseFrontendPerformanceSettings() const
 // 	PerfStatSettingsChangedEvent.Broadcast();
 // }
 
-float UOhHiDoggySettingsLocal::GetDisplayGamma() const
+float UOHDSettingsLocal::GetDisplayGamma() const
 {
 	return DisplayGamma;
 }
 
-void UOhHiDoggySettingsLocal::SetDisplayGamma(float InGamma)
+void UOHDSettingsLocal::SetDisplayGamma(float InGamma)
 {
 	DisplayGamma = InGamma;
 	ApplyDisplayGamma();
 }
 
-void UOhHiDoggySettingsLocal::ApplyDisplayGamma()
+void UOHDSettingsLocal::ApplyDisplayGamma()
 {
 	if (GEngine)
 	{
@@ -597,51 +597,51 @@ void UOhHiDoggySettingsLocal::ApplyDisplayGamma()
 	}
 }
 
-float UOhHiDoggySettingsLocal::GetFrameRateLimit_OnBattery() const
+float UOHDSettingsLocal::GetFrameRateLimit_OnBattery() const
 {
 	return FrameRateLimit_OnBattery;
 }
 
-void UOhHiDoggySettingsLocal::SetFrameRateLimit_OnBattery(float NewLimitFPS)
+void UOHDSettingsLocal::SetFrameRateLimit_OnBattery(float NewLimitFPS)
 {
 	FrameRateLimit_OnBattery = NewLimitFPS;
 	UpdateEffectiveFrameRateLimit();
 }
 
-float UOhHiDoggySettingsLocal::GetFrameRateLimit_InMenu() const
+float UOHDSettingsLocal::GetFrameRateLimit_InMenu() const
 {
 	return FrameRateLimit_InMenu;
 }
 
-void UOhHiDoggySettingsLocal::SetFrameRateLimit_InMenu(float NewLimitFPS)
+void UOHDSettingsLocal::SetFrameRateLimit_InMenu(float NewLimitFPS)
 {
 	FrameRateLimit_InMenu = NewLimitFPS;
 	UpdateEffectiveFrameRateLimit();
 }
 
-float UOhHiDoggySettingsLocal::GetFrameRateLimit_WhenBackgrounded() const
+float UOHDSettingsLocal::GetFrameRateLimit_WhenBackgrounded() const
 {
 	return FrameRateLimit_WhenBackgrounded;
 }
 
-void UOhHiDoggySettingsLocal::SetFrameRateLimit_WhenBackgrounded(float NewLimitFPS)
+void UOHDSettingsLocal::SetFrameRateLimit_WhenBackgrounded(float NewLimitFPS)
 {
 	FrameRateLimit_WhenBackgrounded = NewLimitFPS;
 	UpdateEffectiveFrameRateLimit();
 }
 
-float UOhHiDoggySettingsLocal::GetFrameRateLimit_Always() const
+float UOHDSettingsLocal::GetFrameRateLimit_Always() const
 {
 	return GetFrameRateLimit();
 }
 
-void UOhHiDoggySettingsLocal::SetFrameRateLimit_Always(float NewLimitFPS)
+void UOHDSettingsLocal::SetFrameRateLimit_Always(float NewLimitFPS)
 {
 	SetFrameRateLimit(NewLimitFPS);
 	UpdateEffectiveFrameRateLimit();
 }
 
-void UOhHiDoggySettingsLocal::UpdateEffectiveFrameRateLimit()
+void UOHDSettingsLocal::UpdateEffectiveFrameRateLimit()
 {
 	if (!IsRunningDedicatedServer())
 	{
@@ -649,17 +649,17 @@ void UOhHiDoggySettingsLocal::UpdateEffectiveFrameRateLimit()
 	}
 }
 
-int32 UOhHiDoggySettingsLocal::GetDefaultMobileFrameRate()
+int32 UOHDSettingsLocal::GetDefaultMobileFrameRate()
 {
 	return CVarDeviceProfileDrivenMobileDefaultFrameRate.GetValueOnGameThread();
 }
 
-int32 UOhHiDoggySettingsLocal::GetMaxMobileFrameRate()
+int32 UOHDSettingsLocal::GetMaxMobileFrameRate()
 {
 	return CVarDeviceProfileDrivenMobileMaxFrameRate.GetValueOnGameThread();
 }
 
-bool UOhHiDoggySettingsLocal::IsSupportedMobileFramePace(int32 TestFPS)
+bool UOHDSettingsLocal::IsSupportedMobileFramePace(int32 TestFPS)
 {
 	const bool bIsDefault = (TestFPS == GetDefaultMobileFrameRate());
 	const bool bDoesNotExceedLimit = (TestFPS <= GetMaxMobileFrameRate());
@@ -670,17 +670,17 @@ bool UOhHiDoggySettingsLocal::IsSupportedMobileFramePace(int32 TestFPS)
 	return bIsDefault || (bDoesNotExceedLimit && bIsSupportedPace);
 }
 
-int32 UOhHiDoggySettingsLocal::GetFirstFrameRateWithQualityLimit() const
+int32 UOHDSettingsLocal::GetFirstFrameRateWithQualityLimit() const
 {
 	return OhHiDoggySettingsHelpers::GetFirstFrameRateWithQualityLimit();
 }
 
-int32 UOhHiDoggySettingsLocal::GetLowestQualityWithFrameRateLimit() const
+int32 UOHDSettingsLocal::GetLowestQualityWithFrameRateLimit() const
 {
 	return OhHiDoggySettingsHelpers::GetLowestQualityWithFrameRateLimit();
 }
 
-void UOhHiDoggySettingsLocal::ResetToMobileDeviceDefaults()
+void UOHDSettingsLocal::ResetToMobileDeviceDefaults()
 {
 	// // Reset frame rate
 	// DesiredMobileFrameRateLimit = GetDefaultMobileFrameRate();
@@ -695,7 +695,7 @@ void UOhHiDoggySettingsLocal::ResetToMobileDeviceDefaults()
 	// UpdateGameModeDeviceProfileAndFps();
 }
 
-int32 UOhHiDoggySettingsLocal::GetMaxSupportedOverallQualityLevel() const
+int32 UOHDSettingsLocal::GetMaxSupportedOverallQualityLevel() const
 {
 	// const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 	// if ((PlatformSettings->FramePacingMode == EOhHiDoggyFramePacingMode::MobileStyle) && DeviceDefaultScalabilitySettings.bHasOverrides)
@@ -708,7 +708,7 @@ int32 UOhHiDoggySettingsLocal::GetMaxSupportedOverallQualityLevel() const
 	//}
 }
 
-void UOhHiDoggySettingsLocal::SetMobileFPSMode(int32 NewLimitFPS)
+void UOHDSettingsLocal::SetMobileFPSMode(int32 NewLimitFPS)
 {
 	// const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 	// if (PlatformSettings->FramePacingMode == EOhHiDoggyFramePacingMode::MobileStyle)
@@ -723,7 +723,7 @@ void UOhHiDoggySettingsLocal::SetMobileFPSMode(int32 NewLimitFPS)
 	// }
 }
 
-void UOhHiDoggySettingsLocal::SetDesiredMobileFrameRateLimit(int32 NewLimitFPS)
+void UOHDSettingsLocal::SetDesiredMobileFrameRateLimit(int32 NewLimitFPS)
 {
 	const int32 OldLimitFPS = DesiredMobileFrameRateLimit;
 
@@ -734,7 +734,7 @@ void UOhHiDoggySettingsLocal::SetDesiredMobileFrameRateLimit(int32 NewLimitFPS)
 	ClampMobileFPSQualityLevels(/*bWriteBack=*/ false);
 }
 
-void UOhHiDoggySettingsLocal::ClampMobileFPSQualityLevels(bool bWriteBack)
+void UOHDSettingsLocal::ClampMobileFPSQualityLevels(bool bWriteBack)
 {
 	// const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 	// if (PlatformSettings->FramePacingMode == EOhHiDoggyFramePacingMode::MobileStyle)
@@ -754,7 +754,7 @@ void UOhHiDoggySettingsLocal::ClampMobileFPSQualityLevels(bool bWriteBack)
 	// }
 }
 
-void UOhHiDoggySettingsLocal::ClampMobileQuality()
+void UOHDSettingsLocal::ClampMobileQuality()
 {
 	// const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 	// if (PlatformSettings->FramePacingMode == EOhHiDoggyFramePacingMode::MobileStyle)
@@ -790,7 +790,7 @@ void UOhHiDoggySettingsLocal::ClampMobileQuality()
 	// }
 }
 
-void UOhHiDoggySettingsLocal::ClampMobileResolutionQuality(int32 TargetFPS)
+void UOHDSettingsLocal::ClampMobileResolutionQuality(int32 TargetFPS)
 {
 	// Clamp mobile resolution quality
 	float MaxMobileResQuality = OhHiDoggySettingsHelpers::GetApplicableResolutionQualityLimit(TargetFPS);
@@ -806,7 +806,7 @@ void UOhHiDoggySettingsLocal::ClampMobileResolutionQuality(int32 TargetFPS)
 	}
 }
 
-void UOhHiDoggySettingsLocal::RemapMobileResolutionQuality(int32 FromFPS, int32 ToFPS)
+void UOHDSettingsLocal::RemapMobileResolutionQuality(int32 FromFPS, int32 ToFPS)
 {
 	// Mobile resolution quality slider is a normalized value that is lerped between min quality, max quality.
 	// max quality can change depending on FPS mode. This code remaps the quality when FPS mode changes so that the normalized
@@ -826,17 +826,17 @@ void UOhHiDoggySettingsLocal::RemapMobileResolutionQuality(int32 FromFPS, int32 
 	SetResolutionScaleValueEx(ToResQuality);
 }
 
-FString UOhHiDoggySettingsLocal::GetDesiredDeviceProfileQualitySuffix() const
+FString UOHDSettingsLocal::GetDesiredDeviceProfileQualitySuffix() const
 {
 	return DesiredUserChosenDeviceProfileSuffix;
 }
 
-void UOhHiDoggySettingsLocal::SetDesiredDeviceProfileQualitySuffix(const FString& InDesiredSuffix)
+void UOHDSettingsLocal::SetDesiredDeviceProfileQualitySuffix(const FString& InDesiredSuffix)
 {
 	DesiredUserChosenDeviceProfileSuffix = InDesiredSuffix;
 }
 
-void UOhHiDoggySettingsLocal::SetHeadphoneModeEnabled(bool bEnabled)
+void UOHDSettingsLocal::SetHeadphoneModeEnabled(bool bEnabled)
 {
 	if (CanModifyHeadphoneModeEnabled())
 	{
@@ -855,12 +855,12 @@ void UOhHiDoggySettingsLocal::SetHeadphoneModeEnabled(bool bEnabled)
 	}
 }
 
-bool UOhHiDoggySettingsLocal::IsHeadphoneModeEnabled() const
+bool UOHDSettingsLocal::IsHeadphoneModeEnabled() const
 {
 	return bUseHeadphoneMode;
 }
 
-bool UOhHiDoggySettingsLocal::CanModifyHeadphoneModeEnabled() const
+bool UOHDSettingsLocal::CanModifyHeadphoneModeEnabled() const
 {
 	static IConsoleVariable* BinauralSpatializationDisabledCVar = IConsoleManager::Get().FindConsoleVariable(TEXT("au.DisableBinauralSpatialization"));
 	const bool bHRTFOptionAvailable = BinauralSpatializationDisabledCVar && ((BinauralSpatializationDisabledCVar->GetFlags() & EConsoleVariableFlags::ECVF_SetByMask) <= EConsoleVariableFlags::ECVF_SetByGameSetting);
@@ -870,12 +870,12 @@ bool UOhHiDoggySettingsLocal::CanModifyHeadphoneModeEnabled() const
 	return bHRTFOptionAvailable && !bBinauralSettingControlledByOS;
 }
 
-bool UOhHiDoggySettingsLocal::IsHDRAudioModeEnabled() const
+bool UOHDSettingsLocal::IsHDRAudioModeEnabled() const
 {
 	return bUseHDRAudioMode;
 }
 
-void UOhHiDoggySettingsLocal::SetHDRAudioModeEnabled(bool bEnabled)
+void UOHDSettingsLocal::SetHDRAudioModeEnabled(bool bEnabled)
 {
 	// bUseHDRAudioMode = bEnabled;
 	//
@@ -891,14 +891,14 @@ void UOhHiDoggySettingsLocal::SetHDRAudioModeEnabled(bool bEnabled)
 	// }
 }
 
-bool UOhHiDoggySettingsLocal::CanRunAutoBenchmark() const
+bool UOHDSettingsLocal::CanRunAutoBenchmark() const
 {
 	// const UOhHiDoggyPlatformSpecificRenderingSettings* PlatformSettings = UOhHiDoggyPlatformSpecificRenderingSettings::Get();
 	// return PlatformSettings->bSupportsAutomaticVideoQualityBenchmark;
 	return false;
 }
 
-bool UOhHiDoggySettingsLocal::ShouldRunAutoBenchmarkAtStartup() const
+bool UOHDSettingsLocal::ShouldRunAutoBenchmarkAtStartup() const
 {
 	if (!CanRunAutoBenchmark())
 	{
@@ -914,7 +914,7 @@ bool UOhHiDoggySettingsLocal::ShouldRunAutoBenchmarkAtStartup() const
 	return true;
 }
 
-void UOhHiDoggySettingsLocal::RunAutoBenchmark(bool bSaveImmediately)
+void UOHDSettingsLocal::RunAutoBenchmark(bool bSaveImmediately)
 {
 	RunHardwareBenchmark();
 	
@@ -927,17 +927,17 @@ void UOhHiDoggySettingsLocal::RunAutoBenchmark(bool bSaveImmediately)
 	}
 }
 
-void UOhHiDoggySettingsLocal::ApplyScalabilitySettings()
+void UOHDSettingsLocal::ApplyScalabilitySettings()
 {
 	Scalability::SetQualityLevels(ScalabilityQuality);
 }
 
-float UOhHiDoggySettingsLocal::GetOverallVolume() const
+float UOHDSettingsLocal::GetOverallVolume() const
 {
 	return OverallVolume;
 }
 
-void UOhHiDoggySettingsLocal::SetOverallVolume(float InVolume)
+void UOHDSettingsLocal::SetOverallVolume(float InVolume)
 {
 	// Cache the incoming volume value
 	OverallVolume = InVolume;
@@ -962,12 +962,12 @@ void UOhHiDoggySettingsLocal::SetOverallVolume(float InVolume)
 	// }
 }
 
-float UOhHiDoggySettingsLocal::GetMusicVolume() const
+float UOHDSettingsLocal::GetMusicVolume() const
 {
 	return MusicVolume;
 }
 
-void UOhHiDoggySettingsLocal::SetMusicVolume(float InVolume)
+void UOHDSettingsLocal::SetMusicVolume(float InVolume)
 {
 	// Cache the incoming volume value
 	MusicVolume = InVolume;
@@ -992,12 +992,12 @@ void UOhHiDoggySettingsLocal::SetMusicVolume(float InVolume)
 	// }
 }
 
-float UOhHiDoggySettingsLocal::GetSoundFXVolume() const
+float UOHDSettingsLocal::GetSoundFXVolume() const
 {
 	return SoundFXVolume;
 }
 
-void UOhHiDoggySettingsLocal::SetSoundFXVolume(float InVolume)
+void UOHDSettingsLocal::SetSoundFXVolume(float InVolume)
 {
 	// Cache the incoming volume value
 	SoundFXVolume = InVolume;
@@ -1022,12 +1022,12 @@ void UOhHiDoggySettingsLocal::SetSoundFXVolume(float InVolume)
 	// }
 }
 
-float UOhHiDoggySettingsLocal::GetDialogueVolume() const
+float UOHDSettingsLocal::GetDialogueVolume() const
 {
 	return DialogueVolume;
 }
 
-void UOhHiDoggySettingsLocal::SetDialogueVolume(float InVolume)
+void UOHDSettingsLocal::SetDialogueVolume(float InVolume)
 {
 	// Cache the incoming volume value
 	DialogueVolume = InVolume;
@@ -1052,12 +1052,12 @@ void UOhHiDoggySettingsLocal::SetDialogueVolume(float InVolume)
 	// }
 }
 
-float UOhHiDoggySettingsLocal::GetVoiceChatVolume() const
+float UOHDSettingsLocal::GetVoiceChatVolume() const
 {
 	return VoiceChatVolume;
 }
 
-void UOhHiDoggySettingsLocal::SetVoiceChatVolume(float InVolume)
+void UOHDSettingsLocal::SetVoiceChatVolume(float InVolume)
 {
 	// Cache the incoming volume value
 	VoiceChatVolume = InVolume;
@@ -1082,7 +1082,7 @@ void UOhHiDoggySettingsLocal::SetVoiceChatVolume(float InVolume)
 	// }
 }
 //
-// void UOhHiDoggySettingsLocal::SetVolumeForControlBus(USoundControlBus* InSoundControlBus, float InVolume)
+// void UOHDSettingsLocal::SetVolumeForControlBus(USoundControlBus* InSoundControlBus, float InVolume)
 // {
 // 	// Check to see if references to the control buses and control bus mixes have been loaded yet
 // 	// Will likely need to be loaded if this function is the first time a setter has been called
@@ -1119,18 +1119,18 @@ void UOhHiDoggySettingsLocal::SetVoiceChatVolume(float InVolume)
 // 	}
 // }
 
-void UOhHiDoggySettingsLocal::SetAudioOutputDeviceId(const FString& InAudioOutputDeviceId)
+void UOHDSettingsLocal::SetAudioOutputDeviceId(const FString& InAudioOutputDeviceId)
 {
 	AudioOutputDeviceId = InAudioOutputDeviceId;
 	OnAudioOutputDeviceChanged.Broadcast(InAudioOutputDeviceId);
 }
 
-void UOhHiDoggySettingsLocal::ApplySafeZoneScale()
+void UOHDSettingsLocal::ApplySafeZoneScale()
 {
 	SSafeZone::SetGlobalSafeZoneScale(GetSafeZone());
 }
 
-void UOhHiDoggySettingsLocal::ApplyNonResolutionSettings()
+void UOHDSettingsLocal::ApplyNonResolutionSettings()
 {
 	Super::ApplyNonResolutionSettings();
 
@@ -1209,7 +1209,7 @@ void UOhHiDoggySettingsLocal::ApplyNonResolutionSettings()
 	PerfStatSettingsChangedEvent.Broadcast();
 }
 
-int32 UOhHiDoggySettingsLocal::GetOverallScalabilityLevel() const
+int32 UOHDSettingsLocal::GetOverallScalabilityLevel() const
 {
 	// int32 Result = Super::GetOverallScalabilityLevel();
 	//
@@ -1223,7 +1223,7 @@ int32 UOhHiDoggySettingsLocal::GetOverallScalabilityLevel() const
 	return 0;
 }
 
-void UOhHiDoggySettingsLocal::SetOverallScalabilityLevel(int32 Value)
+void UOHDSettingsLocal::SetOverallScalabilityLevel(int32 Value)
 {
 	// TGuardValue Guard(bSettingOverallQualityGuard, true);
 	//
@@ -1248,7 +1248,7 @@ void UOhHiDoggySettingsLocal::SetOverallScalabilityLevel(int32 Value)
 	// }
 }
 
-void UOhHiDoggySettingsLocal::SetControllerPlatform(const FName InControllerPlatform)
+void UOHDSettingsLocal::SetControllerPlatform(const FName InControllerPlatform)
 {
 	if (ControllerPlatform != InControllerPlatform)
 	{
@@ -1262,12 +1262,12 @@ void UOhHiDoggySettingsLocal::SetControllerPlatform(const FName InControllerPlat
 	}
 }
 
-FName UOhHiDoggySettingsLocal::GetControllerPlatform() const
+FName UOHDSettingsLocal::GetControllerPlatform() const
 {
 	return ControllerPlatform;
 }
 
-void UOhHiDoggySettingsLocal::RegisterInputConfig(ECommonInputType Type, const UPlayerMappableInputConfig* NewConfig, const bool bIsActive)
+void UOHDSettingsLocal::RegisterInputConfig(ECommonInputType Type, const UPlayerMappableInputConfig* NewConfig, const bool bIsActive)
 {
 	if (NewConfig)
 	{
@@ -1283,7 +1283,7 @@ void UOhHiDoggySettingsLocal::RegisterInputConfig(ECommonInputType Type, const U
 	}
 }
 
-int32 UOhHiDoggySettingsLocal::UnregisterInputConfig(const UPlayerMappableInputConfig* ConfigToRemove)
+int32 UOHDSettingsLocal::UnregisterInputConfig(const UPlayerMappableInputConfig* ConfigToRemove)
 {
 	if (ConfigToRemove)
 	{
@@ -1298,7 +1298,7 @@ int32 UOhHiDoggySettingsLocal::UnregisterInputConfig(const UPlayerMappableInputC
 	return INDEX_NONE;
 }
 
-void UOhHiDoggySettingsLocal::ActivateInputConfig(const UPlayerMappableInputConfig* Config)
+void UOHDSettingsLocal::ActivateInputConfig(const UPlayerMappableInputConfig* Config)
 {
 	if (Config)
 	{
@@ -1311,7 +1311,7 @@ void UOhHiDoggySettingsLocal::ActivateInputConfig(const UPlayerMappableInputConf
 	}
 }
 
-void UOhHiDoggySettingsLocal::DeactivateInputConfig(const UPlayerMappableInputConfig* Config)
+void UOHDSettingsLocal::DeactivateInputConfig(const UPlayerMappableInputConfig* Config)
 {
 	if (Config)
 	{
@@ -1324,7 +1324,7 @@ void UOhHiDoggySettingsLocal::DeactivateInputConfig(const UPlayerMappableInputCo
 	}
 }
 
-const UPlayerMappableInputConfig* UOhHiDoggySettingsLocal::GetInputConfigByName(FName ConfigName) const
+const UPlayerMappableInputConfig* UOHDSettingsLocal::GetInputConfigByName(FName ConfigName) const
 {
 	for (const FLoadedMappableConfigPair& Pair : RegisteredInputConfigs)
 	{
@@ -1336,7 +1336,7 @@ const UPlayerMappableInputConfig* UOhHiDoggySettingsLocal::GetInputConfigByName(
 	return nullptr;
 }
 
-void UOhHiDoggySettingsLocal::GetRegisteredInputConfigsOfType(ECommonInputType Type, TArray<FLoadedMappableConfigPair>& OutArray) const
+void UOHDSettingsLocal::GetRegisteredInputConfigsOfType(ECommonInputType Type, TArray<FLoadedMappableConfigPair>& OutArray) const
 {
 	OutArray.Empty();
 
@@ -1356,7 +1356,7 @@ void UOhHiDoggySettingsLocal::GetRegisteredInputConfigsOfType(ECommonInputType T
 	}
 }
 //
-// void UOhHiDoggySettingsLocal::AddOrUpdateCustomKeyboardBindings(const FName MappingName, const FKey NewKey, UOhHiDoggyLocalPlayer* LocalPlayer)
+// void UOHDSettingsLocal::AddOrUpdateCustomKeyboardBindings(const FName MappingName, const FKey NewKey, UOhHiDoggyLocalPlayer* LocalPlayer)
 // {
 // 	if (MappingName == NAME_None)
 // 	{
@@ -1399,7 +1399,7 @@ void UOhHiDoggySettingsLocal::GetRegisteredInputConfigsOfType(ECommonInputType T
 // 	}
 // }
 //
-void UOhHiDoggySettingsLocal::LoadUserControlBusMix()
+void UOHDSettingsLocal::LoadUserControlBusMix()
 {
 // 	if (GEngine)
 // 	{
@@ -1513,13 +1513,13 @@ void UOhHiDoggySettingsLocal::LoadUserControlBusMix()
 // 	}
 }
 
-void UOhHiDoggySettingsLocal::OnAppActivationStateChanged(bool bIsActive)
+void UOHDSettingsLocal::OnAppActivationStateChanged(bool bIsActive)
 {
 	// We might want to adjust the frame rate when the app loses/gains focus on multi-window platforms
 	UpdateEffectiveFrameRateLimit();
 }
 
-void UOhHiDoggySettingsLocal::UpdateGameModeDeviceProfileAndFps()
+void UOHDSettingsLocal::UpdateGameModeDeviceProfileAndFps()
 {
 #if WITH_EDITOR
 	if (GIsEditor && !CVarApplyDeviceProfilesInPIE.GetValueOnGameThread())
@@ -1673,7 +1673,7 @@ void UOhHiDoggySettingsLocal::UpdateGameModeDeviceProfileAndFps()
 // 	}
 }
 
-void UOhHiDoggySettingsLocal::UpdateConsoleFramePacing()
+void UOHDSettingsLocal::UpdateConsoleFramePacing()
 {
 	// Apply device-profile-driven frame sync and frame pace
 	const int32 FrameSyncType = CVarDeviceProfileDrivenFrameSyncType.GetValueOnGameThread();
@@ -1697,7 +1697,7 @@ void UOhHiDoggySettingsLocal::UpdateConsoleFramePacing()
 	}
 }
 
-void UOhHiDoggySettingsLocal::UpdateDesktopFramePacing()
+void UOHDSettingsLocal::UpdateDesktopFramePacing()
 {
 	// For desktop the frame rate limit is handled by the parent class based on the value already
 	// applied via UpdateEffectiveFrameRateLimit()
@@ -1708,7 +1708,7 @@ void UOhHiDoggySettingsLocal::UpdateDesktopFramePacing()
 	UpdateDynamicResFrameTime(ClampedFPS);
 }
 
-void UOhHiDoggySettingsLocal::UpdateMobileFramePacing()
+void UOHDSettingsLocal::UpdateMobileFramePacing()
 {
 	//@TODO: Handle different limits for in-front-end or low-battery mode on mobile
 
@@ -1726,7 +1726,7 @@ void UOhHiDoggySettingsLocal::UpdateMobileFramePacing()
 	// UpdateDynamicResFrameTime((float)TargetFPS);
 }
 
-void UOhHiDoggySettingsLocal::UpdateDynamicResFrameTime(float TargetFPS)
+void UOHDSettingsLocal::UpdateDynamicResFrameTime(float TargetFPS)
 {
 	static IConsoleVariable* CVarDyResFrameTimeBudget = IConsoleManager::Get().FindConsoleVariable(TEXT("r.DynamicRes.FrameTimeBudget"));
 	if (CVarDyResFrameTimeBudget)

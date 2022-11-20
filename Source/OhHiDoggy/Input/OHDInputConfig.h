@@ -6,7 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "InputAction.h"
 #include "Engine/DataAsset.h"
-#include "DoggyInputConfig.generated.h"
+#include "OHDInputConfig.generated.h"
 
 USTRUCT(BlueprintType)
 struct FDoggyInputAction
@@ -25,11 +25,11 @@ public:
  * 
  */
 UCLASS(Blueprintable, Const)
-class OHHIDOGGY_API UDoggyInputConfig : public UDataAsset
+class OHHIDOGGY_API UOHDInputConfig : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	UDoggyInputConfig(const FObjectInitializer& ObjectInitializer);
+	UOHDInputConfig(const FObjectInitializer& ObjectInitializer);
 	const UInputAction* FindNativeInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 	const UInputAction* FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 public:

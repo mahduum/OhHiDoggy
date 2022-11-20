@@ -1,11 +1,11 @@
-﻿#include "FOhHiDoggyGameplayTags.h"
+﻿#include "FOHDGameplayTags.h"
 
 #include "GameplayTagsManager.h"
 
 
-FOhHiDoggyGameplayTags FOhHiDoggyGameplayTags::GameplayTags;
+FOHDGameplayTags FOHDGameplayTags::GameplayTags;
 
-void FOhHiDoggyGameplayTags::InitializeNativeTags()
+void FOHDGameplayTags::InitializeNativeTags()
 {
 	UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
 
@@ -15,7 +15,7 @@ void FOhHiDoggyGameplayTags::InitializeNativeTags()
 	Manager.DoneAddingNativeTags();
 }
 
-void FOhHiDoggyGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
+void FOHDGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 {
 	// AddTag(Ability_ActivateFail_IsDead, "Ability.ActivateFail.IsDead", "Ability failed to activate because its owner is dead.");
 	// AddTag(Ability_ActivateFail_Cooldown, "Ability.ActivateFail.Cooldown", "Ability failed to activate because it is on cool down.");
@@ -57,24 +57,24 @@ void FOhHiDoggyGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddMovementModeTag(Movement_Mode_Custom, "Movement.Mode.Custom", MOVE_Custom);
 }
 
-void FOhHiDoggyGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)
+void FOHDGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)
 {
 	OutTag = UGameplayTagsManager::Get().AddNativeGameplayTag(FName(TagName), FString(TEXT("(Native) ")) + FString(TagComment));
 }
 
-void FOhHiDoggyGameplayTags::AddMovementModeTag(FGameplayTag& OutTag, const ANSICHAR* TagName, uint8 MovementMode)
+void FOHDGameplayTags::AddMovementModeTag(FGameplayTag& OutTag, const ANSICHAR* TagName, uint8 MovementMode)
 {
 	AddTag(OutTag, TagName, "Character movement mode tag.");
 	GameplayTags.MovementModeTagMap.Add(MovementMode, OutTag);
 }
 
-void FOhHiDoggyGameplayTags::AddCustomMovementModeTag(FGameplayTag& OutTag, const ANSICHAR* TagName, uint8 CustomMovementMode)
+void FOHDGameplayTags::AddCustomMovementModeTag(FGameplayTag& OutTag, const ANSICHAR* TagName, uint8 CustomMovementMode)
 {
 	AddTag(OutTag, TagName, "Character custom movement mode tag.");
 	GameplayTags.CustomMovementModeTagMap.Add(CustomMovementMode, OutTag);
 }
 
-FGameplayTag FOhHiDoggyGameplayTags::FindTagByString(FString TagString, bool bMatchPartialString)
+FGameplayTag FOHDGameplayTags::FindTagByString(FString TagString, bool bMatchPartialString)
 {
 	const UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
 	FGameplayTag Tag = Manager.RequestGameplayTag(FName(*TagString), false);

@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "OhHiDoggyPawnComponent.h"
+#include "OHDPawnComponent.h"
 
-UOhHiDoggyPawnComponent::UOhHiDoggyPawnComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UOHDPawnComponent::UOHDPawnComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;

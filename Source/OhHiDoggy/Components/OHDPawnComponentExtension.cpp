@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "OhHiDoggyPawnComponentExt.h"
+#include "OHDPawnComponentExtension.h"
 #include "Net/UnrealNetwork.h"
 
 
-UOhHiDoggyPawnComponentExt::UOhHiDoggyPawnComponentExt(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UOHDPawnComponentExtension::UOHDPawnComponentExtension(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;
@@ -17,7 +17,7 @@ UOhHiDoggyPawnComponentExt::UOhHiDoggyPawnComponentExt(const FObjectInitializer&
 	bPawnReadyToInitialize = false;
 }
 
-void UOhHiDoggyPawnComponentExt::OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)
+void UOHDPawnComponentExtension::OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)
 {
 	if (!OnPawnReadyToInitialize.IsBoundToObject(Delegate.GetUObject()))
 	{
@@ -30,7 +30,7 @@ void UOhHiDoggyPawnComponentExt::OnPawnReadyToInitialize_RegisterAndCall(FSimple
 	}
 }
 
-void UOhHiDoggyPawnComponentExt::OnRegister()
+void UOHDPawnComponentExtension::OnRegister()
 {
 	Super::OnRegister();
 
@@ -38,26 +38,26 @@ void UOhHiDoggyPawnComponentExt::OnRegister()
 	ensureAlwaysMsgf((Pawn != nullptr), TEXT("LyraPawnExtensionComponent on [%s] can only be added to Pawn actors."), *GetNameSafe(GetOwner()));
 
 	TArray<UActorComponent*> PawnExtensionComponents;
-	Pawn->GetComponents(UOhHiDoggyPawnComponentExt::StaticClass(), PawnExtensionComponents);
+	Pawn->GetComponents(UOHDPawnComponentExtension::StaticClass(), PawnExtensionComponents);
 	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one LyraPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
 }
 
-void UOhHiDoggyPawnComponentExt::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UOHDPawnComponentExtension::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UOhHiDoggyPawnComponentExt::SetupPlayerInputComponent()
+void UOHDPawnComponentExtension::SetupPlayerInputComponent()
 {
 	CheckPawnReadyToInitialize();
 }
 
-void UOhHiDoggyPawnComponentExt::OnRep_PawnData()
+void UOHDPawnComponentExtension::OnRep_PawnData()
 {
 	CheckPawnReadyToInitialize();
 }
 
-bool UOhHiDoggyPawnComponentExt::CheckPawnReadyToInitialize()//todo what should be calling this? It is called with various setters like SetPawnData or SetupInputComponent
+bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should be calling this? It is called with various setters like SetPawnData or SetupInputComponent
 {
 	if (bPawnReadyToInitialize)
 	{
@@ -105,7 +105,7 @@ bool UOhHiDoggyPawnComponentExt::CheckPawnReadyToInitialize()//todo what should 
 }
 
 
-void UOhHiDoggyPawnComponentExt::SetPawnData(const UOHDPawnData* InPawnData)//todo make and understand what should be pawn data, make it and set it
+void UOHDPawnComponentExtension::SetPawnData(const UOHDPawnData* InPawnData)//todo make and understand what should be pawn data, make it and set it
 {
 	check(InPawnData);
 

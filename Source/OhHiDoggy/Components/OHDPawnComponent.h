@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
-#include "OhHiDoggyPawnComponent.generated.h"
+#include "OHDPawnComponent.generated.h"
 
 UINTERFACE(BlueprintType)
 class OHHIDOGGY_API UOhHiDoggyReadyInterface : public UInterface
@@ -23,11 +23,11 @@ public:
  * 
  */
 UCLASS(Blueprintable, Meta = (BlueprintSpawnableComponent))
-class OHHIDOGGY_API UOhHiDoggyPawnComponent : public UPawnComponent, public IOhHiDoggyReadyInterface
+class OHHIDOGGY_API UOHDPawnComponent : public UPawnComponent, public IOhHiDoggyReadyInterface
 {
 	GENERATED_BODY()
 public:
-	UOhHiDoggyPawnComponent(const FObjectInitializer& ObjectInitializer);
+	UOHDPawnComponent(const FObjectInitializer& ObjectInitializer);
 
 	virtual bool IsPawnComponentReadyToInitialize() const override { return true; }
 };

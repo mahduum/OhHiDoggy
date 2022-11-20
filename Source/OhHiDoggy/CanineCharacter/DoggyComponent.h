@@ -6,7 +6,7 @@
 #include "GameplayAbilitySpec.h"
 #include "EnhancedInputSubsystems.h"
 #include "Components/PawnComponent.h"
-#include "OhHiDoggy/Components/OhHiDoggyPawnComponent.h"
+#include "OhHiDoggy/Components/OHDPawnComponent.h"
 #include "OhHiDoggy/Input/MappableConfigPair.h"
 #include "DoggyComponent.generated.h"
 
@@ -17,7 +17,7 @@ struct FInputActionValue;
  * 
  */
 UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
-class UDoggyComponent : public UOhHiDoggyPawnComponent//Inspired by ULyraHeroComponent
+class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 {
 	GENERATED_BODY()
 	public:

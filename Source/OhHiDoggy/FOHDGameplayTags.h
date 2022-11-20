@@ -4,11 +4,11 @@
 class UGameplayTagsManager;
 
 /*Singleton containing native gameplay tags*/
-struct FOhHiDoggyGameplayTags
+struct FOHDGameplayTags
 {
 public:
 
-	static const FOhHiDoggyGameplayTags& Get() { return GameplayTags; }
+	static const FOHDGameplayTags& Get() { return GameplayTags; }
 
 	static void InitializeNativeTags();
 
@@ -50,5 +50,5 @@ protected:
 
 private:
 
-	static FOhHiDoggyGameplayTags GameplayTags;
+	static FOHDGameplayTags GameplayTags;
 };

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
+#include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 #include "CanineCharacter.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDoggyPossessed, UInputComponent*)
@@ -47,7 +47,7 @@ protected:
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
-	UOhHiDoggyPawnComponentExt* PawnExtComponent;
+	UOHDPawnComponentExtension* PawnExtComponent;
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
 	// UCanineCameraComponent* CameraComponent;
 	//

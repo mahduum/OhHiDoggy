@@ -205,7 +205,7 @@ APawn* AOHDGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* New
 	{
 		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
 		{
-			if (UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(SpawnedPawn))
+			if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(SpawnedPawn))
 			{
 				if (const UOHDPawnData* PawnData = GetPawnDataForController(NewPlayer))
 				{

@@ -4,7 +4,7 @@
 #include "OHDPlayerState.h"
 
 #include "Net/UnrealNetwork.h"
-#include "OhHiDoggy/Components/OhHiDoggyPawnComponentExt.h"
+#include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 
 AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -36,7 +36,7 @@ void AOHDPlayerState::ClientInitialize(AController* C)
 {
 	Super::ClientInitialize(C);
 
-	if (UOhHiDoggyPawnComponentExt* PawnExtComp = UOhHiDoggyPawnComponentExt::FindPawnExtensionComponent(GetPawn()))
+	if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(GetPawn()))
 	{
 		PawnExtComp->CheckPawnReadyToInitialize();
 	}
