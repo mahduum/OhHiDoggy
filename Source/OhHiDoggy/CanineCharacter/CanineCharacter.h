@@ -41,6 +41,10 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual void PreInitializeComponents() override;//todo implement it in higher base AModularChararcter class with the logic to register with GameFeature
+	void BeginPlay();
+	void EndPlay(EEndPlayReason::Type EndPlayReason);
+
 	//todo use from PawnComponentExt instead
 	FOnDoggyPossessed OnDoggyPossessedDelegate;
 

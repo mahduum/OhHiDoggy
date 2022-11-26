@@ -7,6 +7,8 @@
 #include "UObject/Object.h"
 #include "OHDExperienceDefinition.generated.h"
 
+class UOHDExperienceActionSet;
+class UGameFeatureAction;
 /**
  * 
  */
@@ -41,11 +43,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
 	TObjectPtr<const UOHDPawnData> DefaultPawnData;
 
-	// List of actions to perform as this experience is loaded/activated/deactivated/unloaded
-	// UPROPERTY(EditDefaultsOnly, Instanced, Category="Actions")
-	// TArray<UGameFeatureAction*> Actions;
+	//List of actions to perform as this experience is loaded/activated/deactivated/unloaded
+	UPROPERTY(EditDefaultsOnly, Instanced, Category="Actions")
+	TArray<UGameFeatureAction*> Actions;
 
-	// List of additional action sets to compose into this experience
-	// UPROPERTY(EditDefaultsOnly, Category=Gameplay)
-	// TArray<TObjectPtr<UOHDExperienceActionSet>> ActionSets;
+	//List of additional action sets to compose into this experience
+	UPROPERTY(EditDefaultsOnly, Category=Gameplay)
+	TArray<TObjectPtr<UOHDExperienceActionSet>> ActionSets;
 };

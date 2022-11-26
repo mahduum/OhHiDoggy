@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "CanineCharacter.h"
+#include "Components/GameFrameworkComponentManager.h"
 #include "../Movement/CanineCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -62,5 +62,32 @@ void ACanineCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+}
+
+//todo move it higher to modular character base
+void ACanineCharacter::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	/*Enable this to be able to interact with GameFramework and allow to be modified by GameFeatures or other plugins*/
+	UGameFrameworkComponentManager::AddGameFrameworkComponentReceiver(this);
+}
+
+//todo move it higher to modular character base
+void ACanineCharacter::BeginPlay()
+{
+	/*Send a message to GameFramework that it is ready for extensions on part of GameFeature or other plugins*/
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, UGameFrameworkComponentManager::NAME_GameActorReady);
+
+	Super::BeginPlay();
+}
+
+//todo move it higher to modular character base
+void ACanineCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	/*Remove ability to receive extensions from plugins*/
+	UGameFrameworkComponentManager::RemoveGameFrameworkComponentReceiver(this);
+
+	Super::EndPlay(EndPlayReason);
 }
 
