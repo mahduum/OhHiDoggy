@@ -12,7 +12,7 @@ UOHDPawnComponentExtension::UOHDPawnComponentExtension(const FObjectInitializer&
 
 	SetIsReplicatedByDefault(true);
 
-	//PawnData = nullptr;//todo also add pawn data to lifetime replicated props
+	PawnData = nullptr;//todo also add pawn data to lifetime replicated props
 	AbilitySystemComponent = nullptr;
 	bPawnReadyToInitialize = false;
 }
@@ -64,11 +64,11 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 		return true;
 	}
 
-	// Pawn data is required.
-	// if (!PawnData)
-	// {
-	// 	return false;
-	// }
+	//Pawn data is required.
+	if (!PawnData)
+	{
+		return false;
+	}
 
 	APawn* Pawn = GetPawnChecked<APawn>();
 

@@ -1,0 +1,14 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "d:\\unreal\\ohhidoggy\\plugins\\gamefeatures\\agilitytraining\\source\\agilitytrainingruntime\\private\\agilitytrainingruntimemodule.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal\\ohhidoggy\\intermediate\\build\\win64\\ohhidoggyeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "d:\\unreal\\ohhidoggy\\plugins\\gamefeatures\\agilitytraining\\intermediate\\build\\win64\\unrealeditor\\development\\agilitytrainingruntime\\definitions.agilitytrainingruntime.h",
+            "d:\\unreal\\ohhidoggy\\plugins\\gamefeatures\\agilitytraining\\source\\agilitytrainingruntime\\public\\agilitytrainingruntimemodule.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
