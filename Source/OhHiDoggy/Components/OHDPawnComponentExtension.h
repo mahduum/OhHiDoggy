@@ -7,6 +7,7 @@
 #include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OHDPawnComponentExtension.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOHDDynamicMulticastDelegate);
 
 class UAbilitySystemComponent;
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -55,6 +56,8 @@ public:
 	bool IsPawnReadyToInitialize() const { return bPawnReadyToInitialize; }
 	
 	// Register with the OnPawnReadyToInitialize delegate and broadcast if condition is already met.
+	// Anything that depends on this pawn will delegate its own initialization to when the PawnExt and all its dependencies are ready and
+	// any requirements of other components are met (any component with requirements has it specified by an interface implementation)
 	void OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
 	
 	// // Register with the OnAbilitySystemInitialized delegate and broadcast if condition is already met.
@@ -73,8 +76,8 @@ protected:
 	// Delegate fired when pawn has everything needed for initialization.
 	FSimpleMulticastDelegate OnPawnReadyToInitialize;
 
-	// UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "On Pawn Ready To Initialize"))
-	// FOhHiDoggyDynamicMulticastDelegate BP_OnPawnReadyToInitialize;
+	UPROPERTY(BlueprintAssignable, Meta = (DisplayName = "On Pawn Ready To Initialize"))
+	FOHDDynamicMulticastDelegate BP_OnPawnReadyToInitialize;
 
 	// Delegate fired when our pawn becomes the ability system's avatar actor
 	FSimpleMulticastDelegate OnAbilitySystemInitialized;

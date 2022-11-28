@@ -45,6 +45,9 @@ void UOHDPawnComponentExtension::OnRegister()
 void UOHDPawnComponentExtension::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UOHDPawnComponentExtension, PawnData);
+
 }
 
 void UOHDPawnComponentExtension::SetupPlayerInputComponent()
@@ -97,9 +100,10 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 	}
 
 	// Pawn is ready to initialize.
+	// Call whatever has already registered with the delegates, and everything else calling it later will execute instantly as PawnExt is will be already initialized.
 	bPawnReadyToInitialize = true;
 	OnPawnReadyToInitialize.Broadcast();
-	//BP_OnPawnReadyToInitialize.Broadcast();
+	BP_OnPawnReadyToInitialize.Broadcast();
 
 	return true;
 }

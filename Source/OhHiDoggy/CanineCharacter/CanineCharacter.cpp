@@ -39,6 +39,12 @@ ACanineCharacter::ACanineCharacter(const FObjectInitializer& ObjectInitializer)
 	CanineMoveComp->bCanWalkOffLedgesWhenCrouching = true;
 	CanineMoveComp->SetCrouchedHalfHeight(65.0f);
 
+	
+	PawnExtComponent = CreateDefaultSubobject<UOHDPawnComponentExtension>(TEXT("PawnExtensionComponent"));
+	//PawnExtComponent->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
+	//PawnExtComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
+
+
 	// CameraComponent = CreateDefaultSubobject<ULyraCameraComponent>(TEXT("CameraComponent"));
 	// CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
 

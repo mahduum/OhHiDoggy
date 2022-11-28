@@ -14,7 +14,7 @@ struct FGameplayTag;
 struct FGameplayAbilitySpecHandle;
 struct FInputActionValue;
 /**
- * 
+ * Really a component that can be added to anything the player needs to control - todo doesn't need to be called "doggy"
  */
 UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
 class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
