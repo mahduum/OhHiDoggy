@@ -280,7 +280,7 @@ bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 
 void UDoggyComponent::OnInputConfigActivated(const FLoadedMappableConfigPair& ConfigPair)
 {
-	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())//todo make oh hi doggy player controller
+	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())//todo primary make oh hi doggy player controller
 	{
 		if (APawn* Pawn = GetPawn<APawn>())
 		{

@@ -84,8 +84,6 @@ const UOHDPawnData* AOHDGameMode::GetPawnDataForController(const AController* In
 
 void AOHDGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	FOHDGameplayTags::InitializeNativeTags();//todo move to custom asset manager inside StartInitialLoading when ability system is initialized void ULyraAssetManager::InitializeAbilitySystem()
-
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	//@TODO: Eventually only do this for PIE/auto
