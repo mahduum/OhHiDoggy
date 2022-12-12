@@ -7,7 +7,6 @@ class UGameplayTagsManager;
 struct FOHDGameplayTags
 {
 public:
-
 	static const FOHDGameplayTags& Get() { return GameplayTags; }
 
 	static void InitializeNativeTags();

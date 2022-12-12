@@ -7,6 +7,7 @@
 #include "Engine/AssetManager.h"
 #include "GameFramework/PlayerStart.h"
 #include "Misc/UObjectToken.h"
+#include "OhHiDoggy/System/OHDAssetManager.h"
 
 
 // Sets default values
@@ -20,7 +21,7 @@ FPrimaryAssetId AOHDWorldSettings::GetDefaultGameplayExperience() const
 	FPrimaryAssetId Result;
 	if (!DefaultGameplayExperience.IsNull())
 	{
-		Result = UAssetManager::Get().GetPrimaryAssetIdForPath(DefaultGameplayExperience.ToSoftObjectPath());
+		Result = UOHDAssetManager::Get().GetPrimaryAssetIdForPath(DefaultGameplayExperience.ToSoftObjectPath());//todo this doesn't work???
 
 		if (!Result.IsValid())
 		{

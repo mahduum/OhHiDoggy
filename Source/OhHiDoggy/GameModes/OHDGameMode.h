@@ -10,7 +10,7 @@
 class UOHDPawnData;
 class UOHDExperienceDefinition;
 UCLASS(Config = Game, Meta = (ShortTooltip = "The base game mode class used by this project."))
-class OHHIDOGGY_API AOHDGameMode : public AGameMode //todo make it modular
+class OHHIDOGGY_API AOHDGameMode : public AGameModeBase //todo make it modular
 {
 	GENERATED_BODY()
 public:
@@ -21,8 +21,7 @@ public:
 	//~AGameModeBase interface
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
-	virtual APawn*
-	SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override;
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;

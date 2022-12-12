@@ -4,18 +4,23 @@
 #include "OHDGameMode.h"
 #include "OHDExperienceDefinition.h"
 //#include "OHDWorldSettings.h"
+#include "OHDExperienceManagerComponent.h"
+#include "OHDGameState.h"
+#include "OHDWorldSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "GameFramework/GameSession.h"
 #include "GameFramework/GameState.h"
 #include "GameFramework/HUD.h"
+#include "OhHiDoggy/FOHDGameplayTags.h"
 #include "OhHiDoggy/CanineCharacter/CanineCharacter.h"
 #include "OhHiDoggy/Player/OHDPlayerState.h"
+#include "OhHiDoggy/System/OHDAssetManager.h"
 
 AOHDGameMode::AOHDGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	GameStateClass = AGameState::StaticClass();//todo gamemode custom
+	GameStateClass = AOHDGameState::StaticClass();//todo gamemode custom
 	GameSessionClass = AGameSession::StaticClass();//todo gamemode custom
 	PlayerControllerClass = APlayerController::StaticClass();//todo gamemode custom
 	//ReplaySpectatorPlayerControllerClass = AOHDReplayPlayerController::StaticClass();//todo gamemode custom
@@ -31,36 +36,56 @@ const UOHDPawnData* AOHDGameMode::GetPawnDataForController(const AController* In
 	{
 		if (const AOHDPlayerState* OHDPS = InController->GetPlayerState<AOHDPlayerState>())
 		{
+			UE_LOG(LogCore, Display, TEXT("OHDPlayerState found on pawn's controller."));
+
 			if (const UOHDPawnData* PawnData = OHDPS->GetPawnData<UOHDPawnData>())
 			{
+				UE_LOG(LogCore, Display, TEXT("Pawn data found on OHDPlayerState."));
+
 				return PawnData;
 			}
 		}
 	}
 
 	// If not, fall back to the the default for the current experience todo experience
-	// check(GameState);
-	// UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
-	// check(ExperienceComponent);
-	//
-	// if (ExperienceComponent->IsExperienceLoaded())
-	// {
-	// 	const UOHDExperienceDefinition* Experience = ExperienceComponent->GetCurrentExperienceChecked();
-	// 	if (Experience->DefaultPawnData != nullptr)
-	// 	{
-	// 		return Experience->DefaultPawnData;
-	// 	}
-	//
-	// 	// Experience is loaded and there's still no pawn data, fall back to the default for now
-	// 	return UOHDAssetManager::Get().GetDefaultPawnData();
-	// }
+	check(GameState);
+	UE_LOG(LogCore, Display, TEXT("Game state class name: %s."), *GameState.GetClass()->GetName());
+	UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();//todo no comp in game state
+	if(!ExperienceComponent)
+	{
+		UE_LOG(LogCore, Error, TEXT("No experience compoenent found on game state."));
+		return nullptr;
+	}
+	check(ExperienceComponent);
+	
+	if (ExperienceComponent->IsExperienceLoaded())
+	{
+		UE_LOG(LogCore, Display, TEXT("Experience is loaded! Name: %s."), *ExperienceComponent->GetCurrentExperienceChecked()->GetName());
+
+		const UOHDExperienceDefinition* Experience = ExperienceComponent->GetCurrentExperienceChecked();
+		if (Experience->DefaultPawnData != nullptr)
+		{
+			UE_LOG(LogCore, Display, TEXT("Returning default pawn data from experience."));
+
+			return Experience->DefaultPawnData;
+		}
+	
+		// Experience is loaded and there's still no pawn data, fall back to the default for now
+		UE_LOG(LogCore, Display, TEXT("Experience has no pawn data, returning default pawn data from the asset manager."));
+
+		return UOHDAssetManager::Get().GetDefaultPawnData();
+	}
 
 	// Experience not loaded yet, so there is no pawn data to be had
+	UE_LOG(LogCore, Display, TEXT("Experience is not loaded yet and there is no pawn data to be had."));
+
 	return nullptr;
 }
 
 void AOHDGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
+	FOHDGameplayTags::InitializeNativeTags();//todo move to custom asset manager inside StartInitialLoading when ability system is initialized void ULyraAssetManager::InitializeAbilitySystem()
+
 	Super::InitGame(MapName, Options, ErrorMessage);
 
 	//@TODO: Eventually only do this for PIE/auto
@@ -69,8 +94,8 @@ void AOHDGameMode::InitGame(const FString& MapName, const FString& Options, FStr
 
 void AOHDGameMode::HandleMatchAssignmentIfNotExpectingOne()
 {
-	// FPrimaryAssetId ExperienceId;
-	// FString ExperienceIdSource;
+	FPrimaryAssetId ExperienceId;
+	FString ExperienceIdSource;
 	//
 	// // Precedence order (highest wins)
 	// //  - Matchmaking assignment (if present)
@@ -80,81 +105,87 @@ void AOHDGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	// //  - World Settings
 	// //  - Default experience
 	//
-	// UWorld* World = GetWorld();
-	//
-	// if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
-	// {
-	// 	const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
-	// 	ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UOHDExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions));
-	// 	ExperienceIdSource = TEXT("OptionsString");
-	// }
-	//
-	// if (!ExperienceId.IsValid() && World->IsPlayInEditor())
-	// {
-	// 	ExperienceId = GetDefault<UOHDDeveloperSettings>()->ExperienceOverride;
-	// 	ExperienceIdSource = TEXT("DeveloperSettings");
-	// }
-	//
-	// // see if the command line wants to set the experience
-	// if (!ExperienceId.IsValid())
-	// {
-	// 	FString ExperienceFromCommandLine;
-	// 	if (FParse::Value(FCommandLine::Get(), TEXT("Experience="), ExperienceFromCommandLine))
-	// 	{
-	// 		ExperienceId = FPrimaryAssetId::ParseTypeAndName(ExperienceFromCommandLine);
-	// 		ExperienceIdSource = TEXT("CommandLine");
-	// 	}
-	// }
+	UWorld* World = GetWorld();
+	
+	if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
+	{
+		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
+		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(UOHDExperienceDefinition::StaticClass()->GetFName()), FName(*ExperienceFromOptions));
+		ExperienceIdSource = TEXT("OptionsString");
+	}
+	
+	if (!ExperienceId.IsValid() && World->IsPlayInEditor())
+	{
+		UE_LOG(LogCore, Warning, TEXT("Experience is invalid but UOHDDeveloperSettings with experience override is not implemented yet."));
+
+		// ExperienceId = GetDefault<UOHDDeveloperSettings>()->ExperienceOverride;
+		// ExperienceIdSource = TEXT("DeveloperSettings");
+	}
+	
+	// see if the command line wants to set the experience
+	if (!ExperienceId.IsValid())
+	{
+		FString ExperienceFromCommandLine;
+		if (FParse::Value(FCommandLine::Get(), TEXT("Experience="), ExperienceFromCommandLine))
+		{
+			ExperienceId = FPrimaryAssetId::ParseTypeAndName(ExperienceFromCommandLine);
+			ExperienceIdSource = TEXT("CommandLine");
+		}
+	}
 	//
 	// // see if the world settings has a default experience
-	// if (!ExperienceId.IsValid())
-	// {
-	// 	if (AOHDWorldSettings* TypedWorldSettings = Cast<AOHDWorldSettings>(GetWorldSettings()))
-	// 	{
-	// 		ExperienceId = TypedWorldSettings->GetDefaultGameplayExperience();
-	// 		ExperienceIdSource = TEXT("WorldSettings");
-	// 	}
-	// }
+	if (!ExperienceId.IsValid())
+	{
+		if (AOHDWorldSettings* TypedWorldSettings = Cast<AOHDWorldSettings>(GetWorldSettings()))
+		{
+			ExperienceId = TypedWorldSettings->GetDefaultGameplayExperience();//todo primary this should work!
+			ExperienceIdSource = TEXT("WorldSettings");
+		}
+	}
 	//
-	// UOHDAssetManager& AssetManager = UOHDAssetManager::Get();
-	// FAssetData Dummy;
-	// if (ExperienceId.IsValid() && !AssetManager.GetPrimaryAssetData(ExperienceId, /*out*/ Dummy))
-	// {
-	// 	UE_LOG(LogCore, Error, TEXT("EXPERIENCE: Wanted to use %s but couldn't find it, falling back to the default)"), *ExperienceId.ToString());
-	// 	ExperienceId = FPrimaryAssetId();
-	// }
+	UOHDAssetManager& AssetManager = UOHDAssetManager::Get();//todo primary: change this to UOHDAssetManager
+	FAssetData Dummy;
+	if (ExperienceId.IsValid() && !AssetManager.GetPrimaryAssetData(ExperienceId, /*out*/ Dummy))
+	{
+		UE_LOG(LogCore, Error, TEXT("EXPERIENCE: Wanted to use %s but couldn't find it, falling back to the default)"), *ExperienceId.ToString());
+		ExperienceId = FPrimaryAssetId();
+	}
 	//
 	// // Final fallback to the default experience
-	// if (!ExperienceId.IsValid())
-	// {
-	// 	//@TODO: Pull this from a config setting or something
-	// 	ExperienceId = FPrimaryAssetId(FPrimaryAssetType("OHDExperienceDefinition"), FName("B_OHDDefaultExperience"));
-	// 	ExperienceIdSource = TEXT("Default");
-	// }
+	if (!ExperienceId.IsValid())
+	{
+		UE_LOG(LogCore, Error, TEXT("EXPERIENCE: Missing experience but no default experience in final callback implemented yet."));
+
+		//@TODO: Pull this from a config setting or something
+		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("OHDExperienceDefinition"), FName("B_OHDDefaultExperience"));//todo no default experience yet with this name
+		ExperienceIdSource = TEXT("Default");
+	}
 	//
-	// OnMatchAssignmentGiven(ExperienceId, ExperienceIdSource);
+	OnMatchAssignmentGiven(ExperienceId, ExperienceIdSource);
 }
 
 void AOHDGameMode::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const FString& ExperienceIdSource)
 {
-// #if WITH_SERVER_CODE
-// 	if (ExperienceId.IsValid())
-// 	{
-// 		UE_LOG(LogCore, Log, TEXT("Identified experience %s (Source: %s)"), *ExperienceId.ToString(), *ExperienceIdSource);
-//
-// 		UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
-// 		check(ExperienceComponent);
-// 		ExperienceComponent->ServerSetCurrentExperience(ExperienceId);
-// 	}
-// 	else
-// 	{
-// 		UE_LOG(LogCore, Error, TEXT("Failed to identify experience, loading screen will stay up forever"));
-// 	}
-// #endif
+#if WITH_SERVER_CODE
+	if (ExperienceId.IsValid())
+	{
+		UE_LOG(LogCore, Log, TEXT("Identified experience %s (Source: %s)"), *ExperienceId.ToString(), *ExperienceIdSource);
+
+		UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
+		check(ExperienceComponent);
+		ExperienceComponent->ServerSetCurrentExperience(ExperienceId);//todo???
+	}
+	else
+	{
+		UE_LOG(LogCore, Error, TEXT("Failed to identify experience, loading screen will stay up forever"));
+	}
+#endif
 }
 
 void AOHDGameMode::OnExperienceLoaded(const UOHDExperienceDefinition* CurrentExperience)
 {
+	UE_LOG(LogCore, Display, TEXT("OHDGameModee on experience loaded..."));
+
 	// Spawn any players that are already attached
 	//@TODO: Here we're handling only *player* controllers, but in GetDefaultPawnClassForController_Implementation we skipped all controllers
 	// GetDefaultPawnClassForController_Implementation might only be getting called for players anyways
@@ -173,12 +204,11 @@ void AOHDGameMode::OnExperienceLoaded(const UOHDExperienceDefinition* CurrentExp
 
 bool AOHDGameMode::IsExperienceLoaded() const
 {
-	// check(GameState);
-	// UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
-	// check(ExperienceComponent);
-	//
-	// return ExperienceComponent->IsExperienceLoaded();
-	return false; //todo experience
+	check(GameState);
+	UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
+	check(ExperienceComponent);
+	
+	return ExperienceComponent->IsExperienceLoaded();
 }
 
 UClass* AOHDGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -187,6 +217,8 @@ UClass* AOHDGameMode::GetDefaultPawnClassForController_Implementation(AControlle
 	{
 		if (PawnData->PawnClass)
 		{
+			UE_LOG(LogCore, Display, TEXT("OHDGameMode returning default pawn class."));
+
 			return PawnData->PawnClass;
 		}
 	}
@@ -196,6 +228,8 @@ UClass* AOHDGameMode::GetDefaultPawnClassForController_Implementation(AControlle
 
 APawn* AOHDGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
 {
+	UE_LOG(LogCore, Display, TEXT("Spawning default pawn at transform implementation."));
+
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Instigator = GetInstigator();
 	SpawnInfo.ObjectFlags |= RF_Transient;	// Never save the default player pawns into a map.
@@ -207,6 +241,8 @@ APawn* AOHDGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* New
 		{
 			if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(SpawnedPawn))
 			{
+				UE_LOG(LogCore, Display, TEXT("Pawn extension component found after default pawn spawn."));
+
 				if (const UOHDPawnData* PawnData = GetPawnDataForController(NewPlayer))
 				{
 					PawnExtComp->SetPawnData(PawnData);
@@ -252,7 +288,7 @@ void AOHDGameMode::HandleStartingNewPlayer_Implementation(APlayerController* New
 
 AActor* AOHDGameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
-	// todo player start
+	// todo primary player start
 	// if (UOHDPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UOHDPlayerSpawningManagerComponent>())
 	// {
 	// 	return PlayerSpawningComponent->ChoosePlayerStart(Player);
@@ -263,7 +299,7 @@ AActor* AOHDGameMode::ChoosePlayerStart_Implementation(AController* Player)
 
 void AOHDGameMode::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
 {
-	// todo player start
+	// todo primary player start
 
 	// if (UOHDPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UOHDPlayerSpawningManagerComponent>())
 	// {
@@ -296,7 +332,7 @@ bool AOHDGameMode::ControllerCanRestart(AController* Controller)
 		}
 	}
 
-	// todo player start
+	// todo primary player start
 
 	// if (UOHDPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UOHDPlayerSpawningManagerComponent>())
 	// {
@@ -310,11 +346,11 @@ void AOHDGameMode::InitGameState()
 {
 	Super::InitGameState();
 
-	// todo experience
+
 	// Listen for the experience load to complete	
-	// UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
-	// check(ExperienceComponent);
-	// ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnOHDExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
+	check(ExperienceComponent);
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnOHDExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
 void AOHDGameMode::OnPostLogin(AController* NewPlayer)

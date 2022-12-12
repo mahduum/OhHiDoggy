@@ -24,7 +24,7 @@ class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 
 	//UDoggyComponent(const FObjectInitializer& ObjectInitializer);
 
-	// Returns the hero component if one exists on the specified actor.
+	// Returns the hero component if one exists on the specified actor. Convenience function to find this component for whatever actor. todo REMEMBER THIS! it is similar to extension functions in C#
 	UFUNCTION(BlueprintPure, Category = "|Hero")
 	static UDoggyComponent* FindHeroComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UDoggyComponent>() : nullptr); }
 

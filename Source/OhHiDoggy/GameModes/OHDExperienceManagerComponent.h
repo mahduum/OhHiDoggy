@@ -69,8 +69,10 @@ private:
 	void OnRep_CurrentExperience();
 
 	void StartExperienceLoad();
+	/* Call this after each experience load and check if there are more to load (for example any connected game features or other assets etc.*/
 	void OnExperienceLoadComplete();
 	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
+	/* Call this when there is nothing more to load */
 	void OnExperienceFullLoadCompleted();
 
 	void OnActionDeactivationCompleted();

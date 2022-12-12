@@ -30,7 +30,8 @@ public class OhHiDoggy : ModuleRules
 				"EnhancedInput",
 				"RHI",
 				"AudioMixer",
-				"NetCore"
+				"NetCore",
+				//"GameplayMessageRuntime",
 			}
 		);
 	}

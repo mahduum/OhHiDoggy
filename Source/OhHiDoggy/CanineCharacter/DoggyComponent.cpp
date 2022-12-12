@@ -51,6 +51,8 @@ void UDoggyComponent::OnRegister()
 
 void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register to owner or pawn ext when pawn will be ready to initialize (like onpossessed etc.)
 {
+	UE_LOG(LogCore, Display, TEXT("Pawn is ready to initialize for input."));	
+
 	if (!ensure(!bPawnHasInitialized))
 	{
 		// Don't initialize twice
@@ -62,10 +64,16 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 	{
 		return;
 	}
+
+	UE_LOG(LogCore, Display, TEXT("Pawn is found for input to initialize on."));
+
 	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 
 	APlayerState* OhHiDoggyPS = GetPlayerState<APlayerState>();
 	check(OhHiDoggyPS);
+	
+	UE_LOG(LogCore, Display, TEXT("Player state found."));
+
 
 	//const UOHDPawnData* PawnData = nullptr;
 
@@ -80,8 +88,12 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 
 	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())
 	{
+		UE_LOG(LogCore, Display, TEXT("Controller is found for input to initialize on."));
+
 		if (Pawn->InputComponent != nullptr)
 		{
+			UE_LOG(LogCore, Display, TEXT("Pawn's input component is ready to initialize player input."));
+
 			InitializePlayerInput(Pawn->InputComponent);
 		}
 	}
@@ -134,10 +146,16 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
 	{
+		UE_LOG(LogCore, Display, TEXT("Pawn's extension component is ready for input init."));
+
 		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())//todo make pawn data and nest it in extension comp
 		{
+			UE_LOG(LogCore, Display, TEXT("Pawn's data is ready for input init."));
+
 			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)//todo what input config
 			{
+				UE_LOG(LogCore, Display, TEXT("Input config found in pawn's data for input init."));
+
 				//todo make as UOhHiDoggyGameplayTags, tags by which to find to what input action the native action is bound
 				//an input action has its tag defined and assigned and it can by found by that tag, and internally then it bounds and action, object, trigger event with this input action.
 				const FOHDGameplayTags& GameplayTags = FOHDGameplayTags::Get();
@@ -151,11 +169,11 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				UOHDInputComponent* DoggyIC = CastChecked<UOHDInputComponent>(PlayerInputComponent);//todo
 	
 				DoggyIC->AddInputMappings(InputConfig, Subsystem);
-				if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())
-				{
-					LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
-					LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
-				}
+				// if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo primary local settings not existing!!! Use normal settings
+				// {
+				// 	LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
+				// 	LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
+				// }
 
 				//todo with abilities ready:
 				//TArray<uint32> BindHandles;
@@ -190,6 +208,8 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	// {
 	// 	OhHiDoggyController->SetIsAutoRunning(false);
 	// }
+	
+	UE_LOG(LogCore, Display, TEXT("Input move value received."));
 	
 	if (Controller)
 	{

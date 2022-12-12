@@ -55,6 +55,21 @@ EDataValidationResult UOHDExperienceDefinition::IsDataValid(TArray<FText>& Valid
 		}
 	}
 
+	auto GetName = [] (EDataValidationResult InResult)-> const ANSICHAR*
+	{
+		switch (InResult){
+		case EDataValidationResult::Invalid:
+			return "Invalid";
+		case EDataValidationResult::NotValidated:
+			return "NotValidated";
+		case EDataValidationResult::Valid:
+			return "Valid";
+		}
+		return "";
+	};
+
+	UE_LOG(LogCore, Display, TEXT("Experience validation result: %hs."), GetName(Result));
+
 	return Result;
 }
 #endif

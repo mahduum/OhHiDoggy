@@ -64,12 +64,16 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 {
 	if (bPawnReadyToInitialize)
 	{
+		UE_LOG(LogCore, Display, TEXT("Pawn is ready to initialize."));
+
 		return true;
 	}
 
 	//Pawn data is required.
 	if (!PawnData)
 	{
+		UE_LOG(LogCore, Warning, TEXT("Pawn is missing pawn data."));
+		
 		return false;
 	}
 
@@ -83,6 +87,8 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 		// Check for being possessed by a controller.
 		if (!GetController<AController>())
 		{
+			UE_LOG(LogCore, Warning, TEXT("Pawn is missing controller and is locally controlled."));
+
 			return false;
 		}
 	}
@@ -95,6 +101,7 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 		const IOhHiDoggyReadyInterface* Ready = CastChecked<IOhHiDoggyReadyInterface>(InteractableComponent);
 		if (!Ready->IsPawnComponentReadyToInitialize())
 		{
+			UE_LOG(LogCore, Warning, TEXT("Pawn's component is not ready to initialze: %s."), *InteractableComponent->GetName());
 			return false;
 		}
 	}
@@ -102,6 +109,9 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 	// Pawn is ready to initialize.
 	// Call whatever has already registered with the delegates, and everything else calling it later will execute instantly as PawnExt is will be already initialized.
 	bPawnReadyToInitialize = true;
+	
+	UE_LOG(LogCore, Display, TEXT("Pawn is set ready to initialize, braodcasting to delegates."));
+
 	OnPawnReadyToInitialize.Broadcast();
 	BP_OnPawnReadyToInitialize.Broadcast();
 

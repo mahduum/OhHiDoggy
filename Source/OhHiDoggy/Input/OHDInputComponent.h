@@ -41,6 +41,8 @@ public:
 template<class UserClass, typename FuncType>
 void UOHDInputComponent::BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound)
 {
+	UE_LOG(LogCore, Display, TEXT("Binding native action for input tag: %s."), *InputTag.ToString());
+
 	check(InputConfig);
 	if (const UInputAction* IA = InputConfig->FindNativeInputActionForTag(InputTag, bLogIfNotFound))
 	{

@@ -1,11 +1,11 @@
 ﻿#include "FOHDGameplayTags.h"
 
 #include "GameplayTagsManager.h"
-
+#include "Engine/AssetManager.h"
 
 FOHDGameplayTags FOHDGameplayTags::GameplayTags;
 
-void FOHDGameplayTags::InitializeNativeTags()
+void FOHDGameplayTags::InitializeNativeTags()//todo primary native tags not being added???
 {
 	UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
 

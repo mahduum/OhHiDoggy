@@ -129,7 +129,7 @@ void UOHDAssetManager::InitializeGameplayCueManager()
 {
 	SCOPED_BOOT_TIMING("UOHDAssetManager::InitializeGameplayCueManager");
 
-	// UOHDGameplayCueManager* GCM = UOHDGameplayCueManager::Get();
+	// UOHDGameplayCueManager* GCM = UOHDGameplayCueManager::Get();//todo primary
 	//check(GCM);
 	//GCM->LoadAlwaysLoadedCues();
 }

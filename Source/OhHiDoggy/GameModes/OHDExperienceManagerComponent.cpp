@@ -12,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "OhHiDoggy/OHDLogChannels.h"
 #include "OhHiDoggy/Settings/OHDSettingsLocal.h"
+#include "OhHiDoggy/System/OHDAssetManager.h"
 
 
 //@TODO: Async load the experience definition itself
@@ -54,7 +55,7 @@ UOHDExperienceManagerComponent::UOHDExperienceManagerComponent(const FObjectInit
 #if WITH_SERVER_CODE
 void UOHDExperienceManagerComponent::ServerSetCurrentExperience(FPrimaryAssetId ExperienceId)
 {
-	UAssetManager& AssetManager = UAssetManager::Get();//todo make own asset manager
+	UOHDAssetManager& AssetManager = UOHDAssetManager::Get();//todo make own asset manager
 	FSoftObjectPath AssetPath = AssetManager.GetPrimaryAssetPath(ExperienceId);
 	TSubclassOf<UOHDExperienceDefinition> AssetClass = Cast<UClass>(AssetPath.TryLoad());
 	check(AssetClass);
@@ -131,7 +132,7 @@ void UOHDExperienceManagerComponent::StartExperienceLoad()
 
 	LoadState = EOHDExperienceLoadState::Loading;
 
-	UAssetManager& AssetManager = UAssetManager::Get();
+	UOHDAssetManager& AssetManager = UOHDAssetManager::Get();
 
 	TSet<FPrimaryAssetId> BundleAssetList;
 	TSet<FSoftObjectPath> RawAssetList;
@@ -148,7 +149,7 @@ void UOHDExperienceManagerComponent::StartExperienceLoad()
 	// Load assets associated with the experience
 
 	TArray<FName> BundlesToLoad;
-	//BundlesToLoad.Add(FOHDBundles::Equipped);//todo for custom derived form UAssetManager
+	BundlesToLoad.Add(FOHDBundles::Equipped);//todo for custom derived form UAssetManager
 
 	//@TODO: Centralize this client/server stuff into the OHDAssetManager
 	const ENetMode OwnerNetMode = GetOwner()->GetNetMode();
@@ -346,7 +347,7 @@ void UOHDExperienceManagerComponent::OnExperienceFullLoadCompleted()
 
 	// Apply any necessary scalability settings
 #if !UE_SERVER
-	UOHDSettingsLocal::Get()->OnExperienceLoaded();
+	//UOHDSettingsLocal::Get()->OnExperienceLoaded();//todo primary settings
 #endif
 }
 
