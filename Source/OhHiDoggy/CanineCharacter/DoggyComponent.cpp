@@ -2,6 +2,8 @@
 
 
 #include "DoggyComponent.h"
+
+#include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework//PlayerState.h"
 #include "Misc/UObjectToken.h"
@@ -11,6 +13,7 @@
 #include "OhHiDoggy/Input/OHDInputConfig.h"
 #include "OhHiDoggy/Input/OHDInputComponent.h"
 #include "OhHiDoggy/Settings/OHDSettingsLocal.h"
+#include "OhHiDoggy/System/OHDAssetManager.h"
 
 //#include "OhHiDoggy/Input/DoggyInputConfig.h"
 
@@ -75,16 +78,16 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 	UE_LOG(LogCore, Display, TEXT("Player state found."));
 
 
-	//const UOHDPawnData* PawnData = nullptr;
+	const UOHDPawnData* PawnData = nullptr;
 
-	// if (UOhHiDoggyPawnExtensionComponent* PawnExtComp = UOhHiDoggyPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
-	// {
-	// 	PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
-	//
-	// 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
-	// 	// The ability system component and attribute sets live on the player state.
-	// 	PawnExtComp->InitializeAbilitySystem(OhHiDoggyPS->GetOhHiDoggyAbilitySystemComponent(), OhHiDoggyPS);
-	// }
+	 if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+	 {
+	 	PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
+	
+	 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
+	 	// The ability system component and attribute sets live on the player state.
+	 	//PawnExtComp->InitializeAbilitySystem(OhHiDoggyPS->GetOhHiDoggyAbilitySystemComponent(), OhHiDoggyPS);
+	 }
 
 	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())
 	{
@@ -164,16 +167,30 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				 for (const FMappableConfigPair& Pair : DefaultInputConfigs)
 				 {
 				 	FMappableConfigPair::ActivatePair(Pair);
+
+				 	//todo temporary for testing DELETE after:
+
+				 	// UOHDAssetManager& AssetManager = UOHDAssetManager::Get();//todo make custom manager
+				 	// // Only activate a pair that has been successfully registered
+				 	// if (FMappableConfigPair::RegisterPair(Pair) && Pair.CanBeActivated())
+				 	// {		
+				 	// 	if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
+				 	// 	{
+				 	// 		//need settings to load registered pair
+				 	// 		//OnInputConfigActivated(LoadedConfig.f);
+					 //
+				 	// 	}			
+				 	// }
 				 }
 				
 				UOHDInputComponent* DoggyIC = CastChecked<UOHDInputComponent>(PlayerInputComponent);//todo
 	
-				DoggyIC->AddInputMappings(InputConfig, Subsystem);
-				// if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo primary local settings not existing!!! Use normal settings
-				// {
-				// 	LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
-				// 	LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
-				// }
+				DoggyIC->AddInputMappings(InputConfig, Subsystem);//todo primary this was disabled (all commented out)
+				if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo primary local settings not existing!!! Use normal settings
+				 {
+				 	LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
+				 	LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
+				 }
 
 				//todo with abilities ready:
 				//TArray<uint32> BindHandles;
@@ -193,8 +210,8 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 		bReadyToBindInputs = true;
 	}
 	//
-	// UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);
-	// UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
+	//UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);//todo
+	//UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 
 
@@ -204,12 +221,10 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	const AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
 	// If the player has attempted to move again then cancel auto running
-	// if (AOhHiDoggyPlayerController* OhHiDoggyController = Cast<AOhHiDoggyPlayerController>(Controller))
+	// if (AOhHiDoggyPlayerController* OhHiDoggyController = Cast<AOhHiDoggyPlayerController>(Controller))//todo
 	// {
 	// 	OhHiDoggyController->SetIsAutoRunning(false);
 	// }
-	
-	UE_LOG(LogCore, Display, TEXT("Input move value received."));
 	
 	if (Controller)
 	{

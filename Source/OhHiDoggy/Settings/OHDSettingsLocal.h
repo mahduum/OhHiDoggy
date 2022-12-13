@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameUserSettings.h"
 #include "OhHiDoggy/Input/MappableConfigPair.h"
+#include "PlayerMappableInputConfig.h"
 #include "OHDSettingsLocal.generated.h"
 
-class UPlayerMappableInputConfig;
 enum class ECommonInputType : uint8;
 
 class USoundControlBus;
 class USoundControlBusMix;
-class UPlayerMappableInputConfig;
 //class UOhHiDoggyLocalPlayer;
 
 USTRUCT()

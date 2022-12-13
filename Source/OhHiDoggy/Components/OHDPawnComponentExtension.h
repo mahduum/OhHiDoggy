@@ -39,8 +39,8 @@ public:
 	// // Should be called by the owning pawn to remove itself as the avatar of the ability system.
 	// void UninitializeAbilitySystem();
 	//
-	// // Should be called by the owning pawn when the pawn's controller changes.
-	// void HandleControllerChanged();
+	// Should be called by the owning pawn when the pawn's controller changes.
+	void HandleControllerChanged();
 	//
 	// // Should be called by the owning pawn when the player state has been replicated.
 	// void HandlePlayerStateReplicated();

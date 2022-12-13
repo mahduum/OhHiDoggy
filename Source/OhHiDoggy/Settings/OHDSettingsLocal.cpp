@@ -2,8 +2,6 @@
 
 
 #include "OHDSettingsLocal.h"
-
-#include "OHDSettingsLocal.h"
 #include "Sound/SoundClass.h"
 #include "AudioDeviceManager.h"
 #include "AudioDevice.h"

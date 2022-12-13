@@ -67,7 +67,9 @@ void ACanineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void ACanineCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	
+	UE_LOG(LogCore, Warning, TEXT("Player is being possessed by Controller."));//todo debug when it's happening
+
+	PawnExtComponent->HandleControllerChanged();
 }
 
 //todo move it higher to modular character base

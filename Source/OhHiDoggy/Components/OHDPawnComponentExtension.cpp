@@ -50,6 +50,25 @@ void UOHDPawnComponentExtension::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 }
 
+
+void UOHDPawnComponentExtension::HandleControllerChanged()
+{
+	// if (AbilitySystemComponent && (AbilitySystemComponent->GetAvatarActor() == GetPawnChecked<APawn>()))
+	// {
+	// 	ensure(AbilitySystemComponent->AbilityActorInfo->OwnerActor == AbilitySystemComponent->GetOwnerActor());
+	// 	if (AbilitySystemComponent->GetOwnerActor() == nullptr)
+	// 	{
+	// 		UninitializeAbilitySystem();
+	// 	}
+	// 	else
+	// 	{
+	// 		AbilitySystemComponent->RefreshAbilityActorInfo();
+	// 	}
+	// }
+
+	CheckPawnReadyToInitialize();
+}
+
 void UOHDPawnComponentExtension::SetupPlayerInputComponent()
 {
 	CheckPawnReadyToInitialize();
@@ -89,8 +108,16 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 		{
 			UE_LOG(LogCore, Warning, TEXT("Pawn is missing controller and is locally controlled."));
 
+			if (Pawn)
+			{
+				const FString Name = Pawn->GetName();
+				UE_LOG(LogCore, Display, TEXT("Pawn's owner name is: %s."), *Name);
+			}
+
 			return false;
 		}
+
+		UE_LOG(LogCore, Warning, TEXT("Pawn's controller found!"));
 	}
 
 	// Allow pawn components to have requirements.//todo debug Lyra to find what exactly are those components
@@ -110,7 +137,7 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 	// Call whatever has already registered with the delegates, and everything else calling it later will execute instantly as PawnExt is will be already initialized.
 	bPawnReadyToInitialize = true;
 	
-	UE_LOG(LogCore, Display, TEXT("Pawn is set ready to initialize, braodcasting to delegates."));
+	UE_LOG(LogCore, Warning, TEXT("Pawn is set ready to initialize, braodcasting to delegates."));
 
 	OnPawnReadyToInitialize.Broadcast();
 	BP_OnPawnReadyToInitialize.Broadcast();

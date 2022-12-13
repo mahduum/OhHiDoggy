@@ -2,6 +2,8 @@
 
 #include "OHDInputComponent.h"
 
+#include "OhHiDoggy/Settings/OHDSettingsLocal.h"
+
 
 UOHDInputComponent::UOHDInputComponent(const FObjectInitializer& ObjectInitializer)
 {
@@ -13,39 +15,39 @@ void UOHDInputComponent::AddInputMappings(const UOHDInputConfig* InputConfig, UE
 	check(InputSubsystem);
 
 	// todo primary local player impl add
-	//UOhHiDoggyLocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<UOhHiDoggyLocalPlayer>();//todo add local player
-	//check(LocalPlayer);
+	ULocalPlayer* LocalPlayer = InputSubsystem->GetLocalPlayer<ULocalPlayer>();//todo add local player custom
+	check(LocalPlayer);
 
-	// Add any registered input mappings from the settings!
-	// if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo add custom settings
-	// {
-	// 	// We don't want to ignore keys that were "Down" when we add the mapping context
-	// 	// This allows you to die holding a movement key, keep holding while waiting for respawn,
-	// 	// and have it be applied after you respawn immediately. Leaving bIgnoreAllPressedKeysUntilRelease
-	// 	// to it's default "true" state would require the player to release the movement key,
-	// 	// and press it again when they respawn
-	// 	FModifyContextOptions Options = {};
-	// 	Options.bIgnoreAllPressedKeysUntilRelease = false;
-	// 	
-	// 	// Add all registered configs, which will add every input mapping context that is in it
-	// 	const TArray<FLoadedMappableConfigPair>& Configs = LocalSettings->GetAllRegisteredInputConfigs();//todo add mappable
-	// 	for (const FLoadedMappableConfigPair& Pair : Configs)
-	// 	{
-	// 		if (Pair.bIsActive)
-	// 		{
-	// 			InputSubsystem->AddPlayerMappableConfig(Pair.Config, Options);	
-	// 		}
-	// 	}
-	// 	
-	// 	// Tell enhanced input about any custom keymappings that we have set
-	// 	for (const TPair<FName, FKey>& Pair : LocalSettings->GetCustomPlayerInputConfig())
-	// 	{
-	// 		if (Pair.Key != NAME_None && Pair.Value.IsValid())
-	// 		{
-	// 			InputSubsystem->AddPlayerMappedKey(Pair.Key, Pair.Value);
-	// 		}
-	// 	}
-	//}
+	 //Add any registered input mappings from the settings!
+	 if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo add custom settings
+	 {
+	 	// We don't want to ignore keys that were "Down" when we add the mapping context
+	 	// This allows you to die holding a movement key, keep holding while waiting for respawn,
+	 	// and have it be applied after you respawn immediately. Leaving bIgnoreAllPressedKeysUntilRelease
+	 	// to it's default "true" state would require the player to release the movement key,
+	 	// and press it again when they respawn
+	 	FModifyContextOptions Options = {};
+	 	Options.bIgnoreAllPressedKeysUntilRelease = false;
+	 	
+	 	// Add all registered configs, which will add every input mapping context that is in it
+	 	const TArray<FLoadedMappableConfigPair>& Configs = LocalSettings->GetAllRegisteredInputConfigs();//todo add mappable
+	 	for (const FLoadedMappableConfigPair& Pair : Configs)
+	 	{
+	 		if (Pair.bIsActive)
+	 		{
+	 			InputSubsystem->AddPlayerMappableConfig(Pair.Config, Options);	
+	 		}
+	 	}
+	 	
+	 	// Tell enhanced input about any custom keymappings that we have set
+	 	for (const TPair<FName, FKey>& Pair : LocalSettings->GetCustomPlayerInputConfig())
+	 	{
+	 		if (Pair.Key != NAME_None && Pair.Value.IsValid())
+	 		{
+	 			InputSubsystem->AddPlayerMappedKey(Pair.Key, Pair.Value);
+	 		}
+	 	}
+	}
 }
 
 void UOHDInputComponent::RemoveInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
