@@ -1285,6 +1285,7 @@ int32 UOHDSettingsLocal::UnregisterInputConfig(const UPlayerMappableInputConfig*
 {
 	if (ConfigToRemove)
 	{
+		/*Lambda goes over every FLoadedMappableConfigPair and compares config for sameness*/
 		const int32 Index = RegisteredInputConfigs.IndexOfByPredicate( [&ConfigToRemove](const FLoadedMappableConfigPair& Pair) { return Pair.Config == ConfigToRemove; } );
 		if (Index != INDEX_NONE)
 		{
