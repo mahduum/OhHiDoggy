@@ -17,6 +17,12 @@
 
 //#include "OhHiDoggy/Input/DoggyInputConfig.h"
 
+namespace DoggyHero
+{
+	static const float LookYawRate = 300.0f;
+	static const float LookPitchRate = 165.0f;
+};
+
 void UDoggyComponent::OnRegister()
 {
 	Super::OnRegister();
@@ -197,8 +203,8 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				//DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 	
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
-				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
-				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
+				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
+				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
 				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
 				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);
 			}
@@ -245,6 +251,53 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	}
 }
 
+
+void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
+
+	if (!Pawn)
+	{
+		return;
+	}
+	
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+
+	if (Value.X != 0.0f)
+	{
+		Pawn->AddControllerYawInput(Value.X);
+	}
+
+	if (Value.Y != 0.0f)
+	{
+		Pawn->AddControllerPitchInput(Value.Y);
+	}
+}
+
+void UDoggyComponent::Input_LookStick(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
+
+	if (!Pawn)
+	{
+		return;
+	}
+	
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+
+	const UWorld* World = GetWorld();
+	check(World);
+
+	if (Value.X != 0.0f)
+	{
+		Pawn->AddControllerYawInput(Value.X * DoggyHero::LookYawRate * World->GetDeltaSeconds());
+	}
+
+	if (Value.Y != 0.0f)
+	{
+		Pawn->AddControllerPitchInput(Value.Y * DoggyHero::LookPitchRate * World->GetDeltaSeconds());
+	}
+}
 
 bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 {

@@ -68,6 +68,14 @@
 			"Enabled": true
 		},
 		{
+			"Name": "CommonGame",
+			"Enabled": true
+		},
+		{
+			"Name": "GameSubtitles",
+			"Enabled": true
+		},
+		{
 			"Name": "AbilitySystemGameFeatureActions",
 			"Enabled": true
 		},

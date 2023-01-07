@@ -31,6 +31,8 @@ public class OhHiDoggy : ModuleRules
 				"RHI",
 				"AudioMixer",
 				"NetCore",
+				"CommonGame",
+				"GameSubtitles",
 				//"GameplayMessageRuntime",
 			}
 		);
