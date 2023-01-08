@@ -93,6 +93,9 @@ protected:
 	UPROPERTY(Config)
 	TSoftObjectPtr<UOHDPawnData> DefaultPawnData;
 
+	UPROPERTY(Config, EditAnywhere, Category=Project)
+	bool ConfigTestAssetManager;
+
 private:
 	// Flushes the StartupJobs array. Processes all startup work.
 	void DoAllStartupJobs();

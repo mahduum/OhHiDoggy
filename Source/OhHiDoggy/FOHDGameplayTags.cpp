@@ -5,7 +5,7 @@
 
 FOHDGameplayTags FOHDGameplayTags::GameplayTags;
 
-void FOHDGameplayTags::InitializeNativeTags()//todo primary native tags not being added???
+void FOHDGameplayTags::InitializeNativeTags()
 {
 	UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
 
