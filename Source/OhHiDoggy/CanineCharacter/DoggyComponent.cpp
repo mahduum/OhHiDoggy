@@ -8,6 +8,7 @@
 #include "GameFramework//PlayerState.h"
 #include "Misc/UObjectToken.h"
 #include "OhHiDoggy/FOHDGameplayTags.h"
+#include "OhHiDoggy/OHDLogChannels.h"
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 #include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OhHiDoggy/Input/OHDInputConfig.h"
@@ -226,6 +227,7 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	APawn* Pawn = GetPawn<APawn>();
 	const AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
+
 	// If the player has attempted to move again then cancel auto running
 	// if (AOhHiDoggyPlayerController* OhHiDoggyController = Cast<AOhHiDoggyPlayerController>(Controller))//todo
 	// {
@@ -254,6 +256,7 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 {
+	UE_LOG(LogOHD, Display, TEXT("Received mouse input: %f"), InputActionValue.GetMagnitude());
 	APawn* Pawn = GetPawn<APawn>();
 
 	if (!Pawn)
