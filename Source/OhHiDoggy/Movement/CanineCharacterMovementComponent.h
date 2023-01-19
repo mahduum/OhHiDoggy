@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputAction.h"
 #include "NativeGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "CanineCharacterMovementComponent.generated.h"
@@ -32,6 +33,26 @@ struct FCanineCharacterGroundInfo
 	UPROPERTY(BlueprintReadOnly)
 	float GroundDistance;
 };
+
+/** Movement modes for Characters. */
+UENUM(BlueprintType)
+enum ECanineGroundMovement
+{
+	CANINE_MOVE_None				UMETA(DisplayName="None"),
+	
+	CANINE_MOVE_WalkingSlowly		UMETA(DisplayName="Canine Walk Slow"),
+	
+	CANINE_MOVE_Walking				UMETA(DisplayName="Canine Walk"),
+
+	CANINE_MOVE_Trotting			UMETA(DisplayName="Canine Trot"),
+
+	CANINE_MOVE_Running				UMETA(DisplayName="Canine Run"),
+	
+	CANINE_MOVE_Sprinting			UMETA(DisplayName="Canine Sprint"),
+
+	CANINE_MOVE_WalkingBackwards	UMETA(DisplayName="Canine Walk Back"),
+};
+
 /**
  * 
  */
@@ -68,6 +89,21 @@ protected:
     // Cached ground info for the character.  Do not access this directly!  It's only updated when accessed via GetGroundInfo().
     FCanineCharacterGroundInfo CachedGroundInfo;
 
+	UPROPERTY(Category="Canine Movement Modes: Medium Speeds", BlueprintGetter=GetCanineSpeeds, EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0", UIMin="0", ForceUnits="cm/s"))
+	TMap<TEnumAsByte<ECanineGroundMovement>, float> CanineMaxSpeeds;
+
     UPROPERTY(Transient)
     bool bHasReplicatedAcceleration = false;
+
+	UFUNCTION(BlueprintGetter)
+	TMap<TEnumAsByte<ECanineGroundMovement>, float> GetCanineSpeeds() const;
+
+	UPROPERTY(BlueprintReadWrite)
+	TEnumAsByte<ECanineGroundMovement> CurrentGroundMovementMode = ECanineGroundMovement::CANINE_MOVE_None;
+
+	UFUNCTION(BlueprintPure, Category = "Canine Movement Modes")
+	static TEnumAsByte<ECanineGroundMovement> GetNextMode(const AActor* Actor, const UInputAction* InputAction);
+
+	UFUNCTION(BlueprintCallable, Category = "Canine Movement Modes")
+	bool TryChangeCurrentMaxSpeed(const UInputAction* InputAction, float SpeedChangeRate);
 };

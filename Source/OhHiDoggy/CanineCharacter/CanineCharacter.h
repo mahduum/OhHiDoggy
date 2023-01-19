@@ -61,7 +61,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
 	UOHDPawnComponentExtension* PawnExtComponent;
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
-	// UCanineCameraComponent* CameraComponent;
+	// UCanineCameraComponent* CameraComponent;//todo
 	//
 };
 

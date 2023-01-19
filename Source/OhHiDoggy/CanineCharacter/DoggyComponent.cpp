@@ -162,7 +162,9 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 		{
 			UE_LOG(LogCore, Display, TEXT("Pawn's data is ready for input init."));
 
-			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)//todo what input config
+			//input config is necessary to bind native input actions to functions in c++ code below, without it the native actions won't be bound to any functions
+			//and we would not be able to trigger them
+			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)
 			{
 				UE_LOG(LogCore, Display, TEXT("Input config found in pawn's data for input init."));
 
@@ -174,20 +176,6 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				 for (const FMappableConfigPair& Pair : DefaultInputConfigs)
 				 {
 				 	FMappableConfigPair::ActivatePair(Pair);
-
-				 	//todo temporary for testing DELETE after:
-
-				 	// UOHDAssetManager& AssetManager = UOHDAssetManager::Get();//todo make custom manager
-				 	// // Only activate a pair that has been successfully registered
-				 	// if (FMappableConfigPair::RegisterPair(Pair) && Pair.CanBeActivated())
-				 	// {		
-				 	// 	if (const UPlayerMappableInputConfig* LoadedConfig = AssetManager.GetAsset(Pair.Config))
-				 	// 	{
-				 	// 		//need settings to load registered pair
-				 	// 		//OnInputConfigActivated(LoadedConfig.f);
-					 //
-				 	// 	}			
-				 	// }
 				 }
 				
 				UOHDInputComponent* DoggyIC = CastChecked<UOHDInputComponent>(PlayerInputComponent);//todo
@@ -241,14 +229,16 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		if (Value.X != 0.0f)
 		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);//where is the right vector pointing
 			Pawn->AddMovementInput(MovementDirection, Value.X);
 		}
 
 		if (Value.Y != 0.0f)
 		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
+
+			//todo add rotation
 		}
 	}
 }
@@ -256,7 +246,6 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 {
-	UE_LOG(LogOHD, Display, TEXT("Received mouse input: %f"), InputActionValue.GetMagnitude());
 	APawn* Pawn = GetPawn<APawn>();
 
 	if (!Pawn)
@@ -268,12 +257,12 @@ void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 
 	if (Value.X != 0.0f)
 	{
-		Pawn->AddControllerYawInput(Value.X);
+		Pawn->AddControllerYawInput(Value.X);//how sideways are we looking
 	}
 
 	if (Value.Y != 0.0f)
 	{
-		Pawn->AddControllerPitchInput(Value.Y);
+		Pawn->AddControllerPitchInput(Value.Y);//how height are we looking 
 	}
 }
 

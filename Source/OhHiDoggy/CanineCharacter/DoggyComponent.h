@@ -28,10 +28,10 @@ class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 	UFUNCTION(BlueprintPure, Category = "|Hero")
 	static UDoggyComponent* FindHeroComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UDoggyComponent>() : nullptr); }
 
-	//void SetAbilityCameraMode(TSubclassOf<UCameraMode> CameraMode, const FGameplayAbilitySpecHandle& OwningSpecHandle);
+	//void SetAbilityCameraMode(TSubclassOf<UCameraMode> CameraMode, const FGameplayAbilitySpecHandle& OwningSpecHandle);//todo
 	//void ClearAbilityCameraMode(const FGameplayAbilitySpecHandle& OwningSpecHandle);
 
-	//void AddAdditionalInputConfig(const UDoggyInputConfigBad* InputConfig);
+	//void AddAdditionalInputConfig(const UDoggyInputConfigBad* InputConfig);//todo
 	//void RemoveAdditionalInputConfig(const UDoggyInputConfigBad* InputConfig);
 
 	/** True if this has completed OnPawnReadyToInitialize so is prepared for late-added features */

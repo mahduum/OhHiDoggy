@@ -46,6 +46,39 @@ void UCanineAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	// UCharacterMovementComponent* CharMoveComp = CastChecked<UCharacterMovementComponent>(Character->GetCharacterMovement());
-	// const FLyraCharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();
+	// const FLyraCharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();//todo
 	// GroundDistance = GroundInfo.GroundDistance;
+}
+
+TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed) const
+{
+	TArray<TEnumAsByte<ECanineGroundMovement>> Modes = GroundMovementModes->GroundMovementModes;
+	uint8 Index = 0;
+	if (FMath::IsNearlyZero(CurrentSpeed))
+	{
+		return Modes[Index];
+	}
+
+	Index++;
+	float Step = 1.0f/Modes.Num();
+	const float Value = GroundMovementModesCurve->GetFloatValue(CurrentSpeed);
+
+	constexpr int LoopGuard = 100;
+	while (Value > Step && Index < LoopGuard)
+	{
+		Step += Step;
+		Index++;
+	}
+
+	if(Index == LoopGuard)
+	{
+		UE_LOG(LogOHD, Error, TEXT("Loop guard break for speed ranges!"));
+	}
+
+	if(Index < Modes.Num())
+	{
+		return Modes[Index];
+	}
+	
+	return Modes[0];
 }
