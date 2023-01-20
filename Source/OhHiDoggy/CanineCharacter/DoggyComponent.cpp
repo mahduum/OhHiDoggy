@@ -110,7 +110,7 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 
 	// if (bIsLocallyControlled && PawnData)
 	// {
-	// 	if (UOhHiDoggyCameraComponent* CameraComponent = UOhHiDoggyCameraComponent::FindCameraComponent(Pawn))
+	// 	if (UOhHiDoggyCameraComponent* CameraComponent = UOhHiDoggyCameraComponent::FindCameraComponent(Pawn))//todo
 	// 	{
 	// 		CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
 	// 	}
@@ -225,9 +225,15 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	if (Controller)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
+
+		if (Value.X != 0)//rotate controller first
+		{
+			Pawn->AddControllerYawInput(Value.X);//todo value needs to be attenuated? in input config? so it does not turn to rapidly? is divided by speed/displacement?
+		}
+		
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 
-		if (Value.X != 0.0f)
+		if (bMoveSidewaysWithRotationInput && Value.X != 0.0f)
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);//where is the right vector pointing
 			Pawn->AddMovementInput(MovementDirection, Value.X);
@@ -235,9 +241,8 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		if (Value.Y != 0.0f)
 		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing assuming that the character is always rotated relative to forward vector
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
-
 			//todo add rotation
 		}
 	}
