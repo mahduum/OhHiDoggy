@@ -228,7 +228,10 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		if (Value.X != 0)//rotate controller first
 		{
-			Pawn->AddControllerYawInput(Value.X);//todo value needs to be attenuated? in input config? so it does not turn to rapidly? is divided by speed/displacement?
+			//get velocity, divide input by velocity, each frame diminish velocity by 1? Or deal with it directly in BP? Modify rotation strength when it comes?
+			//double LocalVelocityX = Pawn->GetActorRotation().UnrotateVector(Pawn->GetVelocity()).X;
+
+			Pawn->AddControllerYawInput(Value.X);//todo value needs to be attenuated? try modifying it directly in input action by a dedicated modifier?
 		}
 		
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
