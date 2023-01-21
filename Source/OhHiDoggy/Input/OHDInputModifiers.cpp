@@ -10,6 +10,7 @@
 #include "EnhancedPlayerInput.h"
 #include "GameFramework/PlayerController.h"
 #include "../Input/OHDAimSensitivityData.h"
+#include "OhHiDoggy/OHDLogChannels.h"
 #include "OhHiDoggy/Player/OHDLocalPlayer.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogOHDInputModifiers, Log, All);
@@ -199,4 +200,31 @@ FInputActionValue UOHDInputModifierAimInversion::ModifyRaw_Implementation(const 
 	}
 	
 	return NewValue;
+}
+
+/*
+* Smooth
+*/
+
+FInputActionValue UOHDInputModifierSmooth::ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime)
+{
+	//if used must be for all inputs!!!
+	if (ensureMsgf(CurrentValue.GetValueType() != EInputActionValueType::Boolean, TEXT("Scale modifier doesn't support boolean values.")))
+	{
+		const auto ScaledTotalTime = [&]{ return FMath::Clamp(TotalSampleTime * TimeDilation, 0.0f, 1.0f);};
+
+		if (CurrentValue.GetMagnitudeSq() < LastValue.GetMagnitudeSq())
+		{
+			LastValue.Reset();
+			TotalSampleTime = 0.0f;
+		}
+
+		TotalSampleTime += DeltaTime;
+		CurrentValue *= ScaledTotalTime();
+		LastValue = CurrentValue;
+
+		return CurrentValue;
+	}
+
+	return CurrentValue;
 }

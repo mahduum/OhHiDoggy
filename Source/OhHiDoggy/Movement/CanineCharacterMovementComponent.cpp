@@ -70,12 +70,11 @@ TEnumAsByte<ECanineGroundMovement> UCanineCharacterMovementComponent::GetNextMod
 	//use TArray<FDoggyInputAction> NativeInputActions; from OHDInputConfig.h
 	FString Name;
 	InputAction->GetName(Name);
-	UE_LOG(LogOHD, Display, TEXT("Input action name: %s"), *Name);
 
 	//todo delete
-	const UEnum* enumObject = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECanineGroundMovement"));
-	const auto enumCount = enumObject->NumEnums();
-	UE_LOG(LogOHD, Display, TEXT("Cannine enum count: %i"), enumCount);
+	// const UEnum* enumObject = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECanineGroundMovement"));
+	// const auto enumCount = enumObject->NumEnums();
+	// UE_LOG(LogOHD, Display, TEXT("Canine enum count: %i"), enumCount);
 
 	
 	if(Name == "IA_AccelerateOverride")
@@ -86,10 +85,8 @@ TEnumAsByte<ECanineGroundMovement> UCanineCharacterMovementComponent::GetNextMod
 		}
 
 		const ECanineGroundMovement enumValue = MovementComponent->CurrentGroundMovementMode.GetValue();
-		UE_LOG(LogOHD, Display, TEXT("Enum value: %i"), enumValue);
 		std::underlying_type_t<ECanineGroundMovement> i = enumValue;
 		i++;
-		UE_LOG(LogOHD, Display, TEXT("Incremented i: %i"), i);
 
 		return static_cast<ECanineGroundMovement>(i);
 	}
@@ -102,10 +99,8 @@ TEnumAsByte<ECanineGroundMovement> UCanineCharacterMovementComponent::GetNextMod
 		}
 
 		const ECanineGroundMovement enumValue = MovementComponent->CurrentGroundMovementMode.GetValue();
-		UE_LOG(LogOHD, Display, TEXT("Enum value: %i"), enumValue);
 		std::underlying_type_t<ECanineGroundMovement> i = enumValue;
 		i--;
-		UE_LOG(LogOHD, Display, TEXT("Incremented i: %i"), i);
 
 		return static_cast<ECanineGroundMovement>(i);
 	}
@@ -119,10 +114,6 @@ bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(const UInputAct
 	const TEnumAsByte<ECanineGroundMovement> NextMode = GetNextMode(GetOwner(), InputAction);
 	const float TargetSpeed = *CanineMaxSpeeds.Find(NextMode);
 	const float NewSpeed = FMath::FInterpTo(CurrentSpeed, TargetSpeed, GetWorld()->DeltaTimeSeconds, SpeedChangeRate);
-	UE_LOG(LogOHD, Display, TEXT("Current Mode: %s"), *UEnum::GetValueAsString(CurrentGroundMovementMode));
-	UE_LOG(LogOHD, Display, TEXT("Next Mode: %s"), *UEnum::GetValueAsString(NextMode));
-	UE_LOG(LogOHD, Display, TEXT("Current Speed: %f"), CurrentSpeed);
-	UE_LOG(LogOHD, Display, TEXT("Target Speed: %f"), TargetSpeed);
 
 	if(FMath::IsNearlyZero(FMath::Abs(NewSpeed - TargetSpeed), 0.001))
 	{

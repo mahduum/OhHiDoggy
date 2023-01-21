@@ -228,10 +228,11 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		if (Value.X != 0)//rotate controller first
 		{
+			//todo if input y is 0 then add movement input directional that will trigger rotate 90 degrees animation!!!
 			//get velocity, divide input by velocity, each frame diminish velocity by 1? Or deal with it directly in BP? Modify rotation strength when it comes?
 			//double LocalVelocityX = Pawn->GetActorRotation().UnrotateVector(Pawn->GetVelocity()).X;
 
-			Pawn->AddControllerYawInput(Value.X);//todo value needs to be attenuated? try modifying it directly in input action by a dedicated modifier?
+			Pawn->AddControllerYawInput(Value.X);//todo should rotate less?
 		}
 		
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
@@ -245,7 +246,7 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 		if (Value.Y != 0.0f)
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing assuming that the character is always rotated relative to forward vector
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
+			Pawn->AddMovementInput(MovementDirection, Value.Y + FMath::Abs(Value.X));
 			//todo add rotation
 		}
 	}

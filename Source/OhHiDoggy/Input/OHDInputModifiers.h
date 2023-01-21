@@ -132,3 +132,30 @@ class UOHDInputModifierAimInversion : public UInputModifier
 protected:
 	virtual FInputActionValue ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime) override;	
 };
+
+UCLASS(NotBlueprintable, MinimalAPI, meta = (DisplayName = "OHD Smooth"))
+class UOHDInputModifierSmooth final : public UInputModifier
+{
+	GENERATED_BODY()
+
+	void ClearSmoothedAxis();
+
+protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Settings)
+	float TimeDilation = 0.2f;
+
+	/** How long input has been zero. */
+	float ZeroTime = 0.f;
+
+	/** Current average input/sample */
+	FInputActionValue LastValue;
+
+	/** Number of samples since input  has been zero */
+	int32 Samples = 0;
+
+#define SMOOTH_TOTAL_SAMPLE_TIME_DEFAULT (0.0083f)
+	/** Input sampling total time. */
+	float TotalSampleTime = SMOOTH_TOTAL_SAMPLE_TIME_DEFAULT;
+
+	virtual FInputActionValue ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime) override;
+};
