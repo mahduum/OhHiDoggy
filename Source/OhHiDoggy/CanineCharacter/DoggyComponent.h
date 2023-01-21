@@ -91,7 +91,4 @@ protected:
 
 	// True when player input bindings have been applyed, will never be true for non-players
 	bool bReadyToBindInputs;
-
-	UPROPERTY(EditAnywhere)
-	bool bMoveSidewaysWithRotationInput = false;
 };

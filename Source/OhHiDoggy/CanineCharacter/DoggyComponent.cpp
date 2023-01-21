@@ -226,28 +226,21 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 
+		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		
 		if (Value.X != 0)//rotate controller first
 		{
 			//todo if input y is 0 then add movement input directional that will trigger rotate 90 degrees animation!!!
 			//get velocity, divide input by velocity, each frame diminish velocity by 1? Or deal with it directly in BP? Modify rotation strength when it comes?
 			//double LocalVelocityX = Pawn->GetActorRotation().UnrotateVector(Pawn->GetVelocity()).X;
 
-			Pawn->AddControllerYawInput(Value.X);//todo should rotate less?
+			Pawn->AddControllerYawInput(Value.X * 0.2f);//todo should rotate less? set variable rotation damper?
 		}
 		
-		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
-
-		if (bMoveSidewaysWithRotationInput && Value.X != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);//where is the right vector pointing
-			Pawn->AddMovementInput(MovementDirection, Value.X);
-		}
-
 		if (Value.Y != 0.0f)
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing assuming that the character is always rotated relative to forward vector
-			Pawn->AddMovementInput(MovementDirection, Value.Y + FMath::Abs(Value.X));
-			//todo add rotation
+			Pawn->AddMovementInput(MovementDirection, FMath::Clamp(Value.Y + FMath::Abs(Value.X), 0.0f, 1.0f));//todo separate two inputs to avoid this, and put a special modifier on turns to be accessed from gameplay
 		}
 	}
 }
