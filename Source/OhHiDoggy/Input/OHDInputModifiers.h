@@ -9,7 +9,6 @@
  * 
  */
 
-#include "DynamicInputModifier.h"
 #include "InputModifiers.h"
 #include "../Settings/OHDSettingsShared.h"
 #include "OHDInputModifiers.generated.h"
@@ -162,12 +161,9 @@ protected:
 };
 
 UCLASS(NotBlueprintable, MinimalAPI, meta = (DisplayName = "OHD Dampen"))
-class UOHDInputModifierDamp final : public UInputModifier, public IDynamicInputModifier
+class UOHDInputModifierDamp final : public UInputModifier
 {
-public:
-	virtual void UpdateModifierSetting(float InValue) override;
-
-private:
+	
 	GENERATED_BODY()
 
 protected:
