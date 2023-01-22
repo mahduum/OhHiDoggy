@@ -9,6 +9,7 @@
  * 
  */
 
+#include "DynamicInputModifier.h"
 #include "InputModifiers.h"
 #include "../Settings/OHDSettingsShared.h"
 #include "OHDInputModifiers.generated.h"
@@ -156,6 +157,24 @@ protected:
 #define SMOOTH_TOTAL_SAMPLE_TIME_DEFAULT (0.0083f)
 	/** Input sampling total time. */
 	float TotalSampleTime = SMOOTH_TOTAL_SAMPLE_TIME_DEFAULT;
+
+	virtual FInputActionValue ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime) override;
+};
+
+UCLASS(NotBlueprintable, MinimalAPI, meta = (DisplayName = "OHD Dampen"))
+class UOHDInputModifierDamp final : public UInputModifier, public IDynamicInputModifier
+{
+public:
+	virtual void UpdateModifierSetting(float InValue) override;
+
+private:
+	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Settings)
+	float DefaultDampingFactor = 1.0f;
+
+	float RuntimeDampingFactor = 1.0f;
 
 	virtual FInputActionValue ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput, FInputActionValue CurrentValue, float DeltaTime) override;
 };

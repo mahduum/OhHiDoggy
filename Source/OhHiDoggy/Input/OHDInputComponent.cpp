@@ -90,7 +90,7 @@ void UOHDInputComponent::AddInputConfig(const FLoadedMappableConfigPair& ConfigP
 	check(InputSubsystem);
 	if (ensure(ConfigPair.bIsActive))
 	{
-		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);	
+		InputSubsystem->AddPlayerMappableConfig(ConfigPair.Config);
 	}
 }
 

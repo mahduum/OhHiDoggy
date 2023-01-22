@@ -8,6 +8,7 @@
 #include "Components/PawnComponent.h"
 #include "OhHiDoggy/Components/OHDPawnComponent.h"
 #include "OhHiDoggy/Input/MappableConfigPair.h"
+#include "OhHiDoggy/Input/OHDInputModifiers.h"
 #include "DoggyComponent.generated.h"
 
 struct FGameplayTag;
@@ -20,8 +21,7 @@ UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
 class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 {
 	GENERATED_BODY()
-	public:
-
+public:
 	//UDoggyComponent(const FObjectInitializer& ObjectInitializer);
 
 	// Returns the hero component if one exists on the specified actor. Convenience function to find this component for whatever actor. todo REMEMBER THIS! it is similar to extension functions in C#
@@ -41,6 +41,18 @@ class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 	//bool IsReadyToBindInputs() const;
 
 	static const FName NAME_BindInputsNow;
+
+	UPROPERTY(EditAnywhere, Category="Input Modifier")
+	UCurveFloat* YawInputModifierCurve;
+
+	UPROPERTY(BlueprintGetter=GetYawInputModifier, BlueprintSetter=SetYawInputModifier, meta = (ClampMin="0.0", ClampMax="1.0"))
+	float YawInputModifier = 1.0f;
+
+	UFUNCTION(BlueprintGetter)
+	float GetYawInputModifier() const;
+
+	UFUNCTION(BlueprintSetter)
+	void SetYawInputModifier(float InValue);
 
 protected:
 

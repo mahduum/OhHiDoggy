@@ -26,7 +26,9 @@ public:
 	void RemoveInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;
 
 	template<class UserClass, typename FuncType>
-	void BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound);
+	void BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag,
+	                                     ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func,
+	                                     bool bLogIfNotFound);
 
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 	void BindAbilityActions(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
@@ -39,10 +41,10 @@ public:
 
 /* Binds actions to input actions with tags, delegates and owners */
 template<class UserClass, typename FuncType>
-void UOHDInputComponent::BindNativeAction(const UOHDInputConfig* InputConfig, const FGameplayTag& InputTag, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, bool bLogIfNotFound)
+void UOHDInputComponent::BindNativeAction(const UOHDInputConfig* InputConfig,
+                                                         const FGameplayTag& InputTag, ETriggerEvent TriggerEvent,
+                                                         UserClass* Object, FuncType Func, bool bLogIfNotFound)
 {
-	UE_LOG(LogCore, Display, TEXT("Binding native action for input tag: %s."), *InputTag.ToString());
-
 	check(InputConfig);
 	if (const UInputAction* IA = InputConfig->FindNativeInputActionForTag(InputTag, bLogIfNotFound))
 	{

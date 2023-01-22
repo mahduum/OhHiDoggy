@@ -228,3 +228,21 @@ FInputActionValue UOHDInputModifierSmooth::ModifyRaw_Implementation(const UEnhan
 
 	return CurrentValue;
 }
+
+void UOHDInputModifierDamp::UpdateModifierSetting(float InValue)
+{
+	UE_LOG(LogOHD, Display, TEXT("Updated dynamic input modifier setting to %f"), InValue);
+	RuntimeDampingFactor = InValue;
+}
+
+FInputActionValue UOHDInputModifierDamp::ModifyRaw_Implementation(const UEnhancedPlayerInput* PlayerInput,
+                                                                  FInputActionValue CurrentValue, float DeltaTime)
+{
+	if (ensureMsgf(CurrentValue.GetValueType() != EInputActionValueType::Boolean, TEXT("Scale modifier doesn't support boolean values.")))
+	{
+		UE_LOG(LogOHD, Display, TEXT("While modifying raw the runtime damping factor was: %f"), RuntimeDampingFactor);
+		return CurrentValue * RuntimeDampingFactor;
+	}
+
+	return CurrentValue;
+}

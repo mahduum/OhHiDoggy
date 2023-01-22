@@ -70,8 +70,14 @@ public:
     virtual bool CanAttemptJump() const override;
 
     // Returns the current ground info.  Calling this will update the ground info if it's out of date.
-    UFUNCTION(BlueprintCallable, Category = "Lyra|CharacterMovement")
+    UFUNCTION(BlueprintCallable, Category = "OHD|CharacterMovement")
     const FCanineCharacterGroundInfo& GetGroundInfo();
+
+	UFUNCTION(BlueprintCallable, Category = "OHD|CharacterMovement")
+	static UCanineCharacterMovementComponent* FindCanineMovementComponent (const AActor* Actor)
+	{
+		return Actor ? Actor->FindComponentByClass<UCanineCharacterMovementComponent>() : nullptr;
+	}
 
     void SetReplicatedAcceleration(const FVector& InAcceleration);
 
@@ -79,6 +85,9 @@ public:
     virtual FRotator GetDeltaRotation(float DeltaTime) const override;
     virtual float GetMaxSpeed() const override;
     //~End of UMovementComponent interface
+
+	DECLARE_EVENT_OneParam(UCanineCharacterMovementComponent, FDelegateMaxSpeedChanged, float);
+	FDelegateMaxSpeedChanged OnMaxSpeedChanged;
 
 protected:
 

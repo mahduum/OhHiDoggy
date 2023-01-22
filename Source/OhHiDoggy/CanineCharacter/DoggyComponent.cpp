@@ -13,6 +13,8 @@
 #include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OhHiDoggy/Input/OHDInputConfig.h"
 #include "OhHiDoggy/Input/OHDInputComponent.h"
+#include "OhHiDoggy/Input/OHDInputModifiers.h"
+#include "OhHiDoggy/Movement/CanineCharacterMovementComponent.h"
 #include "OhHiDoggy/Settings/OHDSettingsLocal.h"
 #include "OhHiDoggy/System/OHDAssetManager.h"
 
@@ -23,6 +25,16 @@ namespace DoggyHero
 	static const float LookYawRate = 300.0f;
 	static const float LookPitchRate = 165.0f;
 };
+
+float UDoggyComponent::GetYawInputModifier() const
+{
+	return YawInputModifier;
+}
+
+void UDoggyComponent::SetYawInputModifier(float InValue)
+{
+	YawInputModifier = FMath::Clamp(InValue, 0.0f,1.0f);
+}
 
 void UDoggyComponent::OnRegister()
 {
@@ -108,6 +120,15 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 		}
 	}
 
+	if (UCanineCharacterMovementComponent* CanineMovement =
+		UCanineCharacterMovementComponent::FindCanineMovementComponent(GetOwner()))
+	{
+		CanineMovement->OnMaxSpeedChanged.AddLambda([this](float InValue)
+		{
+			SetYawInputModifier(YawInputModifierCurve->GetFloatValue(InValue));//todo or use the same curve as for speeds but with different offset?
+		});//AddUObject(this, &UDoggyComponent::SetYawInputModifier);
+	}
+
 	// if (bIsLocallyControlled && PawnData)
 	// {
 	// 	if (UOhHiDoggyCameraComponent* CameraComponent = UOhHiDoggyCameraComponent::FindCameraComponent(Pawn))//todo
@@ -183,9 +204,11 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				DoggyIC->AddInputMappings(InputConfig, Subsystem);//todo primary this was disabled (all commented out)
 				if (UOHDSettingsLocal* LocalSettings = UOHDSettingsLocal::Get())//todo primary local settings not existing!!! Use normal settings
 				 {
-				 	LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);
+				 	LocalSettings->OnInputConfigActivated.AddUObject(this, &UDoggyComponent::OnInputConfigActivated);//uobject will be called on broadcast of this delegate
 				 	LocalSettings->OnInputConfigDeactivated.AddUObject(this, &UDoggyComponent::OnInputConfigDeactivated);
 				 }
+
+				//todo: create event and subscribe modifier to this event on binding???
 
 				//todo with abilities ready:
 				//TArray<uint32> BindHandles;
@@ -231,13 +254,9 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 		
-		if (Value.X != 0)//rotate controller first
+		if (Value.X != 0)
 		{
-			//todo if input y is 0 then add movement input directional that will trigger rotate 90 degrees animation!!!
-			//get velocity, divide input by velocity, each frame diminish velocity by 1? Or deal with it directly in BP? Modify rotation strength when it comes?
-			//double LocalVelocityX = Pawn->GetActorRotation().UnrotateVector(Pawn->GetVelocity()).X;
-
-			Pawn->AddControllerYawInput(Value.X * 0.2f);//todo should rotate less? set variable rotation damper?
+			Pawn->AddControllerYawInput(Value.X * GetYawInputModifier());//todo should rotate less? set variable rotation damper?
 		}
 		
 		if (Value.Y != 0.0f)
@@ -355,7 +374,7 @@ void UDoggyComponent::OnInputConfigActivated(const FLoadedMappableConfigPair& Co
 				{
 					if (UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
 					{
-						OhHiDoggyIC->AddInputConfig(ConfigPair, Subsystem);	
+						OhHiDoggyIC->AddInputConfig(ConfigPair, Subsystem);
 					}	
 				}
 			}

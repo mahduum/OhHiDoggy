@@ -108,6 +108,7 @@ TEnumAsByte<ECanineGroundMovement> UCanineCharacterMovementComponent::GetNextMod
 	return CANINE_MOVE_None;
 }
 
+//todo remove interp and set desired gears from root motion speed
 bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(const UInputAction* InputAction, float SpeedChangeRate)
 {
 	const float CurrentSpeed = MaxWalkSpeed;//todo if current speed is greater than target... then? set the speed for the first time, hardcode 0 until changed, if is in motion then cache the speed, on mode changed clear the speed
@@ -123,6 +124,7 @@ bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(const UInputAct
 	}
 
 	MaxWalkSpeed = NewSpeed;
+	OnMaxSpeedChanged.Broadcast(MaxWalkSpeed);
 	return true;
 }
 
