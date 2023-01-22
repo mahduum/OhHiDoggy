@@ -190,7 +190,10 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				//todo with abilities ready:
 				//TArray<uint32> BindHandles;
 				//DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
-	
+
+				/* input config is needed to find the actual InputAction asset in the game while all we are providing is just a tag, because input config has a helper
+				 * function that allows to find it by tag given that inside the actual input config asset we had it set up correctly.
+				 */
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
