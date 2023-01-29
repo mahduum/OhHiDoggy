@@ -2,6 +2,7 @@
 #include "CanineAnimInstance.h"
 #include "AbilitySystemGlobals.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 #if WITH_EDITOR
@@ -49,7 +50,7 @@ void UCanineAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// const FLyraCharacterGroundInfo& GroundInfo = CharMoveComp->GetGroundInfo();//todo
 	// GroundDistance = GroundInfo.GroundDistance;
 }
-
+//TODO also return float value for each mode, within space -1 to 1, first for play rate decrease later for increase, and abs value for stride warping alpha
 TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed) const
 {
 	TArray<TEnumAsByte<ECanineGroundMovement>> Modes = GroundMovementModes->GroundMovementModes;
@@ -60,13 +61,14 @@ TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(fl
 	}
 
 	Index++;
-	float Step = 1.0f/Modes.Num();
+	const float StepSize = 1.0f/Modes.Num();
+	float StepSum = StepSize;
 	const float Value = GroundMovementModesCurve->GetFloatValue(CurrentSpeed);
 
 	constexpr int LoopGuard = 100;
-	while (Value > Step && Index < LoopGuard)
+	while (Value > StepSum && Index < LoopGuard)//if value is greater then we are in the next step
 	{
-		Step += Step;
+		StepSum += StepSize;
 		Index++;
 	}
 
@@ -77,6 +79,12 @@ TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(fl
 
 	if(Index < Modes.Num())
 	{
+		//get frac of step size
+		const float StepLerp = Value - (StepSum - StepSize);
+		const float StepPercent = UKismetMathLibrary::NormalizeToRange(StepLerp, 0.0f, StepSize);
+		float RemapMinusOneToOne = UKismetMathLibrary::MapRangeClamped(StepPercent, 0.0f, 1.f, -1.f, 1.f);
+		// or: float RemapMinusOneToOne = (StepPercent - 0.5f) * 2.f;
+		//TODO decide how to return it
 		return Modes[Index];
 	}
 	
