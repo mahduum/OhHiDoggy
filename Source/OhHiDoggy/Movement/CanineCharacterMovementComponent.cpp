@@ -114,6 +114,8 @@ bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(const UInputAct
 	const float CurrentSpeed = MaxWalkSpeed;//todo if current speed is greater than target... then? set the speed for the first time, hardcode 0 until changed, if is in motion then cache the speed, on mode changed clear the speed
 	const TEnumAsByte<ECanineGroundMovement> NextMode = GetNextMode(GetOwner(), InputAction);
 	const float TargetSpeed = *CanineMaxSpeeds.Find(NextMode);
+
+	//if not decelerating/accelerating slowly interpolate to the middle speed but elsewhere?
 	const float NewSpeed = FMath::FInterpTo(CurrentSpeed, TargetSpeed, GetWorld()->DeltaTimeSeconds, SpeedChangeRate);
 
 	if(FMath::IsNearlyZero(FMath::Abs(NewSpeed - TargetSpeed), 0.001))

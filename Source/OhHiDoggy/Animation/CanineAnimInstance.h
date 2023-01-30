@@ -113,5 +113,5 @@ protected:
 	UCurveFloat* GroundMovementModesCurve;
 
 	UFUNCTION(BlueprintCallable, Category="Speed Ranges for Ground Movement Modes", meta = (AnimBlueprintFunction, BlueprintThreadSafe))
-	TEnumAsByte<ECanineGroundMovement> GetGroundMovementMode(float CurrentSpeed) const;
+	void GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<ECanineGroundMovement>& CanineGroundMovementMode, float& StrideWarpAlphaMinusOneToOne) const;
 };

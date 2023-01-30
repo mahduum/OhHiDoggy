@@ -51,13 +51,15 @@ void UCanineAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// GroundDistance = GroundInfo.GroundDistance;
 }
 //TODO also return float value for each mode, within space -1 to 1, first for play rate decrease later for increase, and abs value for stride warping alpha
-TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed) const
+void UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<ECanineGroundMovement>& CanineGroundMovementMode, float& StrideWarpAlphaMinusOneToOne) const
 {
 	TArray<TEnumAsByte<ECanineGroundMovement>> Modes = GroundMovementModes->GroundMovementModes;
 	uint8 Index = 0;
 	if (FMath::IsNearlyZero(CurrentSpeed))
 	{
-		return Modes[Index];
+		CanineGroundMovementMode = Modes[Index];
+		StrideWarpAlphaMinusOneToOne = 0.0f;
+		return;
 	}
 
 	Index++;
@@ -72,21 +74,21 @@ TEnumAsByte<ECanineGroundMovement> UCanineAnimInstance::GetGroundMovementMode(fl
 		Index++;
 	}
 
-	if(Index == LoopGuard)
+	if (Index == LoopGuard)
 	{
 		UE_LOG(LogOHD, Error, TEXT("Loop guard break for speed ranges!"));
 	}
 
-	if(Index < Modes.Num())
+	float RemapMinusOneToOne = 0.0f;
+	if (Index < Modes.Num())
 	{
 		//get frac of step size
 		const float StepLerp = Value - (StepSum - StepSize);
 		const float StepPercent = UKismetMathLibrary::NormalizeToRange(StepLerp, 0.0f, StepSize);
-		float RemapMinusOneToOne = UKismetMathLibrary::MapRangeClamped(StepPercent, 0.0f, 1.f, -1.f, 1.f);
+		RemapMinusOneToOne = UKismetMathLibrary::MapRangeClamped(StepPercent, 0.0f, 1.f, -1.f, 1.f);
 		// or: float RemapMinusOneToOne = (StepPercent - 0.5f) * 2.f;
-		//TODO decide how to return it
-		return Modes[Index];
 	}
 	
-	return Modes[0];
+	CanineGroundMovementMode = Modes[Index < Modes.Num() ? Index : 0];
+	StrideWarpAlphaMinusOneToOne = RemapMinusOneToOne;
 }
