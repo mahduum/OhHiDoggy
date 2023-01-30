@@ -98,21 +98,9 @@ protected:
     // Cached ground info for the character.  Do not access this directly!  It's only updated when accessed via GetGroundInfo().
     FCanineCharacterGroundInfo CachedGroundInfo;
 
-	UPROPERTY(Category="Canine Movement Modes: Medium Speeds", BlueprintGetter=GetCanineSpeeds, EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0", UIMin="0", ForceUnits="cm/s"))
-	TMap<TEnumAsByte<ECanineGroundMovement>, float> CanineMaxSpeeds;
-
     UPROPERTY(Transient)
     bool bHasReplicatedAcceleration = false;
 
-	UFUNCTION(BlueprintGetter)
-	TMap<TEnumAsByte<ECanineGroundMovement>, float> GetCanineSpeeds() const;
-
-	UPROPERTY(BlueprintReadWrite)
-	TEnumAsByte<ECanineGroundMovement> CurrentGroundMovementMode = ECanineGroundMovement::CANINE_MOVE_None;
-
-	UFUNCTION(BlueprintPure, Category = "Canine Movement Modes")
-	static TEnumAsByte<ECanineGroundMovement> GetNextMode(const AActor* Actor, const UInputAction* InputAction);
-
 	UFUNCTION(BlueprintCallable, Category = "Canine Movement Modes")
-	bool TryChangeCurrentMaxSpeed(const UInputAction* InputAction, float SpeedChangeRate);
+	bool TryChangeCurrentMaxSpeed(float SpeedDelta, float SpeedChangeRate);
 };

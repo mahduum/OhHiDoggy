@@ -53,77 +53,22 @@ void UCanineCharacterMovementComponent::InitializeComponent()
 	Super::InitializeComponent();
 }
 
-TMap<TEnumAsByte<ECanineGroundMovement>, float> UCanineCharacterMovementComponent::GetCanineSpeeds() const
-{
-	return CanineMaxSpeeds;
-}
-
-TEnumAsByte<ECanineGroundMovement> UCanineCharacterMovementComponent::GetNextMode(const AActor* Actor, const UInputAction* InputAction)
-{
-	const UCanineCharacterMovementComponent* MovementComponent = Actor ? Actor->FindComponentByClass<UCanineCharacterMovementComponent>() : nullptr;
-	if(MovementComponent == nullptr)
-	{
-		UE_LOG(LogOHD, Error, TEXT("Could not find %s"), *UCanineCharacterMovementComponent::StaticClass()->GetName());
-		return ECanineGroundMovement::CANINE_MOVE_None;
-	}
-	//todo primary: change to doggy input action and use tags, get the bind to tag object to retrieve the tag from input
-	//use TArray<FDoggyInputAction> NativeInputActions; from OHDInputConfig.h
-	FString Name;
-	InputAction->GetName(Name);
-
-	//todo delete
-	// const UEnum* enumObject = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECanineGroundMovement"));
-	// const auto enumCount = enumObject->NumEnums();
-	// UE_LOG(LogOHD, Display, TEXT("Canine enum count: %i"), enumCount);
-
-	
-	if(Name == "IA_AccelerateOverride")
-	{
-		if (MovementComponent->CurrentGroundMovementMode == ECanineGroundMovement::CANINE_MOVE_Sprinting)
-		{
-			return CANINE_MOVE_Sprinting;
-		}
-
-		const ECanineGroundMovement enumValue = MovementComponent->CurrentGroundMovementMode.GetValue();
-		std::underlying_type_t<ECanineGroundMovement> i = enumValue;
-		i++;
-
-		return static_cast<ECanineGroundMovement>(i);
-	}
-
-	if(Name == "IA_DecelerateOverride")
-	{
-		if (MovementComponent->CurrentGroundMovementMode == ECanineGroundMovement::CANINE_MOVE_None)
-		{
-			return CANINE_MOVE_None;
-		}
-
-		const ECanineGroundMovement enumValue = MovementComponent->CurrentGroundMovementMode.GetValue();
-		std::underlying_type_t<ECanineGroundMovement> i = enumValue;
-		i--;
-
-		return static_cast<ECanineGroundMovement>(i);
-	}
-
-	return CANINE_MOVE_None;
-}
-
 //todo remove interp and set desired gears from root motion speed
-bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(const UInputAction* InputAction, float SpeedChangeRate)
+bool UCanineCharacterMovementComponent::TryChangeCurrentMaxSpeed(float SpeedDelta, float SpeedChangeRate)//todo speed delta can increase in value the longer it is being fed
 {
-	const float CurrentSpeed = MaxWalkSpeed;//todo if current speed is greater than target... then? set the speed for the first time, hardcode 0 until changed, if is in motion then cache the speed, on mode changed clear the speed
-	const TEnumAsByte<ECanineGroundMovement> NextMode = GetNextMode(GetOwner(), InputAction);
-	const float TargetSpeed = *CanineMaxSpeeds.Find(NextMode);
+	//TODO get max possible speed from movement component instead:
+	constexpr float MaxPossibleSpeed = 1320.0f;
 
-	//if not decelerating/accelerating slowly interpolate to the middle speed but elsewhere?
-	const float NewSpeed = FMath::FInterpTo(CurrentSpeed, TargetSpeed, GetWorld()->DeltaTimeSeconds, SpeedChangeRate);
-
-	if(FMath::IsNearlyZero(FMath::Abs(NewSpeed - TargetSpeed), 0.001))
+	if (FMath::IsNearlyEqual(MaxWalkSpeed, MaxPossibleSpeed, 0.0001))
 	{
-		CurrentGroundMovementMode = NextMode;
-		MaxWalkSpeed = TargetSpeed;
 		return false;
 	}
+
+	//if not decelerating/accelerating slowly interpolate to the middle speed but elsewhere?
+	//todo target speed to interp to will be the middle speed of current node, movement comp can provide it???
+	//const float NewSpeed = FMath::FInterpTo(CurrentSpeed, TargetSpeed, GetWorld()->DeltaTimeSeconds, SpeedChangeRate);
+
+	const float NewSpeed = FMath::Clamp(MaxWalkSpeed + SpeedDelta * SpeedChangeRate, 0.0f, MaxPossibleSpeed);
 
 	MaxWalkSpeed = NewSpeed;
 	OnMaxSpeedChanged.Broadcast(MaxWalkSpeed);
