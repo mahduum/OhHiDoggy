@@ -92,3 +92,26 @@ void UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<
 	CanineGroundMovementMode = Modes[Index < Modes.Num() ? Index : 0];
 	StrideWarpAlphaMinusOneToOne = RemapMinusOneToOne;
 }
+
+float UCanineAnimInstance::GetCurrentGroundMovementModeOptimalSpeed(float Speed) const
+{
+	TEnumAsByte<ECanineGroundMovement> CurrentCanineGroundMovementMode;
+	float StrideWarpAlphaMinusOneToOne;
+	GetGroundMovementMode(Speed, CurrentCanineGroundMovementMode, StrideWarpAlphaMinusOneToOne);
+	TArray<FRichCurveKey> MiddleSpeedKeys = GroundMovementModesCurve->FloatCurve.Keys;
+	for (const auto& Key : MiddleSpeedKeys)
+	{
+		//todo cache for optimization
+		TEnumAsByte<ECanineGroundMovement> GroundMovementModeForKey;
+		float Unused;
+		
+		GetGroundMovementMode(Key.Time, GroundMovementModeForKey, Unused);
+
+		if (GroundMovementModeForKey == CurrentCanineGroundMovementMode)
+		{
+			return Key.Time;
+		}
+	}
+
+	return 0.0f;
+}

@@ -105,6 +105,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Character State Data")
 	float GroundDistance = -1.0f;
+
+	UPROPERTY(EditAnywhere)
+	float LastRecordedSpeed = 0.0f;
+
+	UPROPERTY()
+	TEnumAsByte<ECanineGroundMovement> LastRecordedGroundMovementMode = ECanineGroundMovement::CANINE_MOVE_None;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Ground Movement Modes Curve", meta = (BlueprintThreadSafe))
 	UGroundMovementModesCurve* GroundMovementModes;
@@ -114,4 +120,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category="Speed Ranges for Ground Movement Modes", meta = (AnimBlueprintFunction, BlueprintThreadSafe))
 	void GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<ECanineGroundMovement>& CanineGroundMovementMode, float& StrideWarpAlphaMinusOneToOne) const;
+
+	/*Returns the optimal speed for the animation in given movement mode that can be smoothly interpolated to
+	 *if player stays within a given mode and is not accelerating or decelerating or is in auto speed mode.*/
+	UFUNCTION(BlueprintCallable, Category="Speed Ranges for Ground Movement Modes", meta = (AnimBlueprintFunction, BlueprintThreadSafe))
+	float GetCurrentGroundMovementModeOptimalSpeed(float Speed) const;
 };
