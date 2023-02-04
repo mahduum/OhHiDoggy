@@ -65,7 +65,7 @@ void UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<
 	Index++;
 	const float StepSize = 1.0f/Modes.Num();
 	float StepSum = StepSize;
-	const float Value = GroundMovementModesCurve->GetFloatValue(CurrentSpeed);
+	const float Value = GroundMovementModes->GroundMovementModesCurve->GetFloatValue(CurrentSpeed);
 
 	constexpr int LoopGuard = 100;
 	while (Value > StepSum && Index < LoopGuard)//if value is greater then we are in the next step
@@ -93,12 +93,15 @@ void UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<
 	StrideWarpAlphaMinusOneToOne = RemapMinusOneToOne;
 }
 
-float UCanineAnimInstance::GetCurrentGroundMovementModeOptimalSpeed(float Speed) const
+float UCanineAnimInstance::GetGroundMovementModeOptimalSpeedBasedOnCurrentSpeed(float CurrentSpeed) const
 {
 	TEnumAsByte<ECanineGroundMovement> CurrentCanineGroundMovementMode;
 	float StrideWarpAlphaMinusOneToOne;
-	GetGroundMovementMode(Speed, CurrentCanineGroundMovementMode, StrideWarpAlphaMinusOneToOne);
-	TArray<FRichCurveKey> MiddleSpeedKeys = GroundMovementModesCurve->FloatCurve.Keys;
+	GetGroundMovementMode(CurrentSpeed, CurrentCanineGroundMovementMode, StrideWarpAlphaMinusOneToOne);
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ECanineGroundMovement"), true);
+	const auto Mode = EnumPtr->GetNameByIndex((int32)CurrentCanineGroundMovementMode);
+	UE_LOG(LogOHD, Display, TEXT("Current ground movement mode from speed is %s"), *Mode.ToString())
+	TArray<FRichCurveKey> MiddleSpeedKeys = GroundMovementModes->GroundMovementModesCurve->FloatCurve.Keys;
 	for (const auto& Key : MiddleSpeedKeys)
 	{
 		//todo cache for optimization
@@ -106,6 +109,9 @@ float UCanineAnimInstance::GetCurrentGroundMovementModeOptimalSpeed(float Speed)
 		float Unused;
 		
 		GetGroundMovementMode(Key.Time, GroundMovementModeForKey, Unused);
+
+		const auto KeyMode = EnumPtr->GetNameByIndex((int32)GroundMovementModeForKey);
+		UE_LOG(LogOHD, Display, TEXT("Key ground movement mode from speed is %s"), *KeyMode.ToString())
 
 		if (GroundMovementModeForKey == CurrentCanineGroundMovementMode)
 		{
