@@ -88,8 +88,12 @@ void UCanineAnimInstance::GetGroundMovementMode(float CurrentSpeed, TEnumAsByte<
 		RemapMinusOneToOne = UKismetMathLibrary::MapRangeClamped(StepPercent, 0.0f, 1.f, -1.f, 1.f);
 		// or: float RemapMinusOneToOne = (StepPercent - 0.5f) * 2.f;
 	}
+	else
+	{
+		RemapMinusOneToOne = 1.f;
+	}
 	
-	CanineGroundMovementMode = Modes[Index < Modes.Num() ? Index : 0];
+	CanineGroundMovementMode = Modes[Index < Modes.Num() ? Index : Modes.Last()];
 	StrideWarpAlphaMinusOneToOne = RemapMinusOneToOne;
 }
 

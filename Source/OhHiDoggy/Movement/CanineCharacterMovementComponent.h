@@ -38,6 +38,8 @@ struct FCanineCharacterGroundInfo
 UENUM(BlueprintType)
 enum ECanineGroundMovement
 {
+	CANINE_MOVE_None				UMETA(DisplayName="Canine No Movement"),
+	
 	CANINE_MOVE_WalkingSlowly		UMETA(DisplayName="Canine Walk Slow"),
 	
 	CANINE_MOVE_Walking				UMETA(DisplayName="Canine Walk"),
