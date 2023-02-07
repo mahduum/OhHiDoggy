@@ -252,7 +252,7 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 
-		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		const FRotator ControlMovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 		
 		if (Value.X != 0)
 		{
@@ -261,14 +261,14 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 		
 		if (Value.Y != 0.0f)
 		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing assuming that the character is always rotated relative to forward vector
+			const FVector MovementDirection = ControlMovementRotation.RotateVector(FVector::ForwardVector);//where is the forward vector pointing assuming that the character is always rotated relative to forward vector
 			Pawn->AddMovementInput(MovementDirection, FMath::Clamp(Value.Y + FMath::Abs(Value.X), 0.0f, 1.0f));//todo separate two inputs to avoid this, and put a special modifier on turns to be accessed from gameplay
 		}
 	}
 }
 
 
-void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
+void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)//todo link it to camera boom or to control rig when looking/aiming
 {
 	APawn* Pawn = GetPawn<APawn>();
 
@@ -281,7 +281,7 @@ void UDoggyComponent::Input_LookMouse(const FInputActionValue& InputActionValue)
 
 	if (Value.X != 0.0f)
 	{
-		Pawn->AddControllerYawInput(Value.X);//how sideways are we looking
+		//Pawn->AddControllerYawInput(Value.X);//how sideways are we looking
 	}
 
 	if (Value.Y != 0.0f)
