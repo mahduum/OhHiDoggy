@@ -254,9 +254,29 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		const FRotator ControlMovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 		
-		if (Value.X != 0)
+		auto TagLeft = FOHDGameplayTags::Get().InputTag_TurnLeft90.GetTagName();
+		auto TagRight = FOHDGameplayTags::Get().InputTag_TurnRight90.GetTagName();
+
+		// bool conatains = Pawn->Tags.ContainsByPredicate([&](const FName Tag) {return Tag == TagRight || Tag == TagLeft;});
+		// UE_LOG(LogOHD, Display, TEXT("Pawn does not contain turning tags: %i."), conatains == false);
+		
+		if (Value.X != 0 && Value.Y != 0)
 		{
 			Pawn->AddControllerYawInput(Value.X * GetYawInputModifier());//todo should rotate less? set variable rotation damper?
+		}
+		else if (Value.X != 0 && Pawn->Tags.ContainsByPredicate([&](const FName Tag) {return Tag == TagRight || Tag == TagLeft;}) == false)
+		{
+			UE_LOG(LogOHD, Display, TEXT("Pawn does not contain turning tags."));
+			if (Value.X > 0)
+			{
+				Pawn->Tags.Add(TagRight);
+				UE_LOG(LogOHD, Display, TEXT("Added %s tag to pawn of type %s, tags count: %i."), *TagRight.ToString(), *Pawn->GetName(), Pawn->Tags.Num());
+			}
+			else
+			{
+				Pawn->Tags.Add(TagLeft);
+				UE_LOG(LogOHD, Display, TEXT("Added %s tag to pawn of type %s, tags count: %i."), *TagLeft.ToString(), *Pawn->GetName(), Pawn->Tags.Num());
+			}
 		}
 		
 		if (Value.Y != 0.0f)

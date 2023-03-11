@@ -33,6 +33,10 @@ void FOHDGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Crouch, "InputTag.Crouch", "Crouch input.");
 	AddTag(InputTag_AutoRun, "InputTag.AutoRun", "Auto-run input.");
 
+	//Custom anim basic movement tags:
+	AddTag(InputTag_TurnLeft90, "InputTag.TurnLeft90", "Anim turn in place.");
+	AddTag(InputTag_TurnRight90, "InputTag.TurnRight90", "Anim turn in place.");
+
 	// AddTag(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
 	// AddTag(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
 	// AddTag(GameplayEvent_RequestReset, "GameplayEvent.RequestReset", "Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.");

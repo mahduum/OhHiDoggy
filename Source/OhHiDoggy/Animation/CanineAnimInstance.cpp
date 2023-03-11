@@ -31,6 +31,7 @@ void UCanineAnimInstance::NativeInitializeAnimation()
 	{
 		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor))
 		{
+			UE_LOG(LogOHD, Display, TEXT("Initializing ability system from actor."));
 			InitializeWithAbilitySystem(ASC);
 		}
 	}

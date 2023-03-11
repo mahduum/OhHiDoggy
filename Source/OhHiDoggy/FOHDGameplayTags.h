@@ -29,6 +29,9 @@ public:
 	FGameplayTag InputTag_Look_Stick;
 	FGameplayTag InputTag_Crouch;
 	FGameplayTag InputTag_AutoRun;
+	
+	FGameplayTag InputTag_TurnLeft90;
+	FGameplayTag InputTag_TurnRight90;
 
 	FGameplayTag Movement_Mode_Walking;
 	FGameplayTag Movement_Mode_NavWalking;
