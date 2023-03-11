@@ -3,6 +3,8 @@
 
 #include "OHDPawnComponentExtension.h"
 #include "Net/UnrealNetwork.h"
+#include "../AbilitySystem/OHDAbilitySystemComponent.h"
+#include "../OHDLogChannels.h"
 
 
 UOHDPawnComponentExtension::UOHDPawnComponentExtension(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -35,11 +37,11 @@ void UOHDPawnComponentExtension::OnRegister()
 	Super::OnRegister();
 
 	const APawn* Pawn = GetPawn<APawn>();
-	ensureAlwaysMsgf((Pawn != nullptr), TEXT("LyraPawnExtensionComponent on [%s] can only be added to Pawn actors."), *GetNameSafe(GetOwner()));
+	ensureAlwaysMsgf((Pawn != nullptr), TEXT("OHDPawnExtensionComponent on [%s] can only be added to Pawn actors."), *GetNameSafe(GetOwner()));
 
 	TArray<UActorComponent*> PawnExtensionComponents;
 	Pawn->GetComponents(UOHDPawnComponentExtension::StaticClass(), PawnExtensionComponents);
-	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one LyraPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
+	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one OHDPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
 }
 
 void UOHDPawnComponentExtension::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -53,18 +55,18 @@ void UOHDPawnComponentExtension::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 void UOHDPawnComponentExtension::HandleControllerChanged()
 {
-	// if (AbilitySystemComponent && (AbilitySystemComponent->GetAvatarActor() == GetPawnChecked<APawn>()))
-	// {
-	// 	ensure(AbilitySystemComponent->AbilityActorInfo->OwnerActor == AbilitySystemComponent->GetOwnerActor());
-	// 	if (AbilitySystemComponent->GetOwnerActor() == nullptr)
-	// 	{
-	// 		UninitializeAbilitySystem();
-	// 	}
-	// 	else
-	// 	{
-	// 		AbilitySystemComponent->RefreshAbilityActorInfo();
-	// 	}
-	// }
+	if (AbilitySystemComponent && (AbilitySystemComponent->GetAvatarActor() == GetPawnChecked<APawn>()))
+	{
+		ensure(AbilitySystemComponent->AbilityActorInfo->OwnerActor == AbilitySystemComponent->GetOwnerActor());
+		if (AbilitySystemComponent->GetOwnerActor() == nullptr)
+		{
+			UninitializeAbilitySystem();
+		}
+		else
+		{
+			AbilitySystemComponent->RefreshAbilityActorInfo();
+		}
+	}
 
 	CheckPawnReadyToInitialize();
 }
@@ -120,7 +122,7 @@ bool UOHDPawnComponentExtension::CheckPawnReadyToInitialize()//todo what should 
 		UE_LOG(LogCore, Warning, TEXT("Pawn's controller found!"));
 	}
 
-	// Allow pawn components to have requirements.//todo debug Lyra to find what exactly are those components
+	// Allow pawn components to have requirements.//todo debug OHD to find what exactly are those components
 	//todo: REMEMBER query for interfaces using UClass, but use them via their IInterface object
 	TArray<UActorComponent*> InteractableComponents = Pawn->GetComponentsByInterface(UOhHiDoggyReadyInterface::StaticClass());
 	for (UActorComponent* InteractableComponent : InteractableComponents)
@@ -170,4 +172,103 @@ void UOHDPawnComponentExtension::SetPawnData(const UOHDPawnData* InPawnData)//to
 	Pawn->ForceNetUpdate();
 
 	CheckPawnReadyToInitialize();
+}
+
+
+void UOHDPawnComponentExtension::InitializeAbilitySystem(UOHDAbilitySystemComponent* InASC, AActor* InOwnerActor)
+{
+	check(InASC);
+	check(InOwnerActor);
+
+	if (AbilitySystemComponent == InASC)
+	{
+		// The ability system component hasn't changed.
+		return;
+	}
+
+	if (AbilitySystemComponent)
+	{
+		// Clean up the old ability system component.
+		UninitializeAbilitySystem();
+	}
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+	AActor* ExistingAvatar = InASC->GetAvatarActor();
+
+	UE_LOG(LogOHD, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
+
+	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
+	{
+		UE_LOG(LogOHD, Log, TEXT("Existing avatar (authority=%d)"), ExistingAvatar->HasAuthority() ? 1 : 0);
+
+		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
+		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
+		ensure(!ExistingAvatar->HasAuthority());
+
+		if (UOHDPawnComponentExtension* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
+		{
+			OtherExtensionComponent->UninitializeAbilitySystem();
+		}
+	}
+
+	AbilitySystemComponent = InASC;
+	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+
+	if (ensure(PawnData))
+	{
+		InASC->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
+	}
+
+	OnAbilitySystemInitialized.Broadcast();
+}
+
+void UOHDPawnComponentExtension::UninitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	// Uninitialize the ASC if we're still the avatar actor (otherwise another pawn already did it when they became the avatar actor)
+	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
+	{
+		AbilitySystemComponent->CancelAbilities(nullptr, nullptr);
+		AbilitySystemComponent->ClearAbilityInput();
+		AbilitySystemComponent->RemoveAllGameplayCues();
+
+		if (AbilitySystemComponent->GetOwnerActor() != nullptr)
+		{
+			AbilitySystemComponent->SetAvatarActor(nullptr);
+		}
+		else
+		{
+			// If the ASC doesn't have a valid owner, we need to clear *all* actor info, not just the avatar pairing
+			AbilitySystemComponent->ClearActorInfo();
+		}
+
+		OnAbilitySystemUninitialized.Broadcast();
+	}
+
+	AbilitySystemComponent = nullptr;
+}
+
+void UOHDPawnComponentExtension::OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)//todo primary where it's used as commented!!!???
+{
+	if (!OnAbilitySystemInitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemInitialized.Add(Delegate);
+	}
+
+	if (AbilitySystemComponent)
+	{
+		Delegate.Execute();
+	}
+}
+
+void UOHDPawnComponentExtension::OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate)//todo primary where it's used as commented!!!???
+{
+	if (!OnAbilitySystemUninitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemUninitialized.Add(Delegate);
+	}
 }

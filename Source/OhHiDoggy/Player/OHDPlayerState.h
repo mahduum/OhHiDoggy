@@ -4,13 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerState.h"
 #include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OHDPlayerState.generated.h"
 
-
+class AOHDPlayerController;
+class UOHDAbilitySystemComponent;
+class UAbilitySystemComponent;
+class UOHDPawnData;
 class UOHDExperienceDefinition;
+
 /** Defines the types of client connected */
 UENUM()
 enum class EOHDPlayerConnectionType : uint8
@@ -29,7 +34,8 @@ enum class EOHDPlayerConnectionType : uint8
 };
 
 UCLASS(Config = Game)
-class OHHIDOGGY_API AOHDPlayerState : public APlayerState//todo change it to use modular player state from the module ModularGameplayActors
+class OHHIDOGGY_API AOHDPlayerState : public APlayerState/*todo change it to use modular player state from the module ModularGameplayActors*/,
+public IAbilitySystemInterface//, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -37,12 +43,12 @@ public:
 	// Sets default values for this actor's properties
 	AOHDPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	// UFUNCTION(BlueprintCallable, Category = "OHD|PlayerState")
-	// AOHDPlayerController* GetOHDPlayerController() const;
+	UFUNCTION(BlueprintCallable, Category = "OHD|PlayerState")
+	AOHDPlayerController* GetOHDPlayerController() const;
 
-	// UFUNCTION(BlueprintCallable, Category = "OHD|PlayerState")
-	// UOHDAbilitySystemComponent* GetOHDAbilitySystemComponent() const { return AbilitySystemComponent; }
-	// virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UFUNCTION(BlueprintCallable, Category = "OHD|PlayerState")
+	UOHDAbilitySystemComponent* GetOHDAbilitySystemComponent() const { return AbilitySystemComponent; }
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	template <class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
@@ -90,8 +96,8 @@ protected:
 private:
 
 	// The ability system component sub-object used by player characters.
-	// UPROPERTY(VisibleAnywhere, Category = "OHD|PlayerState")
-	// UOHDAbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY(VisibleAnywhere, Category = "OHD|PlayerState")
+	UOHDAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY(Replicated)
 	EOHDPlayerConnectionType MyPlayerConnectionType;

@@ -3,18 +3,24 @@
 
 #include "DoggyComponent.h"
 
+#include "CanineCharacter.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework//PlayerState.h"
 #include "Misc/UObjectToken.h"
 #include "OhHiDoggy/FOHDGameplayTags.h"
 #include "OhHiDoggy/OHDLogChannels.h"
+#include "OhHiDoggy/AbilitySystem/OHDAbilitySystemComponent.h"
+#include "OhHiDoggy/Camera/OHDCameraComponent.h"
+#include "OhHiDoggy/Camera/OHDCameraMode.h"
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 #include "OhHiDoggy/Data/OHDPawnData.h"
 #include "OhHiDoggy/Input/OHDInputConfig.h"
 #include "OhHiDoggy/Input/OHDInputComponent.h"
 #include "OhHiDoggy/Input/OHDInputModifiers.h"
 #include "OhHiDoggy/Movement/CanineCharacterMovementComponent.h"
+#include "OhHiDoggy/Player/OHDPlayerController.h"
+#include "OhHiDoggy/Player/OHDPlayerState.h"
 #include "OhHiDoggy/Settings/OHDSettingsLocal.h"
 #include "OhHiDoggy/System/OHDAssetManager.h"
 
@@ -67,8 +73,6 @@ void UDoggyComponent::OnRegister()
 		}
 #endif
 	}
-	//get owner and add delegate initialize player input to owner to be fired on setup input 
-	//InitializePlayerInput(GetController<APlayerController>()->GetPawn()->InputComponent);//todo crashes
 }
 
 void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register to owner or pawn ext when pawn will be ready to initialize (like onpossessed etc.)
@@ -91,7 +95,7 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 
 	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 
-	APlayerState* OhHiDoggyPS = GetPlayerState<APlayerState>();
+	AOHDPlayerState* OhHiDoggyPS = GetPlayerState<AOHDPlayerState>();
 	check(OhHiDoggyPS);
 	
 	UE_LOG(LogCore, Display, TEXT("Player state found."));
@@ -105,7 +109,7 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 	
 	 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
 	 	// The ability system component and attribute sets live on the player state.
-	 	//PawnExtComp->InitializeAbilitySystem(OhHiDoggyPS->GetOhHiDoggyAbilitySystemComponent(), OhHiDoggyPS);
+	 	PawnExtComp->InitializeAbilitySystem(OhHiDoggyPS->GetOHDAbilitySystemComponent(), OhHiDoggyPS);
 	 }
 
 	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())
@@ -129,13 +133,13 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 		});//AddUObject(this, &UDoggyComponent::SetYawInputModifier);
 	}
 
-	// if (bIsLocallyControlled && PawnData)
-	// {
-	// 	if (UOhHiDoggyCameraComponent* CameraComponent = UOhHiDoggyCameraComponent::FindCameraComponent(Pawn))//todo
-	// 	{
-	// 		CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
-	// 	}
-	// }
+	if (bIsLocallyControlled && PawnData)
+	{
+		if (UOHDCameraComponent* CameraComponent = UOHDCameraComponent::FindCameraComponent(Pawn))//todo
+		{
+			CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+		}
+	}
 
 	bPawnHasInitialized = true;
 }
@@ -210,9 +214,9 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 				//todo: create event and subscribe modifier to this event on binding???
 
-				//todo with abilities ready:
-				//TArray<uint32> BindHandles;
-				//DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+				//todo what do to with those handles?:
+				TArray<uint32> BindHandles;
+				DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 
 				/* input config is needed to find the actual InputAction asset in the game while all we are providing is just a tag, because input config has a helper
 				 * function that allows to find it by tag given that inside the actual input config asset we had it set up correctly.
@@ -220,8 +224,8 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
 				DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, /*bLogIfNotFound=*/ false);
-				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);
-				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);
+				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch, /*bLogIfNotFound=*/ false);//todo primary
+				// DoggyIC->BindNativeAction(InputConfig, GameplayTags.InputTag_AutoRun, ETriggerEvent::Triggered, this, &ThisClass::Input_AutoRun, /*bLogIfNotFound=*/ false);//todo primary
 			}
 		}
 	}
@@ -231,22 +235,95 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 		bReadyToBindInputs = true;
 	}
 	//
-	//UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);//todo
+	//UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);//todo primary
 	//UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 }
 
 
+void UDoggyComponent::AddAdditionalInputConfig(const UOHDInputConfig* InputConfig)
+{
+	TArray<uint32> BindHandles;
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	UOHDInputComponent* OHDIC = Pawn->FindComponentByClass<UOHDInputComponent>();
+	check(OHDIC);
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const ULocalPlayer* LP = PC->GetLocalPlayer();
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+	{
+		OHDIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+	}
+}
+
+void UDoggyComponent::RemoveAdditionalInputConfig(const UOHDInputConfig* InputConfig)
+{
+	//@TODO: Implement me!
+}
+
+bool UDoggyComponent::HasPawnInitialized() const
+{
+	return bPawnHasInitialized;
+}
+
+bool UDoggyComponent::IsReadyToBindInputs() const
+{
+	return bReadyToBindInputs;
+}
+
+void UDoggyComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+		{
+			if (UOHDAbilitySystemComponent* OHDASC = PawnExtComp->GetOHDAbilitySystemComponent())
+			{
+				OHDASC->AbilityInputTagPressed(InputTag);
+			}
+		}	
+	}
+}
+
+void UDoggyComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+	{
+		if (UOHDAbilitySystemComponent* OHDASC = PawnExtComp->GetOHDAbilitySystemComponent())
+		{
+			OHDASC->AbilityInputTagReleased(InputTag);
+		}
+	}
+}
+
 void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
-	const AController* Controller = Pawn ? Pawn->GetController() : nullptr;
-
-
+	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+	
 	// If the player has attempted to move again then cancel auto running
-	// if (AOhHiDoggyPlayerController* OhHiDoggyController = Cast<AOhHiDoggyPlayerController>(Controller))//todo
-	// {
-	// 	OhHiDoggyController->SetIsAutoRunning(false);
-	// }
+	if (AOHDPlayerController* OHDController = Cast<AOHDPlayerController>(Controller))
+	{
+		OHDController->SetIsAutoRunning(false);
+	}
 	
 	if (Controller)
 	{
@@ -419,5 +496,68 @@ void UDoggyComponent::OnInputConfigDeactivated(const FLoadedMappableConfigPair& 
 				}
 			}
 		}
+	}
+}
+
+
+void UDoggyComponent::Input_Crouch(const FInputActionValue& InputActionValue)
+{
+	if (ACanineCharacter* Character = GetPawn<ACanineCharacter>())
+	{
+		Character->ToggleCrouch();
+	}
+}
+
+void UDoggyComponent::Input_AutoRun(const FInputActionValue& InputActionValue)
+{
+	if (APawn* Pawn = GetPawn<APawn>())
+	{
+		if (AOHDPlayerController* Controller = Cast<AOHDPlayerController>(Pawn->GetController()))
+		{
+			// Toggle auto running
+			Controller->SetIsAutoRunning(!Controller->GetIsAutoRunning());
+		}	
+	}
+}
+
+TSubclassOf<UOHDCameraMode> UDoggyComponent::DetermineCameraMode() const
+{
+	if (AbilityCameraMode)
+	{
+		return AbilityCameraMode;
+	}
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return nullptr;
+	}
+
+	if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+	{
+		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())
+		{
+			return PawnData->DefaultCameraMode;
+		}
+	}
+
+	return nullptr;
+}
+
+void UDoggyComponent::SetAbilityCameraMode(TSubclassOf<UOHDCameraMode> CameraMode, const FGameplayAbilitySpecHandle& OwningSpecHandle)
+{
+	if (CameraMode)
+	{
+		AbilityCameraMode = CameraMode;
+		AbilityCameraModeOwningSpecHandle = OwningSpecHandle;
+	}
+}
+
+void UDoggyComponent::ClearAbilityCameraMode(const FGameplayAbilitySpecHandle& OwningSpecHandle)
+{
+	if (AbilityCameraModeOwningSpecHandle == OwningSpecHandle)
+	{
+		AbilityCameraMode = nullptr;
+		AbilityCameraModeOwningSpecHandle = FGameplayAbilitySpecHandle();
 	}
 }

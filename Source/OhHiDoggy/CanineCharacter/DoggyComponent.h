@@ -11,9 +11,11 @@
 #include "OhHiDoggy/Input/OHDInputModifiers.h"
 #include "DoggyComponent.generated.h"
 
+class UOHDCameraMode;
 struct FGameplayTag;
 struct FGameplayAbilitySpecHandle;
 struct FInputActionValue;
+class UOHDInputConfig;
 /**
  * Really a component that can be added to anything the player needs to control - todo doesn't need to be called "doggy"
  */
@@ -28,17 +30,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "|Hero")
 	static UDoggyComponent* FindHeroComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UDoggyComponent>() : nullptr); }
 
-	//void SetAbilityCameraMode(TSubclassOf<UCameraMode> CameraMode, const FGameplayAbilitySpecHandle& OwningSpecHandle);//todo
-	//void ClearAbilityCameraMode(const FGameplayAbilitySpecHandle& OwningSpecHandle);
+	void SetAbilityCameraMode(TSubclassOf<UOHDCameraMode> CameraMode, const FGameplayAbilitySpecHandle& OwningSpecHandle);//todo
+	void ClearAbilityCameraMode(const FGameplayAbilitySpecHandle& OwningSpecHandle);
 
-	//void AddAdditionalInputConfig(const UDoggyInputConfigBad* InputConfig);//todo
-	//void RemoveAdditionalInputConfig(const UDoggyInputConfigBad* InputConfig);
+	void AddAdditionalInputConfig(const UOHDInputConfig* InputConfig);//todo primary throws error
+	void RemoveAdditionalInputConfig(const UOHDInputConfig* InputConfig);
 
 	/** True if this has completed OnPawnReadyToInitialize so is prepared for late-added features */
-	//bool HasPawnInitialized() const;
+	bool HasPawnInitialized() const;
 
 	/** True if this player has sent the BindInputsNow event and is prepared for bindings */
-	//bool IsReadyToBindInputs() const;
+	bool IsReadyToBindInputs() const;
 
 	static const FName NAME_BindInputsNow;
 
@@ -67,16 +69,16 @@ protected:
 
 	virtual void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
-	// void Input_AbilityInputTagPressed(FGameplayTag InputTag);
-	// void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 	//
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_LookStick(const FInputActionValue& InputActionValue);
-	// void Input_Crouch(const FInputActionValue& InputActionValue);
-	// void Input_AutoRun(const FInputActionValue& InputActionValue);
+	void Input_Crouch(const FInputActionValue& InputActionValue);
+	void Input_AutoRun(const FInputActionValue& InputActionValue);
 
-	//TSubclassOf<UCameraMode> DetermineCameraMode() const;
+	TSubclassOf<UOHDCameraMode> DetermineCameraMode() const;
 	
 	void OnInputConfigActivated(const FLoadedMappableConfigPair& ConfigPair);
 	void OnInputConfigDeactivated(const FLoadedMappableConfigPair& ConfigPair);
@@ -93,7 +95,7 @@ protected:
 	TArray<FMappableConfigPair> DefaultInputConfigs;
 	
 	// Camera mode set by an ability.
-	//TSubclassOf<UCameraMode> AbilityCameraMode;
+	TSubclassOf<UOHDCameraMode> AbilityCameraMode;
 
 	// Spec handle for the last ability to set a camera mode.
 	FGameplayAbilitySpecHandle AbilityCameraModeOwningSpecHandle;

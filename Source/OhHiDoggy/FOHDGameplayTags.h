@@ -14,15 +14,15 @@ public:
 	static FGameplayTag FindTagByString(FString TagString, bool bMatchPartialString = false);
 
 public:
-	// FGameplayTag Ability_ActivateFail_IsDead;
-	// FGameplayTag Ability_ActivateFail_Cooldown;
-	// FGameplayTag Ability_ActivateFail_Cost;
-	// FGameplayTag Ability_ActivateFail_TagsBlocked;
-	// FGameplayTag Ability_ActivateFail_TagsMissing;
-	// FGameplayTag Ability_ActivateFail_Networking;
-	// FGameplayTag Ability_ActivateFail_ActivationGroup;
-	//
-	// FGameplayTag Ability_Behavior_SurvivesDeath;
+	FGameplayTag Ability_ActivateFail_IsDead;
+	FGameplayTag Ability_ActivateFail_Cooldown;
+	FGameplayTag Ability_ActivateFail_Cost;
+	FGameplayTag Ability_ActivateFail_TagsBlocked;
+	FGameplayTag Ability_ActivateFail_TagsMissing;
+	FGameplayTag Ability_ActivateFail_Networking;
+	FGameplayTag Ability_ActivateFail_ActivationGroup;
+	
+	FGameplayTag Ability_Behavior_SurvivesDeath;
 
 	FGameplayTag InputTag_Move;
 	FGameplayTag InputTag_Look_Mouse;
@@ -39,6 +39,24 @@ public:
 	FGameplayTag Movement_Mode_Swimming;
 	FGameplayTag Movement_Mode_Flying;
 	FGameplayTag Movement_Mode_Custom;
+
+	//need adding todo
+	FGameplayTag GameplayEvent_Death;
+	FGameplayTag GameplayEvent_Reset;
+	FGameplayTag GameplayEvent_RequestReset;
+
+	FGameplayTag SetByCaller_Damage;
+	FGameplayTag SetByCaller_Heal;
+
+	FGameplayTag Cheat_GodMode;
+	FGameplayTag Cheat_UnlimitedHealth;
+
+	FGameplayTag Status_Crouching;
+	FGameplayTag Status_AutoRunning;
+	FGameplayTag Status_Death;
+	FGameplayTag Status_Death_Dying;
+	FGameplayTag Status_Death_Dead;
+	//end
 
 	TMap<uint8, FGameplayTag> MovementModeTagMap;
 	TMap<uint8, FGameplayTag> CustomMovementModeTagMap;

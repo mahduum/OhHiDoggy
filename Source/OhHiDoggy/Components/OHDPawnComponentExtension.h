@@ -28,22 +28,21 @@ public:
 	void SetPawnData(const UOHDPawnData* InPawnData);//todo I already done it somewhere with data?
 
 	UFUNCTION(BlueprintPure, Category = "OhHiDoggy|Pawn")
-	UAbilitySystemComponent* GetOhHiDoggyAbilitySystemComponent() const { return AbilitySystemComponent; }
+	UOHDAbilitySystemComponent* GetOHDAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-
+	
 	// // Should be called by the owning pawn to become the avatar of the ability system.
-	// void InitializeAbilitySystem(UAbilitySystemComponent* InASC, AActor* InOwnerActor);
-	//
+	void InitializeAbilitySystem(UOHDAbilitySystemComponent* InASC, AActor* InOwnerActor);//todo primary where its called
+	
 	// // Should be called by the owning pawn to remove itself as the avatar of the ability system.
-	// void UninitializeAbilitySystem();
+	void UninitializeAbilitySystem();
 	//
 	// Should be called by the owning pawn when the pawn's controller changes.
 	void HandleControllerChanged();
 	//
 	// // Should be called by the owning pawn when the player state has been replicated.
-	// void HandlePlayerStateReplicated();
+	// void HandlePlayerStateReplicated();//todo and where it's called
 
 	// Should be called by the owning pawn when the input component is setup.
 	void SetupPlayerInputComponent();
@@ -61,10 +60,10 @@ public:
 	void OnPawnReadyToInitialize_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
 	
 	// // Register with the OnAbilitySystemInitialized delegate and broadcast if condition is already met.
-	// void OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
+	void OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);//todo primary and where it's called
 	//
 	// // Register with the OnAbilitySystemUninitialized delegate.
-	// void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
+	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);//todo primary and where it's called
 
 protected:
 
@@ -93,7 +92,7 @@ protected:
 
 	// Pointer to the ability system component that is cached for convenience.
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent;
+	UOHDAbilitySystemComponent* AbilitySystemComponent;
 
 	// True when the pawn has everything needed for initialization.
 	int32 bPawnReadyToInitialize : 1;

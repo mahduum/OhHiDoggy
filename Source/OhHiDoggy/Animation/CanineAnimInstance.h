@@ -85,6 +85,7 @@ class UCanineAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
+public:
 	virtual void InitializeWithAbilitySystem(UAbilitySystemComponent* ASC);
 
 protected:

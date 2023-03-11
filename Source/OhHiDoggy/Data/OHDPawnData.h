@@ -8,6 +8,7 @@
 
 class UOHDAbilityTagRelationshipMapping;
 class UOHDInputConfig;
+class UOHDCameraMode;
 /*
  * UOHDPawnData
  *
@@ -43,6 +44,6 @@ public:
 	UOHDInputConfig* InputConfig;
 
 	// // Default camera mode used by player controlled pawns.
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Camera")
-	// TSubclassOf<ULyraCameraMode> DefaultCameraMode;//TODO primary add camera modes, modes are in stack variable inside custom camera component
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Camera")
+	TSubclassOf<UOHDCameraMode> DefaultCameraMode;//TODO primary add camera modes, modes are in stack variable inside custom camera component
 };

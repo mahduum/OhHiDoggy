@@ -6,7 +6,7 @@ public class OhHiDoggy : ModuleRules
 {
 	public OhHiDoggy(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] {"CommonUI"});
+		PrivateDependencyModuleNames.AddRange(new string[] {"CommonUI", "GameplayMessageRuntime"});
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]
@@ -14,7 +14,7 @@ public class OhHiDoggy : ModuleRules
 			"Core", "CoreUObject", "Engine", "HeadMountedDisplay",
 			"AIModule", "GameplayTasks", "GameplayAbilities",
 			"GameplayTags", "GameFeatures", "ModularGameplay",
-			"ApplicationCore"
+			"ApplicationCore", "PhysicsCore", "ModularGameplayActors"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(

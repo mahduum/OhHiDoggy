@@ -3,9 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayCueInterface.h"
+#include "GameplayTagAssetInterface.h"
 #include "GameFramework/Character.h"
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
+#include "AbilitySystemInterface.h"
 #include "CanineCharacter.generated.h"
+
+class UOHDCameraComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDoggyPossessed, UInputComponent*)
 
@@ -26,17 +31,17 @@ struct FCanineReplicatedAcceleration
 
 class UAbilitySystemComponent;
 
-//TODO: in the future make it derive from AModularCharacter, also copy abilities set, movement tags etc. from LyraCharacter
+//TODO: in the future make it derive from AModularCharacter, also copy abilities set, movement tags etc. from OHDCharacter
 UCLASS(Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class ACanineCharacter : public ACharacter
+class ACanineCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayCueInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
+	/** Camera boom positioning the camera behind the character *///todo is temp
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	/** Follow camera */
+	/** Follow camera *///todo is temp
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
@@ -44,24 +49,121 @@ public:
 
 	ACanineCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-protected:
+	UFUNCTION(BlueprintCallable, Category = "OHD|Character")
+	AOHDPlayerController* GetOHDPlayerController() const;
 
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	virtual void PossessedBy(AController* NewController) override;
+	UFUNCTION(BlueprintCallable, Category = "OHD|Character")
+	AOHDPlayerState* GetOHDPlayerState() const;
 
+	UFUNCTION(BlueprintCallable, Category = "OHD|Character")
+	UOHDAbilitySystemComponent* GetOHDAbilitySystemComponent() const;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+
+	void ToggleCrouch();
+
+	//~AActor interface
 	virtual void PreInitializeComponents() override;//todo implement it in higher base AModularChararcter class with the logic to register with GameFeature
-	void BeginPlay();
-	void EndPlay(EEndPlayReason::Type EndPlayReason);
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Reset() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
+	//~End of AActor interface
 
+	//~APawn interface
+	virtual void NotifyControllerChanged() override;
+	//~End of APawn interface
+
+	//~IOHDTeamAgentInterface interface
+	// virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	// virtual FGenericTeamId GetGenericTeamId() const override;
+	// virtual FOnOHDTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~End of IOHDTeamAgentInterface interface
+
+protected:
 	//todo use from PawnComponentExt instead
 	FOnDoggyPossessed OnDoggyPossessedDelegate;
 
+	virtual void OnAbilitySystemInitialized();
+	virtual void OnAbilitySystemUninitialized();
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+
+	virtual void OnRep_Controller() override;
+	virtual void OnRep_PlayerState() override;
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	void InitializeGameplayTags();
+
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+
+	// Begins the death sequence for the character (disables collision, disables movement, etc...)
+	UFUNCTION()
+	virtual void OnDeathStarted(AActor* OwningActor);
+
+	// Ends the death sequence for the character (detaches controller, destroys pawn, etc...)
+	UFUNCTION()
+	virtual void OnDeathFinished(AActor* OwningActor);
+
+	void DisableMovementAndCollision();
+	void DestroyDueToDeath();
+	void UninitAndDestroy();
+
+	// Called when the death sequence for the character has completed
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
+	void K2_OnDeathFinished();
+
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
+	void SetMovementModeTag(EMovementMode MovementMode, uint8 CustomMovementMode, bool bTagEnabled);
+
+	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	virtual bool CanJumpInternal_Implementation() const;
+
 private:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "OHD|Character", Meta = (AllowPrivateAccess = "true"))
 	UOHDPawnComponentExtension* PawnExtComponent;
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lyra|Character", Meta = (AllowPrivateAccess = "true"))
-	// UCanineCameraComponent* CameraComponent;//todo
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "OHD|Character", Meta = (AllowPrivateAccess = "true"))
+	UOHDCameraComponent* CameraComponent;//todo
 	//
+
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "OHD|Character", Meta = (AllowPrivateAccess = "true"))
+	// UOHDHealthComponent* HealthComponent;//todo primary
+
+	// UPROPERTY(Transient, ReplicatedUsing = OnRep_ReplicatedAcceleration)
+	// FOHDReplicatedAcceleration ReplicatedAcceleration;
+
+	// UPROPERTY(ReplicatedUsing = OnRep_MyTeamID)
+	// FGenericTeamId MyTeamID;
+	//
+	// UPROPERTY()
+	// FOnOHDTeamIndexChangedDelegate OnTeamChangedDelegate;
+
+// protected:
+// 	// Called to determine what happens to the team ID when possession ends
+// 	virtual FGenericTeamId DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const
+// 	{
+// 		// This could be changed to return, e.g., OldTeamID if you want to keep it assigned afterwards, or return an ID for some neutral faction, or etc...
+// 		return FGenericTeamId::NoTeam;
+// 	}
+
+private:
+	// UFUNCTION()
+	// void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+
+	UFUNCTION()
+	void OnRep_ReplicatedAcceleration();
+
+	// UFUNCTION()
+	// void OnRep_MyTeamID(FGenericTeamId OldTeamID);
 };
 

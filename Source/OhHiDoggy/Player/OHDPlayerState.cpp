@@ -3,19 +3,23 @@
 
 #include "OHDPlayerState.h"
 
+#include "OHDPlayerController.h"
 #include "Net/UnrealNetwork.h"
+#include "OhHiDoggy/AbilitySystem/OHDAbilitySystemComponent.h"
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
+#include "OhHiDoggy/GameModes/OHDExperienceManagerComponent.h"
+#include "OhHiDoggy/GameModes/OHDGameMode.h"
 
 AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, MyPlayerConnectionType(EOHDPlayerConnectionType::Player)
 {
-	// AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UOHDAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
-	// AbilitySystemComponent->SetIsReplicated(true);
-	// AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UOHDAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	// CreateDefaultSubobject<UOHDHealthSet>(TEXT("HealthSet"));
-	// CreateDefaultSubobject<UOHDCombatSet>(TEXT("CombatSet"));
+	//CreateDefaultSubobject<UOHDHealthSet>(TEXT("HealthSet"));//todo primary health set
+	//CreateDefaultSubobject<UOHDCombatSet>(TEXT("CombatSet"));
 
 	// AbilitySystemComponent needs to be updated at a high frequency.
 	NetUpdateFrequency = 100.0f;
@@ -84,18 +88,18 @@ void AOHDPlayerState::OnReactivated()
 
 void AOHDPlayerState::OnExperienceLoaded(const UOHDExperienceDefinition* /*CurrentExperience*/)
 {
-	//todo
-	// if (AOHDGameMode* OHDGameMode = GetWorld()->GetAuthGameMode<AOHDGameMode>())
-	// {
-	// 	if (const UOHDPawnData* NewPawnData = OHDGameMode->GetPawnDataForController(GetOwningController()))
-	// 	{
-	// 		SetPawnData(NewPawnData);
-	// 	}
-	// 	else
-	// 	{
-	// 		UE_LOG(LogCore, Error, TEXT("AOHDPlayerState::OnExperienceLoaded(): Unable to find PawnData to initialize player state [%s]!"), *GetNameSafe(this));
-	// 	}
-	// }
+	//todo priamary why is this commented? not used?
+	if (const AOHDGameMode* OHDGameMode = GetWorld()->GetAuthGameMode<AOHDGameMode>())
+	{
+		if (const UOHDPawnData* NewPawnData = OHDGameMode->GetPawnDataForController(GetOwningController()))
+		{
+			SetPawnData(NewPawnData);
+		}
+		else
+		{
+			UE_LOG(LogCore, Error, TEXT("AOHDPlayerState::OnExperienceLoaded(): Unable to find PawnData to initialize player state [%s]!"), *GetNameSafe(this));
+		}
+	}
 }
 
 void AOHDPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -109,33 +113,32 @@ void AOHDPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MyPlayerConnectionType, SharedParams)
 }
 
-//todo
-// AOHDPlayerController* AOHDPlayerState::GetOHDPlayerController() const
-// {
-// 	return Cast<AOHDPlayerController>(GetOwner());
-// }
+AOHDPlayerController* AOHDPlayerState::GetOHDPlayerController() const
+{
+	return Cast<AOHDPlayerController>(GetOwner());
+}
 
-// UAbilitySystemComponent* AOHDPlayerState::GetAbilitySystemComponent() const
-// {
-// 	//return GetOHDAbilitySystemComponent();
-// }
+UAbilitySystemComponent* AOHDPlayerState::GetAbilitySystemComponent() const
+{
+	return GetOHDAbilitySystemComponent();
+}
 
 void AOHDPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
 	// todo
-	// check(AbilitySystemComponent);
-	// AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
-	//
-	// if (GetNetMode() != NM_Client)
-	// {
-	// 	AGameStateBase* GameState = GetWorld()->GetGameState();
-	// 	check(GameState);
-	// 	UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
-	// 	check(ExperienceComponent);
-	// 	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnOHDExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
-	// }
+	check(AbilitySystemComponent);
+	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
+	
+	if (GetNetMode() != NM_Client)
+	{
+		AGameStateBase* GameState = GetWorld()->GetGameState();
+		check(GameState);
+		UOHDExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UOHDExperienceManagerComponent>();
+		check(ExperienceComponent);
+		ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnOHDExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	}
 }
 
 void AOHDPlayerState::SetPawnData(const UOHDPawnData* InPawnData)
@@ -156,6 +159,7 @@ void AOHDPlayerState::SetPawnData(const UOHDPawnData* InPawnData)
 	MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, PawnData, this);
 	PawnData = InPawnData;
 
+	// todo primary ability set 
 	// for (const UOHDAbilitySet* AbilitySet : PawnData->AbilitySets)
 	// {
 	// 	if (AbilitySet)
