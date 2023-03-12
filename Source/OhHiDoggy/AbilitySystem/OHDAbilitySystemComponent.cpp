@@ -178,7 +178,7 @@ void UOHDAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)))
 			{
-				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
+				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);//what abilities has pressed status by handle
 				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
 			}
 		}
