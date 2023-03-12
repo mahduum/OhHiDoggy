@@ -85,7 +85,26 @@ public:
 	// virtual FOnOHDTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~End of IOHDTeamAgentInterface interface
 
+	UFUNCTION(BlueprintCallable, Category=Character)
+	bool CanTurnInPlace90() const;
+
 protected:
+	/**
+ * Customizable event to check if the character can jump in the current state.
+ * Default implementation returns true if the character is on the ground and not crouching,
+ * has a valid CharacterMovementComponent and CanEverJump() returns true.
+ * Default implementation also allows for 'hold to jump higher' functionality: 
+ * As well as returning true when on the ground, it also returns true when GetMaxJumpTime is more
+ * than zero and IsJumping returns true.
+ * 
+ *
+ * @Return Whether the character can jump in the current state. 
+ */
+	UFUNCTION(BlueprintNativeEvent, Category=Character, meta=(DisplayName="CanTurnInPlace90"))
+	bool CanTurnInPlace90Internal() const;
+	virtual bool CanTurnInPlace90Internal_Implementation() const;
+	bool TurnInPlace90IsAllowedInternal() const;
+	
 	//todo use from PawnComponentExt instead
 	FOnDoggyPossessed OnDoggyPossessedDelegate;
 

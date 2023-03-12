@@ -13,7 +13,7 @@ class UPhysicalMaterial;
  * 
  */
 USTRUCT()
-struct OHHIDOGGY_API FOHDGameplayEffectContext : public FGameplayEffectContext//todo missing api?
+struct OHHIDOGGY_API FOHDGameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_BODY()
 

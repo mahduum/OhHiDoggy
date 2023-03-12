@@ -56,10 +56,6 @@ ACanineCharacter::ACanineCharacter(const FObjectInitializer& ObjectInitializer)
 	PawnExtComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
 
 
-	// TODO primary remember to set the custom camera like in OHD
-	CameraComponent = CreateDefaultSubobject<UOHDCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
-
 	// Temporary camera settings://todo remove when OHDCamera is ready
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -67,6 +63,12 @@ ACanineCharacter::ACanineCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	
+	// TODO primary remember to set the custom camera like in OHD
+	CameraComponent = CreateDefaultSubobject<UOHDCameraComponent>(TEXT("CameraComponent"));
+	//CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
+	CameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	CameraComponent->bUsePawnControlRotation = false;
+
 	// Create a follow camera //todo remove when OHDCamera is ready
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
@@ -189,6 +191,52 @@ void ACanineCharacter::NotifyControllerChanged()
 	// 		ConditionalBroadcastTeamChanged(this, OldTeamId, MyTeamID);
 	// 	}
 	// }
+}
+
+bool ACanineCharacter::CanTurnInPlace90() const
+{
+	return CanTurnInPlace90Internal();
+}
+
+bool ACanineCharacter::CanTurnInPlace90Internal_Implementation() const
+{
+	//todo expand?
+	return !bIsCrouched && JumpIsAllowedInternal();
+}
+
+bool ACanineCharacter::TurnInPlace90IsAllowedInternal() const
+{
+	//todo primary do something similar but for turns, conditions will be similar though
+	// Ensure that the CharacterMovement state is valid
+	// bool bJumpIsAllowed = CharacterMovement->CanAttemptJump();
+	//
+	// if (bJumpIsAllowed)
+	// {
+	// 	// Ensure JumpHoldTime and JumpCount are valid.
+	// 	if (!bWasJumping || GetJumpMaxHoldTime() <= 0.0f)
+	// 	{
+	// 		if (JumpCurrentCount == 0 && CharacterMovement->IsFalling())
+	// 		{
+	// 			bJumpIsAllowed = JumpCurrentCount + 1 < JumpMaxCount;
+	// 		}
+	// 		else
+	// 		{
+	// 			bJumpIsAllowed = JumpCurrentCount < JumpMaxCount;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		// Only consider JumpKeyHoldTime as long as:
+	// 		// A) The jump limit hasn't been met OR
+	// 		// B) The jump limit has been met AND we were already jumping
+	// 		const bool bJumpKeyHeld = (bPressedJump && JumpKeyHoldTime < GetJumpMaxHoldTime());
+	// 		bJumpIsAllowed = bJumpKeyHeld &&
+	// 			((JumpCurrentCount < JumpMaxCount) || (bWasJumping && JumpCurrentCount == JumpMaxCount));
+	// 	}
+	// }
+	//
+	// return bJumpIsAllowed;
+	return true;
 }
 
 AOHDPlayerController* ACanineCharacter::GetOHDPlayerController() const
