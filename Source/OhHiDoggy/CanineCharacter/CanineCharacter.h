@@ -88,6 +88,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Character)
 	bool CanTurnInPlace90() const;
 
+	UPROPERTY(BlueprintReadOnly, Category=Character)
+	uint32 bPressedTurnInPlace90:1;
+
+	UFUNCTION(BlueprintCallable, Category=Character)
+	void TurnInPlace90();
+
+	UFUNCTION(BlueprintCallable, Category=Character)
+	void StopTurningInPlace90();
+
 protected:
 	/**
  * Customizable event to check if the character can jump in the current state.

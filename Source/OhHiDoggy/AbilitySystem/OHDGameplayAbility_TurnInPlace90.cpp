@@ -59,7 +59,7 @@ void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Stop()
 	{
 		if (OHDCharacter->IsLocallyControlled() && OHDCharacter->bPressedTurnInPlace90)
 		{
-			OHDCharacter->StopTurnInPlace90ing();
+			OHDCharacter->StopTurningInPlace90();
 		}
 	}
 }

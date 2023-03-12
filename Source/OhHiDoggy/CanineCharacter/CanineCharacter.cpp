@@ -193,6 +193,18 @@ void ACanineCharacter::NotifyControllerChanged()
 	// }
 }
 
+void ACanineCharacter::TurnInPlace90()
+{
+	bPressedJump = true;
+	JumpKeyHoldTime = 0.0f;
+}
+
+void ACanineCharacter::StopTurningInPlace90()
+{
+	bPressedJump = false;
+	ResetJumpState();
+}
+
 bool ACanineCharacter::CanTurnInPlace90() const
 {
 	return CanTurnInPlace90Internal();

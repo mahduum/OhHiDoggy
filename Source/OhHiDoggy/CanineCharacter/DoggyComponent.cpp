@@ -216,6 +216,7 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 				//todo what do to with those handles?:
 				TArray<uint32> BindHandles;
+				//input activated ability actions added in InputConfig as actions under AbilityInputActions - it is data asset class from UOHDInputConfig in DA_DoggyInputConfig_Agility) (examples: jump, reload, dash, fire, turn in place 90...
 				DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 
 				/* input config is needed to find the actual InputAction asset in the game while all we are providing is just a tag, because input config has a helper

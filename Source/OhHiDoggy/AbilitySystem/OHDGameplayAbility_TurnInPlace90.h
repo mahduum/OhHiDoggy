@@ -10,12 +10,12 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class OHHIDOGGY_API UOHDGameplayAbility_TurnInPlace90 : public UOHDGameplayAbility
 {
 	GENERATED_BODY()
 
-	
+
 public:
 
 	UOHDGameplayAbility_TurnInPlace90(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
