@@ -10,6 +10,7 @@
 #include "OhHiDoggy/GameModes/OHDExperienceManagerComponent.h"
 #include "OhHiDoggy/GameModes/OHDGameMode.h"
 #include "OhHiDoggy/OHDLogChannels.h"
+#include "OhHiDoggy/AbilitySystem/OHDAbilitySet.h"
 
 
 AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -163,14 +164,14 @@ void AOHDPlayerState::SetPawnData(const UOHDPawnData* InPawnData)
 	PawnData = InPawnData;
 
 	// todo primary ability set 
-	// for (const UOHDAbilitySet* AbilitySet : PawnData->AbilitySets)
-	// {
-	// 	if (AbilitySet)
-	// 	{
-	// 		AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
-	// 	}
-	// }
-	//
+	for (const UOHDAbilitySet* AbilitySet : PawnData->AbilitySets)
+	{
+		if (AbilitySet)
+		{
+			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+		}
+	}
+	
 	// UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(this, NAME_OHDAbilityReady);
 	
 	ForceNetUpdate();

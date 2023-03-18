@@ -466,8 +466,8 @@ bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 	return true;
 }
 
-//declare a delegate that takes in FInputActonValue, bind to it a lambda, then call it inside this funtion with InputActionValue :)
-void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag)//todo make on released too
+/* This could also be achieved by making two different abilities, one for turn left, the other for right */
+void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag)//todo make on released too (TODO: can the ability handle be bound to a delegate too? such that we don't need to retrieve it?)
 {
 	if (const APawn* Pawn = GetPawn<APawn>())
 	{
@@ -475,7 +475,40 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 		{
 			if (UOHDAbilitySystemComponent* OHDASC = PawnExtComp->GetOHDAbilitySystemComponent())
 			{
-				OHDASC->AbilityInputTagPressed(InputTag);//todo instead trigger event with values that is exact input value (later can do additional binding for when the button was released and what was the input value then? or the time for which it has been held? two events on pressed and released
+				//choose additional tag based on whether we are turning left or right, on tag pressed is ability activated automatically, and on released is deactivated.
+				//NOTE: tag that activates the ability by association with delegate binding is not the same as tags that ability has on itself!!!
+				//TODO commented out for testing
+				//OHDASC->AbilityInputTagPressed(InputTag);//todo instead trigger event with values that is exact input value (later can do additional binding for when the button was released and what was the input value then? or the time for which it has been held? two events on pressed and released
+				
+				TArray<FGameplayAbilitySpecHandle> OutAbilities;
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(InputTag);
+				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Ability spec handle found by tag (%s), count: %i"), *InputTag.GetTagName().ToString(), OutAbilities.Num());
+
+				TArray<FGameplayAbilitySpecHandle> OutAllAbilities;
+				
+				OHDASC->GetAllAbilities(OutAllAbilities);
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("All abilities count: %i"), OutAllAbilities.Num());
+
+				const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
+				check(PawnData);
+				auto InputConfig = PawnData->InputConfig;
+				check(InputConfig);
+				if(auto IAForAbility = InputConfig->FindAbilityInputActionForTag(InputTag))//if I pass the whole action then I don't need all this
+				{
+					FGameplayAbilitySpec* AbilitySpecHandle = OHDASC->FindAbilitySpecFromInputID(
+						IAForAbility->GetUniqueID());//todo this is something else, but I dont know what
+
+					if (AbilitySpecHandle != nullptr)
+					{
+						UE_LOG(LogOHDAbilitySystem, Display, TEXT("Ability spec handle found: %s"), *AbilitySpecHandle->Ability->GetFullName());
+					}
+				}
+				
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Turn in place triggered first step and broadcasting with input value: %f"), InputActionValue.Get<FVector2D>().X);
+
+				//OHDASC->TriggerAbilityFromGameplayEvent()
 			}
 		}	
 	}

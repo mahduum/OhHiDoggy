@@ -1,8 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "OHDGameplayAbility_TurnInPlace90.h"
-
+#include "OhHiDoggy/OHDLogChannels.h"
 #include "OhHiDoggy/CanineCharacter/CanineCharacter.h"
 
 UOHDGameplayAbility_TurnInPlace90::UOHDGameplayAbility_TurnInPlace90(const FObjectInitializer& ObjectInitializer)
@@ -45,6 +44,8 @@ void UOHDGameplayAbility_TurnInPlace90::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+	UE_LOG(LogOHD, Display, TEXT("Turn in place ability activated (also to check whether it was activated by tag."));
+
 	//todo when binding it pass input action data? is it with TryActivateAbility?
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }

@@ -9,6 +9,7 @@
 class UOHDAbilityTagRelationshipMapping;
 class UOHDInputConfig;
 class UOHDCameraMode;
+class UOHDAbilitySet;
 /*
  * UOHDPawnData
  *
@@ -32,8 +33,8 @@ public:
 	TSubclassOf<APawn> PawnClass;
 
 	// Ability sets to grant to this pawn's ability system. //todo primary add class sets
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Abilities")//todo make from primary data asset
-	// TArray<ULyraAbilitySet*> AbilitySets;//todo abilities with data: ability class, ability level and ability input tag, gameplay effects and owner attribute sets
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Abilities")//todo make from primary data asset
+	TArray<UOHDAbilitySet*> AbilitySets;//todo abilities with data: ability class, ability level and ability input tag, gameplay effects and owner attribute sets
 
 	// What mapping of ability tags to use for actions taking by this pawn//todo make from udataasset (tags to cancel, tags required, what other abilities is it blocking etc.)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "OhHiDoggy|Abilities")
