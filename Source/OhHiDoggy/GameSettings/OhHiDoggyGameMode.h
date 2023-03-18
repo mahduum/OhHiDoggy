@@ -7,7 +7,7 @@
 #include "OhHiDoggyGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AOhHiDoggyGameMode : public AGameModeBase
+class AOhHiDoggyGameMode : public AGameModeBase//todo to delete
 {
 	GENERATED_BODY()
 

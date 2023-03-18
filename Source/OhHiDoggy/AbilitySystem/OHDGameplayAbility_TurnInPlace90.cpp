@@ -41,6 +41,14 @@ void UOHDGameplayAbility_TurnInPlace90::EndAbility(const FGameplayAbilitySpecHan
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UOHDGameplayAbility_TurnInPlace90::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
+{
+	//todo when binding it pass input action data? is it with TryActivateAbility?
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
 void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Start()
 {
 	if (ACanineCharacter* OHDCharacter = GetOHDCharacterFromActorInfo())

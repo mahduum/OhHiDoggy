@@ -9,6 +9,8 @@
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
 #include "OhHiDoggy/GameModes/OHDExperienceManagerComponent.h"
 #include "OhHiDoggy/GameModes/OHDGameMode.h"
+#include "OhHiDoggy/OHDLogChannels.h"
+
 
 AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -17,6 +19,8 @@ AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UOHDAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+	UE_LOG(LogOHD, Display, TEXT("Ability system created: %s"), *AbilitySystemComponent->GetFullName());
+
 
 	//CreateDefaultSubobject<UOHDHealthSet>(TEXT("HealthSet"));//todo primary health set
 	//CreateDefaultSubobject<UOHDCombatSet>(TEXT("CombatSet"));
@@ -24,7 +28,6 @@ AOHDPlayerState::AOHDPlayerState(const FObjectInitializer& ObjectInitializer)
 	// AbilitySystemComponent needs to be updated at a high frequency.
 	NetUpdateFrequency = 100.0f;
 }
-
 
 void AOHDPlayerState::PreInitializeComponents()
 {

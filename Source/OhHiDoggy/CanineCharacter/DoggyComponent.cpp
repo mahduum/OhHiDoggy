@@ -56,7 +56,7 @@ void UDoggyComponent::OnRegister()
 	}
 	else
 	{
-		UE_LOG(LogCore, Error, TEXT("[UOhHiDoggyHeroComponent::OnRegister] This component has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint."));
+		UE_LOG(LogOHD, Error, TEXT("[UOhHiDoggyHeroComponent::OnRegister] This component has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint."));
 
 //todo: what is it for?
 #if WITH_EDITOR
@@ -77,7 +77,7 @@ void UDoggyComponent::OnRegister()
 
 void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register to owner or pawn ext when pawn will be ready to initialize (like onpossessed etc.)
 {
-	UE_LOG(LogCore, Display, TEXT("Pawn is ready to initialize for input."));	
+	UE_LOG(LogOHD, Display, TEXT("Pawn is ready to initialize for input."));	
 
 	if (!ensure(!bPawnHasInitialized))
 	{
@@ -91,20 +91,22 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 		return;
 	}
 
-	UE_LOG(LogCore, Display, TEXT("Pawn is found for input to initialize on."));
+	UE_LOG(LogOHD, Display, TEXT("Pawn is found for input to initialize on."));
 
 	const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 
 	AOHDPlayerState* OhHiDoggyPS = GetPlayerState<AOHDPlayerState>();
 	check(OhHiDoggyPS);
 	
-	UE_LOG(LogCore, Display, TEXT("Player state found."));
+	UE_LOG(LogOHD, Display, TEXT("Player state found: %s"), *OhHiDoggyPS->GetFullName());
 
 
 	const UOHDPawnData* PawnData = nullptr;
 
 	 if (UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
 	 {
+	 	UE_LOG(LogOHD, Display, TEXT("Pawn extension component found and ready for ability system init."));
+
 	 	PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
 	
 	 	// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
@@ -114,11 +116,11 @@ void UDoggyComponent::OnPawnReadyToInitialize()//todo bound this in on register 
 
 	if (APlayerController* OhHiDoggyPC = GetController<APlayerController>())
 	{
-		UE_LOG(LogCore, Display, TEXT("Controller is found for input to initialize on."));
+		UE_LOG(LogOHD, Display, TEXT("Controller is found for input to initialize on."));
 
 		if (Pawn->InputComponent != nullptr)
 		{
-			UE_LOG(LogCore, Display, TEXT("Pawn's input component is ready to initialize player input."));
+			UE_LOG(LogOHD, Display, TEXT("Pawn's input component is ready to initialize player input."));
 
 			InitializePlayerInput(Pawn->InputComponent);
 		}
@@ -158,7 +160,7 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 {
 	check(PlayerInputComponent);
 
-	UE_LOG(LogCore, Error, TEXT("Initializing input on [%s]."), *GetNameSafe(this));
+	UE_LOG(LogOHD, Display, TEXT("Initializing input on [%s]."), *GetNameSafe(this));
 
 	const APawn* Pawn = GetPawn<APawn>();
 	if (!Pawn)
@@ -181,17 +183,17 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 
 	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
 	{
-		UE_LOG(LogCore, Display, TEXT("Pawn's extension component is ready for input init."));
+		UE_LOG(LogOHD, Display, TEXT("Pawn's extension component is ready for input init."));
 
 		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())//todo make pawn data and nest it in extension comp
 		{
-			UE_LOG(LogCore, Display, TEXT("Pawn's data is ready for input init."));
+			UE_LOG(LogOHD, Display, TEXT("Pawn's data is ready for input init."));
 
 			//input config is necessary to bind native input actions to functions in c++ code below, without it the native actions won't be bound to any functions
 			//and we would not be able to trigger them
 			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)
 			{
-				UE_LOG(LogCore, Display, TEXT("Input config found in pawn's data for input init."));
+				UE_LOG(LogOHD, Display, TEXT("Input config found in pawn's data for input init."));
 
 				//todo make as UOhHiDoggyGameplayTags, tags by which to find to what input action the native action is bound
 				//an input action has its tag defined and assigned and it can by found by that tag, and internally then it bounds and action, object, trigger event with this input action.
@@ -218,6 +220,7 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				TArray<uint32> BindHandles;
 				//input activated ability actions added in InputConfig as actions under AbilityInputActions - it is data asset class from UOHDInputConfig in DA_DoggyInputConfig_Agility) (examples: jump, reload, dash, fire, turn in place 90...
 				DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+				DoggyIC->BindAbilityActionsWithInputData(InputConfig, this, &ThisClass::OnTurnInPlaceStarted, nullptr, BindHandles);
 
 				/* input config is needed to find the actual InputAction asset in the game while all we are providing is just a tag, because input config has a helper
 				 * function that allows to find it by tag given that inside the actual input config asset we had it set up correctly.
@@ -463,6 +466,21 @@ bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 	return true;
 }
 
+//declare a delegate that takes in FInputActonValue, bind to it a lambda, then call it inside this funtion with InputActionValue :)
+void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag)//todo make on released too
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+		{
+			if (UOHDAbilitySystemComponent* OHDASC = PawnExtComp->GetOHDAbilitySystemComponent())
+			{
+				OHDASC->AbilityInputTagPressed(InputTag);//todo instead trigger event with values that is exact input value (later can do additional binding for when the button was released and what was the input value then? or the time for which it has been held? two events on pressed and released
+			}
+		}	
+	}
+	UE_LOG(LogOHD, Display, TEXT("Turn in place triggered first step and broadcasting with input value: %f"), InputActionValue.Get<FVector2D>().X);
+}
 
 void UDoggyComponent::OnInputConfigActivated(const FLoadedMappableConfigPair& ConfigPair)
 {

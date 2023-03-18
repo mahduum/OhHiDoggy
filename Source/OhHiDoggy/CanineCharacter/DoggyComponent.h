@@ -62,6 +62,7 @@ protected:
 	virtual void OnRegister() override;
 
 	virtual bool IsPawnComponentReadyToInitialize() const override;//TODO when base class is added add override
+	void OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag);
 	void OnPawnReadyToInitialize();//todo here initialize input
 
 	virtual void BeginPlay() override;

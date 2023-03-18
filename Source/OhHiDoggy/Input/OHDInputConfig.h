@@ -39,4 +39,7 @@ public:
 	// List of input actions used by the owner.  These input actions are mapped to a gameplay tag and are automatically bound to abilities with matching input tags.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
 	TArray<FDoggyInputAction> AbilityInputActions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))
+	TArray<FDoggyInputAction> AbilityInputActionsWithInputData;
 };

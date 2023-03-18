@@ -177,12 +177,19 @@ void UOHDPawnComponentExtension::SetPawnData(const UOHDPawnData* InPawnData)//to
 
 void UOHDPawnComponentExtension::InitializeAbilitySystem(UOHDAbilitySystemComponent* InASC, AActor* InOwnerActor)
 {
-	check(InASC);
+	if (InASC == nullptr)
+	{
+		// The ability system component hasn't changed.
+		UE_LOG(LogOHD, Error, TEXT("Ability system component is nullptr"));
+	}
+	
+	checkf(InASC, TEXT("Ability system component check failed."));
 	check(InOwnerActor);
 
 	if (AbilitySystemComponent == InASC)
 	{
 		// The ability system component hasn't changed.
+		UE_LOG(LogOHD, Display, TEXT("Ability system component hasn't changed and is: %s"), *AbilitySystemComponent->GetFullName());
 		return;
 	}
 
@@ -195,7 +202,7 @@ void UOHDPawnComponentExtension::InitializeAbilitySystem(UOHDAbilitySystemCompon
 	APawn* Pawn = GetPawnChecked<APawn>();
 	AActor* ExistingAvatar = InASC->GetAvatarActor();
 
-	UE_LOG(LogOHD, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
+	UE_LOG(LogOHD, Display, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
 
 	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
 	{
