@@ -8,15 +8,16 @@
 #include "InputAction.h"
 #include "OHDGameplayAbility_TurnInPlace90.generated.h"
 
-USTRUCT(BlueprintType)
-struct FAbilityTurnInPlace90InputData
+UCLASS(BlueprintType)
+class UAbilityTurnInPlace90InputData : public UObject
 {
 	GENERATED_BODY()
-
+public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability Input Data")
-	TWeakObjectPtr<UInputAction> TriggerInputAction;
+	FInputActionValue StartAbilityInputActionValue;
 	//add tag to ability before it is triggeres
 };
+
 /**
  * 
  */
@@ -35,6 +36,7 @@ protected:
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void SendGameplayEvent(FGameplayTag EventTag, FGameplayEventData Payload) override;
 
 	UFUNCTION(BlueprintCallable, Category = "OHD|Ability")
 	void CharacterTurnInPlace90Start();

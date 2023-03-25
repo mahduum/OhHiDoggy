@@ -3,6 +3,7 @@
 
 #include "DoggyComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CanineCharacter.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Pawn.h"
@@ -11,6 +12,7 @@
 #include "OhHiDoggy/FOHDGameplayTags.h"
 #include "OhHiDoggy/OHDLogChannels.h"
 #include "OhHiDoggy/AbilitySystem/OHDAbilitySystemComponent.h"
+#include "OhHiDoggy/AbilitySystem/OHDGameplayAbility_TurnInPlace90.h"
 #include "OhHiDoggy/Camera/OHDCameraComponent.h"
 #include "OhHiDoggy/Camera/OHDCameraMode.h"
 #include "OhHiDoggy/Components/OHDPawnComponentExtension.h"
@@ -478,37 +480,51 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 				//choose additional tag based on whether we are turning left or right, on tag pressed is ability activated automatically, and on released is deactivated.
 				//NOTE: tag that activates the ability by association with delegate binding is not the same as tags that ability has on itself!!!
 				//TODO commented out for testing
-				//OHDASC->AbilityInputTagPressed(InputTag);//todo instead trigger event with values that is exact input value (later can do additional binding for when the button was released and what was the input value then? or the time for which it has been held? two events on pressed and released
+				//OHDASC->AbilityInputTagPressed(InputTag);//if we would be using two separate abilities for left and right turn we could use just this call with one or other tag (left/right) base on input value.
+
+				UAbilityTurnInPlace90InputData* InputData = NewObject<UAbilityTurnInPlace90InputData>();
+				InputData->StartAbilityInputActionValue = InputActionValue;
+				FGameplayEventData AbilityEventData;//todo need to cast this in BP
+				AbilityEventData.OptionalObject = InputData;//instead of adding data I can add just appropriate tag
+				//AbilityEventData.TargetData = InputActionValue;
 				
 				TArray<FGameplayAbilitySpecHandle> OutAbilities;
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(InputTag);
 				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);
-				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Ability spec handle found by tag (%s), count: %i"), *InputTag.GetTagName().ToString(), OutAbilities.Num());
-
-				TArray<FGameplayAbilitySpecHandle> OutAllAbilities;
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Before activation ability spec handle found by tag (%s), count: %i"), *InputTag.GetTagName().ToString(), OutAbilities.Num());
 				
-				OHDASC->GetAllAbilities(OutAllAbilities);
-				UE_LOG(LogOHDAbilitySystem, Display, TEXT("All abilities count: %i"), OutAllAbilities.Num());
-
-				const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>();
-				check(PawnData);
-				auto InputConfig = PawnData->InputConfig;
-				check(InputConfig);
-				if(auto IAForAbility = InputConfig->FindAbilityInputActionForTag(InputTag))//if I pass the whole action then I don't need all this
+				for (const FGameplayAbilitySpecHandle AbilitySpecHandle : OutAbilities)
 				{
-					FGameplayAbilitySpec* AbilitySpecHandle = OHDASC->FindAbilitySpecFromInputID(
-						IAForAbility->GetUniqueID());//todo this is something else, but I dont know what
-
-					if (AbilitySpecHandle != nullptr)
+					//OHDASC->HandleGameplayEvent()//NOTE triggers abilities triggerable by the specific tag passed into it; can be called indirectly form SendGameEvent form ability
+					//can also use: UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(AActor* Actor, FGameplayTag EventTag, FGameplayEventData Payload).
+					if(FGameplayAbilitySpec* Ability = OHDASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 					{
-						UE_LOG(LogOHDAbilitySystem, Display, TEXT("Ability spec handle found: %s"), *AbilitySpecHandle->Ability->GetFullName());
+						double XValue = InputActionValue.Get<FVector2d>().X;
+						
+						//todo change vector to 1d vector?
+						//Ability->DynamicAbilityTags.AddTag(FOHDGameplayTags::Get().Cheat_GodMode);
+						//Ability->Ability->AbilityTags
+						
+						//FGameplayAbilityTargetDataHandle DataHandle;
+						//OHDASC->GetAbilityTargetData(AbilitySpecHandle, Ability->ActivationInfo, DataHandle);//add some data to target data
+						//DataHandle.//TODO NOTE adds new data for ability, look at the end for example
+						
+						//auto TagToAdd = XValue > 0 ? FOHDGameplayTags::Get().InputTag_TurnRight90 : FOHDGameplayTags::Get().InputTag_TurnLeft90;
+						//UE_LOG(LogOHD, Display, TEXT("Turn in place ability activated (also to check whether it was activated by tag."));
+						//todo in case we don't need the ability itself
+						//OHDASC->AddLooseGameplayTag(TagToAdd);//todo must also set root motion from everything. Do all this in ability? What with the event anim notify? Try removing tag on gameplay cue? Can ability await anim notify? Check how Lyra removes is_asd tag
 					}
+					//if x value != 0
+
+					OHDASC->TriggerAbilityFromGameplayEvent(AbilitySpecHandle, OHDASC->AbilityActorInfo.Get(), InputTag, &AbilityEventData, *OHDASC);//TODO receive this event in BP
+
+					auto ActorTags = OHDASC->AbilityActorInfo.Get()->AvatarActor->Tags;
+					FString JoinedTagsString = FString::JoinBy(ActorTags, TEXT(", "), [](const FName& Name){ return Name.ToString();});
+					UE_LOG(LogOHDAbilitySystem, Display, TEXT("After event activation abilities on actor data from ablity system: %s"), *JoinedTagsString);
 				}
 				
 				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Turn in place triggered first step and broadcasting with input value: %f"), InputActionValue.Get<FVector2D>().X);
-
-				//OHDASC->TriggerAbilityFromGameplayEvent()
 			}
 		}	
 	}
@@ -617,3 +633,65 @@ void UDoggyComponent::ClearAbilityCameraMode(const FGameplayAbilitySpecHandle& O
 		AbilityCameraModeOwningSpecHandle = FGameplayAbilitySpecHandle();
 	}
 }
+
+/*
+ *
+*USTRUCT(BlueprintType)
+struct MYGAME_API FGameplayAbilityTargetData_CustomData : public FGameplayAbilityTargetData
+{
+	GENERATED_BODY()
+public:
+
+	FGameplayAbilityTargetData_CustomData()
+	{ }
+
+	UPROPERTY()
+	FName CoolName = NAME_None;
+
+	UPROPERTY()
+	FPredictionKey MyCoolPredictionKey;
+
+	// This is required for all child structs of FGameplayAbilityTargetData
+	virtual UScriptStruct* GetScriptStruct() const override
+	{
+		return FGameplayAbilityTargetData_CustomData::StaticStruct();
+	}
+
+	// This is required for all child structs of FGameplayAbilityTargetData
+	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+	{
+		// The engine already defined NetSerialize for FName & FPredictionKey, thanks Epic!
+		CoolName.NetSerialize(Ar, Map, bOutSuccess);
+		MyCoolPredictionKey.NetSerialize(Ar, Map, bOutSuccess);
+		bOutSuccess = true;
+		return true;
+	}
+}
+
+template<>
+struct TStructOpsTypeTraits<FGameplayAbilityTargetData_CustomData> : public TStructOpsTypeTraitsBase2<FGameplayAbilityTargetData_CustomData>
+{
+	enum
+	{
+		WithNetSerializer = true // This is REQUIRED for FGameplayAbilityTargetDataHandle net serialization to work
+	};
+};
+
+* UFUNCTION(BlueprintPure)
+FGameplayAbilityTargetDataHandle MakeTargetDataFromCustomName(const FName CustomName)
+{
+	// Create our target data type, 
+	// Handle's automatically cleanup and delete this data when the handle is destructed, 
+	// if you don't add this to a handle then be careful because this deals with memory management and memory leaks so its safe to just always add it to a handle at some point in the frame!
+	FGameplayAbilityTargetData_CustomData* MyCustomData = new FGameplayAbilityTargetData_CustomData();
+	// Setup the struct's information to use the inputted name and any other changes we may want to do
+	MyCustomData->CoolName = CustomName;
+	
+	// Make our handle wrapper for Blueprint usage
+	FGameplayAbilityTargetDataHandle Handle;
+	// Add the target data to our handle
+	Handle.Add(MyCustomData);
+	// Output our handle to Blueprint
+	return Handle
+}
+ */

@@ -10,6 +10,7 @@ void UCanineAnimInstance::InitializeWithAbilitySystem(UAbilitySystemComponent* A
 {
 	check(ASC);
 
+	UE_LOG(LogOHDAbilitySystem, Display, TEXT("Initializing gameplay tag property map for anim instance."))
 	GameplayTagPropertyMap.Initialize(this, ASC);
 }
 
