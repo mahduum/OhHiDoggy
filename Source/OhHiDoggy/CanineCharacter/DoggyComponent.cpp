@@ -491,7 +491,7 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 				TArray<FGameplayAbilitySpecHandle> OutAbilities;
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(InputTag);
-				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);
+				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);//todo or choose tag here and call apropriate ability
 				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Before activation ability spec handle found by tag (%s), count: %i"), *InputTag.GetTagName().ToString(), OutAbilities.Num());
 				
 				for (const FGameplayAbilitySpecHandle AbilitySpecHandle : OutAbilities)
