@@ -346,24 +346,8 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 		//todo instead add tag as ability activation, ability will have this tags, how to avoid double ability for left and right?
 		if (Value.X != 0 && Value.Y != 0)
 		{
+			UE_LOG(LogOHD, Display, TEXT("Adding yaw input value."));
 			Pawn->AddControllerYawInput(Value.X * GetYawInputModifier());//todo should rotate less? set variable rotation damper?
-		}
-		//todo link this ability to a separate input but ensure that it will never conflict with turn left while walking input (can activate etc.)
-		else if (Value.X != 0 && Pawn->Tags.ContainsByPredicate([&](const FName Tag) {return Tag == TagRight || Tag == TagLeft;}) == false)
-		{
-			UE_LOG(LogOHD, Display, TEXT("Pawn does not contain turning tags."));
-			if (Value.X > 0)
-			{
-				Pawn->Tags.Add(TagRight);
-				UE_LOG(LogOHD, Display, TEXT("Added %s tag to pawn of type %s, tags count: %i."), *TagRight.ToString(), *Pawn->GetName(), Pawn->Tags.Num());
-			}
-			else
-			{
-				Pawn->Tags.Add(TagLeft);
-				UE_LOG(LogOHD, Display, TEXT("Added %s tag to pawn of type %s, tags count: %i."), *TagLeft.ToString(), *Pawn->GetName(), Pawn->Tags.Num());
-			}
-			//testing ability here only temporary:
-			
 		}
 		
 		if (Value.Y != 0.0f)
