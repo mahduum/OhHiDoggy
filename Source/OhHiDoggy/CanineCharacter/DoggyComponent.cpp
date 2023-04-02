@@ -24,6 +24,7 @@
 #include "OhHiDoggy/Player/OHDPlayerController.h"
 #include "OhHiDoggy/Player/OHDPlayerState.h"
 #include "OhHiDoggy/Settings/OHDSettingsLocal.h"
+#include "EnhancedInputComponent.h"
 #include "OhHiDoggy/System/OHDAssetManager.h"
 
 //#include "OhHiDoggy/Input/DoggyInputConfig.h"
@@ -336,9 +337,6 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 
 		const FRotator ControlMovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
-		
-		auto TagLeft = FOHDGameplayTags::Get().InputTag_TurnLeft90.GetTagName();
-		auto TagRight = FOHDGameplayTags::Get().InputTag_TurnRight90.GetTagName();
 
 		// bool conatains = Pawn->Tags.ContainsByPredicate([&](const FName Tag) {return Tag == TagRight || Tag == TagLeft;});
 		// UE_LOG(LogOHD, Display, TEXT("Pawn does not contain turning tags: %i."), conatains == false);
@@ -346,7 +344,6 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 		//todo instead add tag as ability activation, ability will have this tags, how to avoid double ability for left and right?
 		if (Value.X != 0 && Value.Y != 0)
 		{
-			UE_LOG(LogOHD, Display, TEXT("Adding yaw input value."));
 			Pawn->AddControllerYawInput(Value.X * GetYawInputModifier());//todo should rotate less? set variable rotation damper?
 		}
 		
@@ -455,6 +452,7 @@ bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 /* This could also be achieved by making two different abilities, one for turn left, the other for right */
 void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag)//todo make on released too (TODO: can the ability handle be bound to a delegate too? such that we don't need to retrieve it?)
 {
+	UE_LOG(LogCore, Display, TEXT("Ability started, turn in place"));
 	if (const APawn* Pawn = GetPawn<APawn>())
 	{
 		if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))

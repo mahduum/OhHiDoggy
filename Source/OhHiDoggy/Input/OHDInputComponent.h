@@ -9,6 +9,7 @@
 #include "MappableConfigPair.h"
 #include "OhHiDoggy/FOHDGameplayTags.h"
 #include "type_traits"
+#include "OhHiDoggy/OHDLogChannels.h"
 #include "OHDInputComponent.generated.h"
 
 struct FGameplayTag;
@@ -20,6 +21,27 @@ class OHHIDOGGY_API UOHDInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
 
+public:
+
+	/* Capture some additional data args if object method needs them */
+	template <typename UserClass, typename FuncType, typename... VarTypes>
+	auto MakeLambda(UserClass* Obj, FuncType Func, VarTypes... Vars)
+	{
+		return [Obj, Func, Vars...](const FInputActionValue& Value) -> decltype(auto)
+		{
+			return (Obj->*Func)(Value, Vars...);
+		};
+	}
+	
+	/* We can bind a UObject but such what will also take some extra arguments aside from those bound to it, maybe here I could bind lambda that would capture vars, and accept value arg as argument  */
+	template< class FuncType, class UserClass, typename... VarTypes >
+	FEnhancedInputActionEventBinding& BindActionWithValues(const UInputAction* Action, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, VarTypes... Vars)
+	{
+		TUniquePtr<FEnhancedInputActionEventDelegateBinding<FEnhancedInputActionHandlerValueSignature>> AB = MakeUnique<FEnhancedInputActionEventDelegateBinding<FEnhancedInputActionHandlerValueSignature>>(Action, TriggerEvent);
+		AB->Delegate.MakeDelegate().BindLambda(MakeLambda(Object, Func, Vars...));
+		return *EnhancedActionEventBindings.Add_GetRef(MoveTemp(AB));
+	}
+	
 public:
 
 	UOHDInputComponent(const FObjectInitializer& ObjectInitializer);
@@ -122,6 +144,7 @@ void UOHDInputComponent::BindAbilityActionsWithInputData(const UOHDInputConfig* 
 		{
 			if (PressedFunc)//todo maybe pass also trigger event type???
 			{
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Binding action input for tag [%s], input action name: [%s]"), *Action.InputTag.GetTagName().ToString(), *Action.InputAction->GetName());
 				BindHandles.Add(BindActionWithValues(Action.InputAction, ETriggerEvent::Started, Object, PressedFunc, Action.InputTag).GetHandle());//since it is signature with no args apparently, is it then bound to the last arg that is input tag apparently and called with it? maybe it is possible to pass there any number of args?
 			}
 

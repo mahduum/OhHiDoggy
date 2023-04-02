@@ -16,6 +16,7 @@ UOHDGameplayAbility_TurnInPlace90::UOHDGameplayAbility_TurnInPlace90(const FObje
 
 bool UOHDGameplayAbility_TurnInPlace90::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
+	UE_LOG(LogOHD, Display, TEXT("Can activate turn in place ability check."));
 	if (!ActorInfo || !ActorInfo->AvatarActor.IsValid())
 	{
 		return false;

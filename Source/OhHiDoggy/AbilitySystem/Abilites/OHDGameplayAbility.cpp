@@ -486,7 +486,7 @@ bool UOHDGameplayAbility::CanChangeActivationGroup(EOHDAbilityActivationGroup Ne
 
 bool UOHDGameplayAbility::ChangeActivationGroup(EOHDAbilityActivationGroup NewGroup)
 {
-	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(ChangeActivationGroup, false);
+	//ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(UOHDGameplayAbility::ChangeActivationGroup, false);
 
 	if (!CanChangeActivationGroup(NewGroup))
 	{
@@ -509,7 +509,7 @@ bool UOHDGameplayAbility::ChangeActivationGroup(EOHDAbilityActivationGroup NewGr
 
 void UOHDGameplayAbility::SetCameraMode(TSubclassOf<UOHDCameraMode> CameraMode)
 {
-	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(SetCameraMode, );
+	//ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(SetCameraMode, );
 
 	if (UDoggyComponent* HeroComponent = GetHeroComponentFromActorInfo())
 	{
@@ -520,7 +520,7 @@ void UOHDGameplayAbility::SetCameraMode(TSubclassOf<UOHDCameraMode> CameraMode)
 
 void UOHDGameplayAbility::ClearCameraMode()
 {
-	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(ClearCameraMode, );
+	//ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(ClearCameraMode, );
 
 	if (ActiveCameraMode)
 	{

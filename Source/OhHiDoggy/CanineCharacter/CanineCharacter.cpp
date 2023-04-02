@@ -213,7 +213,7 @@ bool ACanineCharacter::CanTurnInPlace90() const
 bool ACanineCharacter::CanTurnInPlace90Internal_Implementation() const
 {
 	//todo expand?
-	return !bIsCrouched && JumpIsAllowedInternal();
+	return !bIsCrouched && JumpIsAllowedInternal() && GetVelocity().Equals(FVector::Zero(), 0.001);
 }
 
 bool ACanineCharacter::TurnInPlace90IsAllowedInternal() const
