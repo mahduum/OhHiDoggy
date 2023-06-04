@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilites/OHDGameplayAbility.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "UObject/Object.h"
 #include "InputAction.h"
 #include "OHDGameplayAbility_TurnInPlace90.generated.h"

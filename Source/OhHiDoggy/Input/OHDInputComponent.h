@@ -7,7 +7,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MappableConfigPair.h"
-#include "OhHiDoggy/FOHDGameplayTags.h"
 #include "type_traits"
 #include "OhHiDoggy/OHDLogChannels.h"
 #include "OHDInputComponent.generated.h"
@@ -43,7 +42,6 @@ public:
 	}
 	
 public:
-
 	UOHDInputComponent(const FObjectInitializer& ObjectInitializer);
 
 	void AddInputMappings(const UOHDInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const;

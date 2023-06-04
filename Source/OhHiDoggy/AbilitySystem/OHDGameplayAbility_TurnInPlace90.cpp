@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "OHDGameplayAbility_TurnInPlace90.h"
-
 #include "AbilitySystemComponent.h"
 #include "OhHiDoggy/FOHDGameplayTags.h"
 #include "OhHiDoggy/OHDLogChannels.h"

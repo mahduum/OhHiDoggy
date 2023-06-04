@@ -325,6 +325,8 @@ void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
+
+	UE_LOG(LogOHD, Display, TEXT("Input move action value received"));
 	
 	// If the player has attempted to move again then cancel auto running
 	if (AOHDPlayerController* OHDController = Cast<AOHDPlayerController>(Controller))
