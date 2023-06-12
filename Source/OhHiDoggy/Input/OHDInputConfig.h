@@ -32,6 +32,8 @@ public:
 	UOHDInputConfig(const FObjectInitializer& ObjectInitializer);
 	const UInputAction* FindNativeInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 	const UInputAction* FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
+	void FindAbilityTagForInputAction(const UInputAction* InputAction, TOptional<FGameplayTag>& OutInputTag, bool bLogNotFound) const;
+
 public:
 	// List of input actions used by the owner.  These input actions are mapped to a gameplay tag and must be manually bound.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (TitleProperty = "InputAction"))

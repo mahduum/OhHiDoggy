@@ -8,6 +8,7 @@ public class OhHiDoggyEditorTarget : TargetRules
 	public OhHiDoggyEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_0;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("OhHiDoggy");
 		RegisterModulesCreatedByRider();

@@ -159,6 +159,36 @@ void UDoggyComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+const UOHDInputConfig* UDoggyComponent::GetInputConfigFromPawnData()
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		UE_LOG(LogOHD, Error, TEXT("Pawn data not found!"));
+		return nullptr;
+	}
+	
+	if (const UOHDPawnComponentExtension* PawnExtComp = UOHDPawnComponentExtension::FindPawnExtensionComponent(Pawn))
+	{
+		UE_LOG(LogOHD, Display, TEXT("Pawn's extension component is ready for input init."));
+
+		if (const UOHDPawnData* PawnData = PawnExtComp->GetPawnData<UOHDPawnData>())//todo make pawn data and nest it in extension comp
+		{
+			UE_LOG(LogOHD, Display, TEXT("Pawn's data is ready for input init."));
+
+			//input config is necessary to bind native input actions to functions in c++ code below, without it the native actions won't be bound to any functions
+			//and we would not be able to trigger them
+			if (const UOHDInputConfig* InputConfig = PawnData->InputConfig)
+			{
+				return InputConfig;
+			}
+		}
+	}
+
+	UE_LOG(LogOHD, Error, TEXT("There was not input config in pawns data!"));
+	return nullptr;
+}
+
 void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
@@ -223,7 +253,11 @@ void UDoggyComponent::InitializePlayerInput(UInputComponent* PlayerInputComponen
 				TArray<uint32> BindHandles;
 				//input activated ability actions added in InputConfig as actions under AbilityInputActions - it is data asset class from UOHDInputConfig in DA_DoggyInputConfig_Agility) (examples: jump, reload, dash, fire, turn in place 90...
 				DoggyIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
-				DoggyIC->BindAbilityActionsWithInputData(InputConfig, this, &ThisClass::OnTurnInPlaceStarted, nullptr, BindHandles);
+				FName FuncName = GET_FUNCTION_NAME_CHECKED(UDoggyComponent, OnTurnInPlaceStarted);
+				UE_LOG(LogOHD, Display, TEXT("Retrieved name for method: [%s]."), *FuncName.ToString());
+				
+				DoggyIC->BindAbilityActionsWithInputData(InputConfig, this, FuncName, nullptr, BindHandles);
+				//DoggyIC->BindAbilityActionsFull(InputConfig, ETriggerEvent::Started, this, FuncName, BindHandles);
 
 				/* input config is needed to find the actual InputAction asset in the game while all we are providing is just a tag, because input config has a helper
 				 * function that allows to find it by tag given that inside the actual input config asset we had it set up correctly.
@@ -321,12 +355,10 @@ void UDoggyComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 }
 
-void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)
+void UDoggyComponent::Input_Move(const FInputActionValue& InputActionValue)//FInputActionValue is FKey
 {
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
-
-	UE_LOG(LogOHD, Display, TEXT("Input move action value received"));
 	
 	// If the player has attempted to move again then cancel auto running
 	if (AOHDPlayerController* OHDController = Cast<AOHDPlayerController>(Controller))
@@ -451,9 +483,17 @@ bool UDoggyComponent::IsPawnComponentReadyToInitialize() const
 	return true;
 }
 
-/* This could also be achieved by making two different abilities, one for turn left, the other for right */
-void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag)//todo make on released too (TODO: can the ability handle be bound to a delegate too? such that we don't need to retrieve it?)
+void UDoggyComponent::OnTurnInPlaceStartedSingle(const FGameplayTag InputActionValue)
 {
+	UE_LOG(LogCore, Display, TEXT("Ability started, turn in place, just action value."));
+}
+/* This could also be achieved by making two different abilities, one for turn left, the other for right */
+void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, float ElapsedTime, float TriggeredTime, const UInputAction* SourceAction)//todo make on released too (TODO: can the ability handle be bound to a delegate too? such that we don't need to retrieve it?)
+{
+	//todo: I can use instead dynamic signarute, retrieve with value also input action source, then find it in TArray<FDoggyInputAction> AbilityInputActionsWithInputData and identify tag for it
+	//todo: do just as an exercise
+	
+	//unless I can have here a more generic method that would accept tag, identify an ability and pass a value to it?
 	UE_LOG(LogCore, Display, TEXT("Ability started, turn in place"));
 	if (const APawn* Pawn = GetPawn<APawn>())
 	{
@@ -473,10 +513,23 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 				//AbilityEventData.TargetData = InputActionValue;
 				
 				TArray<FGameplayAbilitySpecHandle> OutAbilities;
+
+				TOptional<FGameplayTag> InputTag;
+				//find tag for input action
+				if(const UOHDInputConfig* const InputConfig = GetInputConfigFromPawnData())
+				{
+					InputConfig->FindAbilityTagForInputAction(SourceAction, InputTag, true);
+				}
+
+				if (!InputTag.IsSet())
+				{
+					return;
+				}
+				
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(InputTag);
-				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);//todo or choose tag here and call apropriate ability
-				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Before activation ability spec handle found by tag (%s), count: %i"), *InputTag.GetTagName().ToString(), OutAbilities.Num());
+				TagContainer.AddTag(InputTag.GetValue());
+				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Before activation ability spec handle found by tag (%s), count: %i"), *InputTag.GetValue().GetTagName().ToString(), OutAbilities.Num());
 				
 				for (const FGameplayAbilitySpecHandle AbilitySpecHandle : OutAbilities)
 				{
@@ -501,7 +554,7 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 					}
 					//if x value != 0
 
-					OHDASC->TriggerAbilityFromGameplayEvent(AbilitySpecHandle, OHDASC->AbilityActorInfo.Get(), InputTag, &AbilityEventData, *OHDASC);//TODO receive this event in BP
+					OHDASC->TriggerAbilityFromGameplayEvent(AbilitySpecHandle, OHDASC->AbilityActorInfo.Get(), InputTag.GetValue(), &AbilityEventData, *OHDASC);//TODO receive this event in BP
 
 					auto ActorTags = OHDASC->AbilityActorInfo.Get()->AvatarActor->Tags;
 					FString JoinedTagsString = FString::JoinBy(ActorTags, TEXT(", "), [](const FName& Name){ return Name.ToString();});

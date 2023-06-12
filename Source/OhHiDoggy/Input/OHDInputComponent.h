@@ -8,7 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "MappableConfigPair.h"
 #include "type_traits"
-#include "OhHiDoggy/OHDLogChannels.h"
+#include "OhHiDoggy\OHDLogChannels.h"
 #include "OHDInputComponent.generated.h"
 
 struct FGameplayTag;
@@ -24,11 +24,11 @@ public:
 
 	/* Capture some additional data args if object method needs them */
 	template <typename UserClass, typename FuncType, typename... VarTypes>
-	auto MakeLambda(UserClass* Obj, FuncType Func, VarTypes... Vars)
+	auto MakeLambda(UserClass* Obj, FuncType Func, VarTypes... Vars)//vars are args for my method
 	{
 		return [Obj, Func, Vars...](const FInputActionValue& Value) -> decltype(auto)
 		{
-			return (Obj->*Func)(Value, Vars...);
+			return (Obj->*Func)(Value, Vars...);//my method takes input action value, with which it is called, and captured args when it was bound
 		};
 	}
 	
@@ -37,8 +37,10 @@ public:
 	FEnhancedInputActionEventBinding& BindActionWithValues(const UInputAction* Action, ETriggerEvent TriggerEvent, UserClass* Object, FuncType Func, VarTypes... Vars)
 	{
 		TUniquePtr<FEnhancedInputActionEventDelegateBinding<FEnhancedInputActionHandlerValueSignature>> AB = MakeUnique<FEnhancedInputActionEventDelegateBinding<FEnhancedInputActionHandlerValueSignature>>(Action, TriggerEvent);
-		AB->Delegate.MakeDelegate().BindLambda(MakeLambda(Object, Func, Vars...));
-		return *EnhancedActionEventBindings.Add_GetRef(MoveTemp(AB));
+		AB->Delegate.MakeDelegate().BindLambda(MakeLambda(Object, Func, Vars...));//make lambda really takes really just one argument, that is input value, what calling it requires
+		//I can replace what it is doing by making lambda first, passing the necessary args to it before binding, then binding it to a delegate inside my user class object, and calling it together
+		//inside object's method with additional input value argument. The lambda signature will require only one parameter: action tag which it will capture
+		return *EnhancedActionEventBindings.Add_GetRef(MoveTemp(AB));//todo try to use existing dynamic signature
 	}
 	
 public:
@@ -55,8 +57,8 @@ public:
 	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 	void BindAbilityActions(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
 	
-	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-	void BindAbilityActionsWithInputData(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
+	template<class UserClass, typename ReleasedFuncType>
+	void BindAbilityActionsWithInputData(const UOHDInputConfig* InputConfig, UserClass* Object, FName PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles);
 
 	void RemoveBinds(TArray<uint32>& BindHandles);
 
@@ -131,25 +133,28 @@ void UOHDInputComponent::BindNativeAction(const UOHDInputConfig* InputConfig,
  * Difference between BindAction for native and for abilities is that first just binds delegate but the second one makes one.
  */
 
-template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
-void UOHDInputComponent::BindAbilityActionsWithInputData(const UOHDInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
+/*Bind method that has signature of FEnhancedInputActionHandlerDynamicSignature*/
+template<class UserClass, typename ReleasedFuncType>
+void UOHDInputComponent::BindAbilityActionsWithInputData(const UOHDInputConfig* InputConfig, UserClass* Object, FName PressedFuncName, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
 {
 	check(InputConfig);
-
+	
 	for (const FDoggyInputAction& Action : InputConfig->AbilityInputActionsWithInputData)
 	{
 		if (Action.InputAction && Action.InputTag.IsValid())
 		{
-			if (PressedFunc)//todo maybe pass also trigger event type???
-			{
-				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Binding action input for tag [%s], input action name: [%s]"), *Action.InputTag.GetTagName().ToString(), *Action.InputAction->GetName());
-				BindHandles.Add(BindActionWithValues(Action.InputAction, ETriggerEvent::Started, Object, PressedFunc, Action.InputTag).GetHandle());//since it is signature with no args apparently, is it then bound to the last arg that is input tag apparently and called with it? maybe it is possible to pass there any number of args?
-			}
-
-			// if (ReleasedFunc)
+			/*this is no longer usable because of changed class privacy settings*/
+			// if (PressedFuncType)
 			// {
-			// 	BindHandles.Add(BindActionWithValues(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTag).GetHandle());
+			// 	UE_LOG(LogOHDAbilitySystem, Display, TEXT("Binding action input for tag [%s], input action name: [%s]"), *Action.InputTag.GetTagName().ToString(), *Action.InputAction->GetName());
+			// 	BindHandles.Add(BindActionWithValues(Action.InputAction, ETriggerEvent::Started, Object, PressedFuncName, Action.InputTag).GetHandle());//since it is signature with no args apparently, is it then bound to the last arg that is input tag apparently and called with it? maybe it is possible to pass there any number of args?
 			// }
+			
+			if (Object && PressedFuncName.IsValid())
+			{
+				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Binding action input for tag [%s], input action name: [%s], function name: [%s]"), *Action.InputTag.GetTagName().ToString(), *Action.InputAction->GetName(), *PressedFuncName.ToString());
+				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Started, Object, PressedFuncName).GetHandle());
+			}
 		}
 	}
 }
@@ -166,6 +171,7 @@ void UOHDInputComponent::BindAbilityActions(const UOHDInputConfig* InputConfig, 
 		{
 			if (PressedFunc)
 			{
+				//TODO add more args here instead of value, try passing in lambda after Action.Input tag, or some other way to pass in action value
 				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, Action.InputTag).GetHandle());//since it is signature with no args apparently, is it then bound to the last arg that is input tag apparently and called with it? maybe it is possible to pass there any number of args?
 			}
 

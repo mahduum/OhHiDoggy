@@ -52,3 +52,30 @@ const UInputAction* UOHDInputConfig::FindAbilityInputActionForTag(const FGamepla
 
 	return nullptr;
 }
+
+
+void UOHDInputConfig::FindAbilityTagForInputAction(const UInputAction* InputAction, TOptional<FGameplayTag>& OutInputTag, bool bLogNotFound) const
+{
+	for (const FDoggyInputAction& Action : AbilityInputActions)
+	{
+		if (Action.InputAction && (Action.InputAction == InputAction))
+		{
+			OutInputTag = Action.InputTag;
+			break;
+		}
+	}
+
+	for (const FDoggyInputAction& Action : AbilityInputActionsWithInputData)
+	{
+		if (Action.InputAction && (Action.InputAction == InputAction))
+		{
+			OutInputTag = Action.InputTag;
+			break;
+		}
+	}
+
+	if (bLogNotFound && OutInputTag.IsSet() == false)
+	{
+		UE_LOG(LogOHD, Error, TEXT("Can't find InputTag for AbilityInputAction with description: '[%s]' on InputConfig [%s]."), *InputAction->ActionDescription.ToString(), *GetNameSafe(this));
+	}
+}

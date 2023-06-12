@@ -9,6 +9,7 @@
 #include "OhHiDoggy/Components/OHDPawnComponent.h"
 #include "OhHiDoggy/Input/MappableConfigPair.h"
 #include "OhHiDoggy/Input/OHDInputModifiers.h"
+#include "Misc/Optional.h"
 #include "DoggyComponent.generated.h"
 
 class UOHDCameraMode;
@@ -19,6 +20,9 @@ class UOHDInputConfig;
 /**
  * Really a component that can be added to anything the player needs to control - todo doesn't need to be called "doggy"
  */
+DECLARE_DELEGATE_RetVal_OneParam(TFunction<void(const FInputActionValue&)>, FMakeLambdaDelegate, FGameplayTag)
+DECLARE_DELEGATE_OneParam(FLambdaDelegate, const FInputActionValue&)
+
 UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
 class UDoggyComponent : public UOHDPawnComponent//Inspired by ULyraHeroComponent
 {
@@ -56,17 +60,24 @@ public:
 	UFUNCTION(BlueprintSetter)
 	void SetYawInputModifier(float InValue);
 
+	FMakeLambdaDelegate MakeLambdaDelegate;
+	FLambdaDelegate LambdaDelegate;
+
 protected:
 
 	/* Called when component added to object in runtime or in edit mode. */
 	virtual void OnRegister() override;
 
 	virtual bool IsPawnComponentReadyToInitialize() const override;//TODO when base class is added add override
-	void OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, FGameplayTag InputTag);
+	void OnTurnInPlaceStartedSingle(const FGameplayTag InputActionValue);
+
+	UFUNCTION()
+	void OnTurnInPlaceStarted(const FInputActionValue& InputActionValue, float ElapsedTime, float TriggeredTime, const UInputAction* SourceAction);
 	void OnPawnReadyToInitialize();//todo here initialize input
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	const UOHDInputConfig* GetInputConfigFromPawnData();
 
 	virtual void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 

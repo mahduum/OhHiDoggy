@@ -61,7 +61,7 @@
 		},
 		{
 			"Name": "LiveLink",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "CommonUI",
