@@ -511,6 +511,7 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 				FGameplayEventData AbilityEventData;//todo need to cast this in BP
 				AbilityEventData.OptionalObject = InputData;//instead of adding data I can add just appropriate tag
 				//AbilityEventData.TargetData = InputActionValue;
+				AbilityEventData.Instigator = GetOwner();
 				
 				TArray<FGameplayAbilitySpecHandle> OutAbilities;
 
@@ -528,8 +529,12 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 				
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(InputTag.GetValue());
+				AbilityEventData.EventTag = InputTag.GetValue();
+
 				OHDASC->FindAllAbilitiesWithTags(OutAbilities, TagContainer, false);
 				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Before activation ability spec handle found by tag (%s), count: %i"), *InputTag.GetValue().GetTagName().ToString(), OutAbilities.Num());
+
+				bool IsActive = false;
 				
 				for (const FGameplayAbilitySpecHandle AbilitySpecHandle : OutAbilities)
 				{
@@ -538,7 +543,7 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 					if(FGameplayAbilitySpec* Ability = OHDASC->FindAbilitySpecFromHandle(AbilitySpecHandle))
 					{
 						double XValue = InputActionValue.Get<FVector2d>().X;
-						
+						IsActive = Ability->IsActive();
 						//todo change vector to 1d vector?
 						//Ability->DynamicAbilityTags.AddTag(FOHDGameplayTags::Get().Cheat_GodMode);
 						//Ability->Ability->AbilityTags
@@ -554,11 +559,24 @@ void UDoggyComponent::OnTurnInPlaceStarted(const FInputActionValue& InputActionV
 					}
 					//if x value != 0
 
-					OHDASC->TriggerAbilityFromGameplayEvent(AbilitySpecHandle, OHDASC->AbilityActorInfo.Get(), InputTag.GetValue(), &AbilityEventData, *OHDASC);//TODO receive this event in BP
+					if(IsActive)
+					{
+						UE_LOG(LogOHDAbilitySystem, Warning, TEXT("Ability is still active, skipping trigger event!"));
+					}
+					
+					bool TriggerResult = OHDASC->TriggerAbilityFromGameplayEvent(AbilitySpecHandle, OHDASC->AbilityActorInfo.Get(), InputTag.GetValue(), &AbilityEventData, *OHDASC);//TODO receive this event in BP
 
 					auto ActorTags = OHDASC->AbilityActorInfo.Get()->AvatarActor->Tags;
 					FString JoinedTagsString = FString::JoinBy(ActorTags, TEXT(", "), [](const FName& Name){ return Name.ToString();});
-					UE_LOG(LogOHDAbilitySystem, Display, TEXT("After event activation abilities on actor data from ablity system: %s"), *JoinedTagsString);
+					UE_LOG(LogOHDAbilitySystem, Display, TEXT("After event trigger abilities on actor data from ablity system: %s"), *JoinedTagsString);
+					UE_LOG(LogOHDAbilitySystem, Display, TEXT("Event trigger result: %i, ability spec handle: %i, actor info: %i, input tag: %s, optional obj: %i, ability system: %i, X value: %f"),
+						TriggerResult,
+						AbilitySpecHandle.IsValid(),
+						OHDASC->AbilityActorInfo.Get() != nullptr,
+						*InputTag.GetValue().GetTagName().ToString(),
+						(AbilityEventData.OptionalObject != nullptr),
+						OHDASC != nullptr,
+						Cast<UAbilityTurnInPlace90InputData>(AbilityEventData.OptionalObject.Get())->StartAbilityInputActionValue.Get<FVector2D>().X);
 				}
 				
 				UE_LOG(LogOHDAbilitySystem, Display, TEXT("Turn in place triggered first step and broadcasting with input value: %f"), InputActionValue.Get<FVector2D>().X);

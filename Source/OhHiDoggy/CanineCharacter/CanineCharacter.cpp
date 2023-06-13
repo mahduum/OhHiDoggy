@@ -195,13 +195,13 @@ void ACanineCharacter::NotifyControllerChanged()
 
 void ACanineCharacter::TurnInPlace90()
 {
-	bPressedJump = true;
+	bPressedTurnInPlace90 = true;
 	JumpKeyHoldTime = 0.0f;
 }
 
 void ACanineCharacter::StopTurningInPlace90()
 {
-	bPressedJump = false;
+	bPressedTurnInPlace90 = false;
 	ResetJumpState();
 }
 
@@ -213,7 +213,7 @@ bool ACanineCharacter::CanTurnInPlace90() const
 bool ACanineCharacter::CanTurnInPlace90Internal_Implementation() const
 {
 	//todo expand?
-	return !bIsCrouched && JumpIsAllowedInternal() && GetVelocity().Equals(FVector::Zero(), 0.001);
+	return !bIsCrouched && /*JumpIsAllowedInternal()*/ !bPressedTurnInPlace90 && GetVelocity().Equals(FVector::Zero(), 0.001);
 }
 
 bool ACanineCharacter::TurnInPlace90IsAllowedInternal() const

@@ -15,22 +15,28 @@ UOHDGameplayAbility_TurnInPlace90::UOHDGameplayAbility_TurnInPlace90(const FObje
 
 bool UOHDGameplayAbility_TurnInPlace90::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	UE_LOG(LogOHD, Display, TEXT("Can activate turn in place ability check."));
 	if (!ActorInfo || !ActorInfo->AvatarActor.IsValid())
 	{
+		UE_LOG(LogOHD, Warning, TEXT("Cannot activate turn in place ability 1."));
 		return false;
 	}
+
+	//if(this->GetAbilitySystemComponentFromActorInfo()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(AbilityTag));)
 
 	const ACanineCharacter* OHDCharacter = Cast<ACanineCharacter>(ActorInfo->AvatarActor.Get());
 	if (!OHDCharacter || !OHDCharacter->CanTurnInPlace90())
 	{
+		UE_LOG(LogOHD, Warning, TEXT("Cannot activate turn in place ability 2 [%i], [%i]."), !OHDCharacter, !OHDCharacter->CanTurnInPlace90());
 		return false;
 	}
 
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
+		UE_LOG(LogOHD, Warning, TEXT("Cannot activate turn in place ability 3."));
 		return false;
 	}
+
+	UE_LOG(LogOHD, Warning, TEXT("Can activate turn in place ability check, can turn in place: %i, pressed turn in place: %i"), OHDCharacter->CanTurnInPlace90(), OHDCharacter->bPressedTurnInPlace90);
 
 	return true;
 }
@@ -39,9 +45,11 @@ void UOHDGameplayAbility_TurnInPlace90::EndAbility(const FGameplayAbilitySpecHan
 {
 	//ActivationOwnedTags.Reset();
 	// Stop TurnInPlace90ing in case the ability blueprint doesn't call it.
-	CharacterTurnInPlace90Stop();
 
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	CharacterTurnInPlace90Stop();
+	//const ACanineCharacter* OHDCharacter = Cast<ACanineCharacter>(ActorInfo->AvatarActor.Get());
+	//UE_LOG(LogOHD, Warning, TEXT("End ability, can turn in place: %i, pressed turn in place: %i"), OHDCharacter->CanTurnInPlace90(), OHDCharacter->bPressedTurnInPlace90);
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);//todo sometimes this ability is not properly ended!!!
 }
 
 void UOHDGameplayAbility_TurnInPlace90::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -49,11 +57,13 @@ void UOHDGameplayAbility_TurnInPlace90::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayEventData* TriggerEventData)
 {
 	UE_LOG(LogOHD, Display, TEXT("Turn in place ability activated (also to check whether it was activated by tag."));
+	CharacterTurnInPlace90Start();
 	if(const UAbilityTurnInPlace90InputData* const InputData = Cast<UAbilityTurnInPlace90InputData>(
 		TriggerEventData->OptionalObject))
 	{
 		const double XValue = InputData->StartAbilityInputActionValue.Get<FVector2D>().X;
-		if(FMath::IsNearlyEqual(XValue, 0.01) == false)
+		
+		if(FMath::IsNearlyEqual(XValue, 0) == false)
 		{
 			// TODO note: tags left/right should be added before this activity is activated?
 			const FGameplayTag TagToAdd = XValue > 0
@@ -63,13 +73,6 @@ void UOHDGameplayAbility_TurnInPlace90::ActivateAbility(const FGameplayAbilitySp
 			//GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(TagToAdd);//todo make it current tag to remove on end
 
 			UE_LOG(LogOHD, Display, TEXT("Turn in place ability has added tag: %s."), *TagToAdd.GetTagName().ToString());//todo why it can be added only once?
-		}
-
-		if(auto ActorInfo = GetAvatarActorFromActorInfo())
-		{
-			auto ActorTags = ActorInfo->Tags;
-			FString JoinedTagsString = FString::JoinBy(ActorTags, TEXT(", "), [](const FName& Name){ return Name.ToString();});
-			UE_LOG(LogOHDAbilitySystem, Display, TEXT("After activation abilities on actor inside ability: %s"), *JoinedTagsString);
 		}
 	}
 	//todo when binding it pass input action data? is it with TryActivateAbility?
@@ -81,25 +84,28 @@ void UOHDGameplayAbility_TurnInPlace90::SendGameplayEvent(FGameplayTag EventTag,
 	Super::SendGameplayEvent(EventTag, Payload);
 }
 
-void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Start()
+void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Start()//todo make BP 
 {
 	if (ACanineCharacter* OHDCharacter = GetOHDCharacterFromActorInfo())
 	{
 		if (OHDCharacter->IsLocallyControlled() && !OHDCharacter->bPressedTurnInPlace90)
 		{
 			OHDCharacter->UnCrouch();
-			OHDCharacter->TurnInPlace90();
+			OHDCharacter->TurnInPlace90(); 
+			UE_LOG(LogOHD, Warning, TEXT("Set turn in place start, can turn in place: %i, pressed turn in place: %i"), OHDCharacter->CanTurnInPlace90(), OHDCharacter->bPressedTurnInPlace90);
+
 		}
 	}
 }
 
-void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Stop()
+void UOHDGameplayAbility_TurnInPlace90::CharacterTurnInPlace90Stop()//todo make BP
 {
 	if (ACanineCharacter* OHDCharacter = GetOHDCharacterFromActorInfo())
 	{
 		if (OHDCharacter->IsLocallyControlled() && OHDCharacter->bPressedTurnInPlace90)
 		{
 			OHDCharacter->StopTurningInPlace90();
+			UE_LOG(LogOHD, Warning, TEXT("Set turn in place stop, can turn in place: %i, pressed turn in place: %i"), OHDCharacter->CanTurnInPlace90(), OHDCharacter->bPressedTurnInPlace90);
 		}
 	}
 }
