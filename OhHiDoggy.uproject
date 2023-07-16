@@ -90,6 +90,10 @@
 		{
 			"Name": "GameplayInsights",
 			"Enabled": true
+		},
+		{
+			"Name": "PhysicsControl",
+			"Enabled": true
 		}
 	]
 }
