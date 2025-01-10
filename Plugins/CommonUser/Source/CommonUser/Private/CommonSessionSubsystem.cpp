@@ -5,6 +5,7 @@
 #include "Engine/AssetManager.h"
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
+#include "Online/OnlineSessionNames.h"
 
 #if COMMONUSER_OSSV1
 #include "OnlineSubsystem.h"

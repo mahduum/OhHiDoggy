@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "InputCoreTypes.h"
 #include "CommonUserWidget.h"
 #include "CommonPlayerInputKey.generated.h"
 
+enum class ECommonInputType : uint8;
 class UCommonLocalPlayer;
 class APlayerController;
 

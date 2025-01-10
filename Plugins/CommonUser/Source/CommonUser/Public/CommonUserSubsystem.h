@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "OnlineError.h"
+#include "OnlineSubsystem.h"
 #include "CommonUserTypes.h"
 #include "NativeGameplayTags.h"
 #include "Engine/GameInstance.h"

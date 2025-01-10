@@ -11,8 +11,9 @@
 #include "CanineCharacter.generated.h"
 
 class UOHDCameraComponent;
+class UInputComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnDoggyPossessed, UInputComponent*)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDoggyPossessed, UInputComponent*);
 
 USTRUCT()
 struct FCanineReplicatedAcceleration

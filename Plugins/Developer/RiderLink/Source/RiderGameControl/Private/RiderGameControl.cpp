@@ -289,7 +289,7 @@ void FRiderGameControl::RequestPlayWorldCommand(const FCachedCommandInfo& Comman
         SendRequestFailed(RequestID, NotificationType::Error, Message);
         return;
     }
-    AsyncTask(ENamedThreads::GameThread, [=]()
+    AsyncTask(ENamedThreads::GameThread, [&]()
     {
         if (FPlayWorldCommands::GlobalPlayWorldActions->TryExecuteAction(CommandInfo.Command.ToSharedRef()))
         {

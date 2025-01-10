@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "BlueprintGraph/Classes/K2Node_AsyncAction.h"
 #include "CoreMinimal.h"
+#include "K2Node_AsyncAction.h"
 #include "UObject/ObjectMacros.h"
-
 #include "K2Node_AsyncAction_ListenForGameplayMessages.generated.h"
 
 class FBlueprintActionDatabaseRegistrar;

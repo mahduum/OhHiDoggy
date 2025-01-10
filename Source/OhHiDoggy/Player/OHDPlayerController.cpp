@@ -328,7 +328,7 @@ void AOHDPlayerController::UpdateHiddenComponents(const FVector& ViewLocation, T
 				{
 					if (Comp->IsRegistered())
 					{
-						OutHiddenComponents.Add(Comp->ComponentId);
+						//OutHiddenComponents.Add(Comp->ComponentId);todo missing id member
 
 						for (USceneComponent* AttachedChild : Comp->GetAttachChildren())
 						{
@@ -336,7 +336,7 @@ void AOHDPlayerController::UpdateHiddenComponents(const FVector& ViewLocation, T
 							UPrimitiveComponent* AttachChildPC = Cast<UPrimitiveComponent>(AttachedChild);
 							if (AttachChildPC && AttachChildPC->IsRegistered() && !AttachChildPC->ComponentTags.Contains(NAME_NoParentAutoHide))
 							{
-								OutHiddenComponents.Add(AttachChildPC->ComponentId);
+								//OutHiddenComponents.Add(AttachChildPC->ComponentId);//missing id
 							}
 						}
 					}

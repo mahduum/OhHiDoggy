@@ -10,6 +10,7 @@ class UOHDAbilityTagRelationshipMapping;
 class UOHDInputConfig;
 class UOHDCameraMode;
 class UOHDAbilitySet;
+class APawn;
 /*
  * UOHDPawnData
  *

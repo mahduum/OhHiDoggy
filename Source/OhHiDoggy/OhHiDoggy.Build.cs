@@ -14,7 +14,8 @@ public class OhHiDoggy : ModuleRules
 			"Core", "CoreUObject", "Engine", "HeadMountedDisplay",
 			"AIModule", "GameplayTasks", "GameplayAbilities",
 			"GameplayTags", "GameFeatures", "ModularGameplay",
-			"ApplicationCore", "PhysicsCore", "ModularGameplayActors"
+			"ApplicationCore", "PhysicsCore", "ModularGameplayActors",
+			"InputCore", "OnlineSubsystem", "CommonUser"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(

@@ -8,9 +8,13 @@ public class OhHiDoggyEditorTarget : TargetRules
 	public OhHiDoggyEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_0;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 		ExtraModuleNames.Add("OhHiDoggy");
+		CppStandard = CppStandardVersion.Cpp20;
+		bOverrideBuildEnvironment = true;
+		bValidateFormatStrings = false;
+		WindowsPlatform.bStrictConformanceMode = false;
 		RegisterModulesCreatedByRider();
 	}
 
